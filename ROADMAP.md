@@ -26,10 +26,12 @@ built for stop/resume, one bounded session per stage.
 - [x] **Stage 1 — Landscape & positioning** → [`docs/LANDSCAPE.md`](docs/LANDSCAPE.md).
   Done: June-2026 landscape (NLWeb, llms.txt, MCP gateways, NIST/IETF auth, efficiency
   patterns) mapped with sources; LAP positioned as the efficiency-measurement niche.
-- [ ] **▶ Stage 2 — Generalize the scorer beyond pet-zoo.** Accept ANY OpenAPI
-  (file/URL), reusing `spec_source` normalization + the variant generators. CLI
-  `lap score <openapi>` → A/B/C table + LAP level. _Verify: scores a non-pet-zoo OpenAPI._
-- [ ] **Stage 3 — Score real ecosystem targets.** A real MCP server (FastMCP from a
+- [x] **Stage 2 — Generalize the scorer beyond pet-zoo.** Done: standalone [`lap/`](lap/)
+  toolkit — `python -m lap.score <openapi-file-or-url>` loads any spec, normalizes it
+  (`lap/openapi_ir.py`), renders openapi_full / compact_sig / numbered menus
+  (`lap/menu.py`) and reports bucket-A tokens + reduction. Verified on a non-pet-zoo
+  Bookstore spec (418 → 205 compact). B/C still need per-API tasks (token-bench).
+- [ ] **▶ Stage 3 — Score real ecosystem targets.** A real MCP server (FastMCP from a
   public OpenAPI) and, if feasible, an NLWeb `/mcp` endpoint. _Verify: ≥1 real API
   scored end to end._
 - [ ] **Stage 4 — Faithful tokens + success check.** Default to Anthropic
@@ -43,7 +45,7 @@ built for stop/resume, one bounded session per stage.
 
 ## Status
 
-**▶ Next: Stage 2** (Generalize the scorer beyond pet-zoo). Stages 0–1 done.
+**▶ Next: Stage 3** (Score real ecosystem targets). Stages 0–2 done.
 
 ## Sources captured for Stage 1 (so it can be done without re-searching)
 

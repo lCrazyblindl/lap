@@ -1,0 +1,79 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "Bookstore API", "version": "1.0.0" },
+  "paths": {
+    "/books": {
+      "get": {
+        "operationId": "list_books",
+        "summary": "List all books",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Book" } } } }
+          }
+        }
+      },
+      "post": {
+        "operationId": "create_book",
+        "summary": "Add a book",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/BookCreate" } } } },
+        "responses": { "201": { "description": "created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Book" } } } } }
+      }
+    },
+    "/books/{book_id}": {
+      "get": {
+        "operationId": "get_book",
+        "summary": "Get a book by id",
+        "parameters": [ { "name": "book_id", "in": "path", "required": true, "schema": { "type": "integer" } } ],
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Book" } } } } }
+      },
+      "put": {
+        "operationId": "update_book",
+        "summary": "Replace a book",
+        "parameters": [ { "name": "book_id", "in": "path", "required": true, "schema": { "type": "integer" } } ],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/BookCreate" } } } },
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Book" } } } } }
+      },
+      "delete": {
+        "operationId": "delete_book",
+        "summary": "Delete a book",
+        "parameters": [ { "name": "book_id", "in": "path", "required": true, "schema": { "type": "integer" } } ],
+        "responses": { "204": { "description": "deleted" } }
+      }
+    },
+    "/authors/{author_id}/books": {
+      "get": {
+        "operationId": "list_author_books",
+        "summary": "List books by an author",
+        "parameters": [ { "name": "author_id", "in": "path", "required": true, "schema": { "type": "integer" } } ],
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Book" } } } } } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Genre": { "type": "string", "enum": ["fiction", "nonfiction", "poetry", "reference"] },
+      "BookCreate": {
+        "type": "object",
+        "required": ["title", "author", "price", "genre"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1 },
+          "author": { "type": "string" },
+          "price": { "type": "number", "minimum": 0 },
+          "genre": { "$ref": "#/components/schemas/Genre" }
+        }
+      },
+      "Book": {
+        "type": "object",
+        "required": ["id", "title", "author", "price", "genre"],
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string", "minLength": 1 },
+          "author": { "type": "string" },
+          "price": { "type": "number", "minimum": 0 },
+          "genre": { "$ref": "#/components/schemas/Genre" }
+        }
+      }
+    }
+  }
+}
