@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lap-score"
+version = "0.1.0"
+description = "LAP - measure and lint the token-efficiency of agent-facing APIs (OpenAPI)"
+readme = "lap/README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["llm", "agents", "openapi", "mcp", "tokens", "api"]
+dependencies = ["httpx", "tiktoken"]
+
+[project.optional-dependencies]
+mcp = ["fastmcp"]          # real-MCP baseline row (lap score)
+faithful = ["anthropic"]   # faithful Anthropic count_tokens
+all = ["fastmcp", "anthropic"]
+
+[project.scripts]
+lap = "lap.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/lCrazyblindl/LLMToHTTP"
+Roadmap = "https://github.com/lCrazyblindl/LLMToHTTP/blob/main/ROADMAP.md"
+
+[tool.setuptools]
+packages = ["lap"]
+
+[tool.setuptools.package-data]
+lap = ["examples/*.json"]

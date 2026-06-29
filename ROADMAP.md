@@ -45,12 +45,18 @@ built for stop/resume, one bounded session per stage.
 - [x] **Stage 5 — LAP profile v1.0 + linter.** Done: profile promoted to v1.0;
   `lap/lint.py` + `python -m lap.lint <openapi>` flags D3 / R1 / R2 / R3 / W1 / E1 / A1
   with rule citations — verified on the live Swagger Petstore (6 warnings, 10 suggestions).
-- [ ] **▶ Stage 6 — Package & share.** Quickstart, examples, PyPI/GitHub release, short
-  writeup. _Verify: a stranger can `pip install` and score their API._
+- [x] **Stage 6 — Package & share.** Done: `pyproject.toml` (core deps httpx+tiktoken,
+  extras `[mcp]`/`[faithful]`) + `lap/cli.py` console script — `pip install -e .` gives a
+  `lap` command; `lap score` / `lap lint` verified as installed commands. **Remaining manual
+  step (owner's):** publish to PyPI + a GitHub release to make it `pip install lap-score`.
 
 ## Status
 
-**▶ Next: Stage 6** (Package & share). Stages 0–5 done (Stage 4 = budget-safe mechanism; live/faithful numbers skipped, no API key).
+**✅ All stages (0–6) complete.** The LAP toolkit (`lap score` / `lap lint` + real-MCP
+baseline), profile v1.0, the landscape doc, and token-bench are in place and pip-installable.
+Optional manual follow-ups (owner's): publish to PyPI + a GitHub release; and run the live
+success check with an `ANTHROPIC_API_KEY` (`run_bench.py --live --quick`, cheap) to validate
+that the token savings don't cost accuracy.
 
 ## Sources captured for Stage 1 (so it can be done without re-searching)
 

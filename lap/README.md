@@ -5,13 +5,25 @@ how many **tokens** an API's definitions cost an LLM. It answers: *is my agent-A
 menu efficient, and by how much could it shrink?* — the reproducible number the
 agentic-web ecosystem lacks (see [`../docs/LANDSCAPE.md`](../docs/LANDSCAPE.md)).
 
+## Install
+
+```bash
+pip install -e .                  # from the repo root (or: pip install lap-score once published)
+pip install -e ".[mcp]"           # + real-MCP baseline (fastmcp)
+pip install -e ".[faithful]"      # + faithful Anthropic count_tokens
+```
+
+Core deps are just `httpx` + `tiktoken`; `fastmcp` and `anthropic` are optional extras.
+
 ## Quickstart
 
 ```bash
-# deps (or reuse the repo .venv): httpx, tiktoken, anthropic
+lap score  https://petstore3.swagger.io/api/v3/openapi.json   # menu (bucket A) token cost
+lap lint   https://petstore3.swagger.io/api/v3/openapi.json   # flag LAP rule violations
+lap score  lap/examples/bookstore.openapi.json
+
+# no install needed, from the repo root:
 python -m lap.score lap/examples/bookstore.openapi.json
-python -m lap.score https://petstore3.swagger.io/api/v3/openapi.json
-python -m lap.lint  https://petstore3.swagger.io/api/v3/openapi.json   # flag LAP rule violations
 ```
 
 Example output:
