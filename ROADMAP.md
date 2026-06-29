@@ -23,11 +23,10 @@ built for stop/resume, one bounded session per stage.
 
 - [x] **Stage 0 — Persist the plan.** `ROADMAP.md` + `lap-roadmap` memory pointer +
   repo `CLAUDE.md` link. _Done: a new session resumes from the pointer alone._
-- [ ] **▶ Stage 1 — Landscape & positioning** → `docs/LANDSCAPE.md`. Write up the
-  June-2026 findings with source links (see below) and state LAP's niche
-  (measurement + guidance, complementary to MCP/NLWeb). _Done when: the doc explains
-  what already exists and why LAP complements rather than competes._
-- [ ] **Stage 2 — Generalize the scorer beyond pet-zoo.** Accept ANY OpenAPI
+- [x] **Stage 1 — Landscape & positioning** → [`docs/LANDSCAPE.md`](docs/LANDSCAPE.md).
+  Done: June-2026 landscape (NLWeb, llms.txt, MCP gateways, NIST/IETF auth, efficiency
+  patterns) mapped with sources; LAP positioned as the efficiency-measurement niche.
+- [ ] **▶ Stage 2 — Generalize the scorer beyond pet-zoo.** Accept ANY OpenAPI
   (file/URL), reusing `spec_source` normalization + the variant generators. CLI
   `lap score <openapi>` → A/B/C table + LAP level. _Verify: scores a non-pet-zoo OpenAPI._
 - [ ] **Stage 3 — Score real ecosystem targets.** A real MCP server (FastMCP from a
@@ -44,7 +43,7 @@ built for stop/resume, one bounded session per stage.
 
 ## Status
 
-**▶ Next: Stage 1** (Landscape & positioning). Stage 0 done.
+**▶ Next: Stage 2** (Generalize the scorer beyond pet-zoo). Stages 0–1 done.
 
 ## Sources captured for Stage 1 (so it can be done without re-searching)
 

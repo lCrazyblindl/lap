@@ -8,6 +8,7 @@ Sandbox repo for experimenting with exposing tools over HTTP, including MCP.
 - [`pet-zoo/`](pet-zoo/README.md) — a small FastAPI zoo management API (CRUD for monkeys, lions, tigers, elephants), JSON file storage, Docker support, Swagger docs. Built first as a plain web server; the testbed for the experiments below.
 - [`experiments/token-bench/`](experiments/token-bench/README.md) — measures how many **tokens** different ways of exposing pet-zoo's HTTP API to an LLM actually cost, across three buckets: **A** definitions, **B** the call, **C** the result.
 - [`profile/`](profile/llm-api-profile.md) — **LLM-API Profile (LAP)**, a draft convention (compact discovery + minimal writes + shaped/aggregated reads + a code escape hatch) for token-efficient LLM↔HTTP, with each rule backed by the token-bench numbers. A profile over HTTP/JSON/OpenAPI, not a new protocol.
+- [`docs/LANDSCAPE.md`](docs/LANDSCAPE.md) — the June-2026 agentic-web landscape (NLWeb, llms.txt, MCP gateways, agent-identity standards) and where LAP fits: the neutral token-efficiency measurement layer nobody else provides. See [`ROADMAP.md`](ROADMAP.md) for the staged plan.
 
 ## Findings so far (token-bench)
 
