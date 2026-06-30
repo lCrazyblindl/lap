@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 
+from . import estimate
 from . import mcp_form
 from . import menu
 from . import openapi_ir as ir
@@ -41,6 +42,8 @@ def main() -> None:
     ap.add_argument("source", help="OpenAPI spec: file path or http(s) URL")
     ap.add_argument("--model", help="model id for faithful count_tokens (needs ANTHROPIC_API_KEY)")
     ap.add_argument("--no-mcp", action="store_true", help="skip the real-MCP (FastMCP) baseline row")
+    ap.add_argument("--page-size", type=int, default=20,
+                    help="assumed page size for the estimated result-size (bucket C)")
     args = ap.parse_args()
 
     if args.model:
@@ -83,7 +86,21 @@ def main() -> None:
     full, compact = a_cost["openapi_full"], a_cost["compact_sig"]
     print(f"\nMenu efficiency: compact signatures are {_pct_saved(compact, full)} vs naive "
           f"OpenAPI->tools ({full} -> {compact} tokens).")
-    print("Note: this scores bucket A (the menu) only. B (the call) and C (results) need "
+
+    ests = []
+    for op in ops:
+        kind, _per, est = estimate.estimate(spec, op, args.page_size)
+        if kind != "void":
+            ests.append((f"{op.method} {op.path}", kind, est))
+    ests.sort(key=lambda e: e[2], reverse=True)
+    if ests:
+        print(f"\nEstimated result size (bucket C, ~{args.page_size} items/page; structural lower bound):")
+        for where, kind, est in ests[:8]:
+            tag = "   <- heavy list" if kind == "list" else ""
+            print(f"  {where:34} ~{est:>5} tokens ({kind}){tag}")
+        print("  Field projection (R1) and pagination (R3) cut list cost - see `lap lint`.")
+
+    print("\nNote: A (menu) is measured and C (results) is estimated above; B (the call) needs "
           "per-API tasks - see experiments/token-bench for a full A/B/C run.\n")
 
 

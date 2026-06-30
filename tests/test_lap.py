@@ -118,3 +118,15 @@ def test_gnarly_score_and_lint_run(gnarly):
     findings = lint.lint(gnarly)
     # GET /pets declares `limit` (pagination via a path-item-level param) -> no R3 there
     assert not any(f.rule == "R3" and f.where == "GET /pets" for f in findings)
+
+
+# --- bucket-C estimate (Stage 9) --------------------------------------------
+def test_estimate_list_heavier_than_object(spec):
+    from lap import estimate
+
+    ops = {op.name: op for op in ir.operations(spec)}
+    kind_list, per, list_c = estimate.estimate(spec, ops["list_books"], page_size=20)
+    kind_obj, _, obj_c = estimate.estimate(spec, ops["get_book"], page_size=20)
+    assert kind_list == "list" and kind_obj == "object"
+    assert list_c > obj_c > 0
+    assert list_c >= per * 20  # page multiplies the per-item cost

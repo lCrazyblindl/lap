@@ -56,9 +56,10 @@ than the naive baseline.
 
 ## What it measures (and what it doesn't)
 
-It scores **bucket A** — the definitions/menu the model carries in context, which is
-intrinsic to the interface and the biggest cacheable cost. **B** (the call) and **C**
-(results) depend on per-API tasks; for a full A/B/C run see
+It measures **bucket A** (the definitions/menu the model carries in context) and **estimates
+C** (result size, from each response schema + an assumed `--page-size` — a structural lower
+bound that captures keys/nesting/types). **B** (the call) still depends on per-API tasks; for a
+full measured A/B/C run see
 [`../experiments/token-bench`](../experiments/token-bench/README.md). The conventions
 behind the compact form are the [LAP profile](../profile/llm-api-profile.md).
 
@@ -69,6 +70,7 @@ behind the compact form are the [LAP profile](../profile/llm-api-profile.md).
 | `openapi_ir.py` | load any OpenAPI (file/URL) → normalized operations + `inline_refs` |
 | `menu.py` | render the menu forms (openapi_full / compact_sig / numbered) from the IR |
 | `mcp_form.py` | real-MCP baseline via `FastMCP.from_openapi` (optional; `--no-mcp` to skip) |
+| `estimate.py` | estimates bucket C (result size) from response schemas (`--page-size`) |
 | `tokens.py` | token counting (Anthropic endpoint, or tiktoken approx) |
 | `score.py` | the `lap score` CLI |
 | `lint.py` | the `lap lint` CLI — checks a spec against the LAP profile rules (D3/R1/R2/R3/W1/E1/A1) |
