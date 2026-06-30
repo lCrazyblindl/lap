@@ -141,10 +141,14 @@ command, or restart Claude Code so all tools inherit it).
   **2.0 response `schema`**, **2.0 `in: body` params**, type-on-parameter, and `#/definitions` type
   blocks. Regression sample `lap/examples/swagger2.json` + 4 tests (25 passing); k8s went from 0
   findings to 284, EC2 returns 0→1070.  `[no key]`
-- [ ] **▶ Stage 18 — Efficiency leaderboard.** Score N real public APIs (Stripe/GitHub/Slack/
-  Notion/…) — bucket A is free — and publish `docs/LEADERBOARD.md`: a ranked table of agent-API
-  token-efficiency (a neutral public dataset). _Done: leaderboard with ≥15 real APIs._  `[no key]`
-- [ ] **Stage 19 — Ship it.** CHANGELOG + version bump + a marketplace **GitHub Action**
+- [x] **Stage 18 — Efficiency leaderboard.** Done: `experiments/leaderboard.py` scores real public
+  APIs from APIs.guru and writes [`docs/LEADERBOARD.md`](docs/LEADERBOARD.md) — **20 APIs** ranked by
+  naive agent-menu (bucket A) cost: Kubernetes 2.82M tokens, EC2 606k, Jira 346k, Stripe 232k, …;
+  naive menus total ~4.9M, `compact_sig` saves ~86% on average and `tool_search` ~96% (unclaimed
+  today). Surfaced + fixed a real crash on the way: tiktoken raised on the literal `<|endoftext|>`
+  in OpenAI's spec — `lap/tokens.py` now encodes with `disallowed_special=()` (+regression test, 25
+  passing).  `[no key]`
+- [ ] **▶ Stage 19 — Ship it.** CHANGELOG + version bump + a marketplace **GitHub Action**
   (`lap-action`) + packaging polish; the owner publishes to PyPI + cuts a GitHub release.
   _Done: release artifacts ready; (owner) published._  `[owner action]`
 

@@ -76,6 +76,9 @@ def test_token_backend_and_counts():
     assert tokens.count("") == 0
     assert tokens.count("hello world") > 0
     assert tokens.count_tools([]) == 0
+    # tiktoken control strings that appear verbatim in real specs (e.g. OpenAI's
+    # "<|endoftext|>") must be counted as text, not crash the encoder.
+    assert tokens.count("ends with <|endoftext|> token") > 0
 
 
 # --- score -------------------------------------------------------------------

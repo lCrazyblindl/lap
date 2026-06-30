@@ -53,7 +53,10 @@ def count(text: str) -> int:
             model=MODEL, messages=[{"role": "user", "content": text or "."}]
         ).input_tokens
         return max(0, full - _frame_overhead()) if text else 0
-    return len(_enc.encode(text))
+    # disallowed_special=(): treat tiktoken control strings (e.g. "<|endoftext|>"
+    # that appear verbatim in some specs, like OpenAI's) as ordinary text, not a
+    # special token — otherwise tiktoken raises.
+    return len(_enc.encode(text, disallowed_special=()))
 
 
 def count_tools(tools: list[dict]) -> int:
@@ -64,7 +67,7 @@ def count_tools(tools: list[dict]) -> int:
             model=MODEL, messages=_FRAME, tools=tools
         ).input_tokens
         return max(0, with_tools - _frame_tokens())
-    return len(_enc.encode(json.dumps(tools)))
+    return len(_enc.encode(json.dumps(tools), disallowed_special=()))
 
 
 @functools.lru_cache(maxsize=1)
