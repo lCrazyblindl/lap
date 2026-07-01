@@ -158,9 +158,17 @@ command, or restart Claude Code so all tools inherit it).
 
 ### Further backlog (unscheduled, key-free)
 **Shipped after the v0.3 stages:** the LAP rules as a **Spectral ruleset**
-([`spectral/`](spectral/README.md), executed + asserted in CI). Still open: a short
-**Related work / credit** note in the README,
-estimate-C realism (use schema `examples`; configurable string length), caching economics
+([`spectral/`](spectral/README.md), executed + asserted in CI, verified locally on Spectral
+6.11.0 = same 15 findings as `lap lint`); the leaderboard gained a **bucket-C** (heaviest
+result) column. Still open — two honest gaps surfaced along the way:
+**(i) validate on a real third-party API end-to-end** — today the full A/B/C + live-accuracy
+matrix runs on the pet-zoo *toy* (top-level-array lists) + a real model; only bucket A is
+measured on real specs (leaderboard). Run B/C + live against e.g. Stripe/GitHub/Petstore, or
+head-to-head vs a real competitor's compact menu (StackOne/Speakeasy).
+**(ii) estimate-C realism for envelope-wrapped lists** (`{data:[…]}`, k8s `items`) — the
+leaderboard's C column counts these as ~1 item and undercounts; teach `estimate` the envelope
+pattern (also schema `examples`, configurable string length).
+Plus: a short **Related work / credit** note in the README, caching economics
 (first-call vs amortized A), bucket-B estimate, NLWeb endpoint scoring, lint auto-fix (emit a
 compact manifest), `lap score before after` diff mode, profile L0 "be-discoverable" rule
 (llms.txt / .well-known / NLWeb), CONTRIBUTING + issue templates.
