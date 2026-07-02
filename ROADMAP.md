@@ -272,13 +272,18 @@ Post-release (0.3.0 is live on PyPI + GitHub). Same stop/resume model. `[key]` =
   `docs/CODE-EXEC.md`, `profile/llm-api-profile.md` (rule X1), `docs/LANDSCAPE.md` §5, and
   `README.md`'s real-tool table to state "5/5, confirmed pattern" instead of "k=1, noisy."
   `[key]`
-- [ ] **▶ S2 — Test `mcp-compressor` (Atlassian), a third real compression mechanism.** Identified
-  in R1's inventory (`docs/REAL-TOOLS.md`) as the best real OSS optimizer candidate but never
-  actually run. Wrap one of R3's real reference servers (git/fetch/time) with it and compare the
-  compressed menu against the server's raw advertised menu — a third real data point on
-  "structural vs behavioral" savings, alongside Tool Search (R5) and code-execution (R6).
-  _Done: a real before/after row, written up like R2/R3._  `[no key]`
-- [ ] **S3 — Leaderboard expansion, 20 → 40+ real APIs.** Mechanical extension of
+- [x] **S2 — Test `mcp-compressor` (Atlassian), a third real compression mechanism.** Done.
+  Wrapped two of R3's real reference servers with the real, published (PyPI `mcp-compressor`,
+  Rust-backed) stdio proxy at all 4 compression levels: `mcp-server-time` (2 tools, small) and
+  `mcp-server-git` (12 tools, mid-size). **Scale amplifies the win** — our own tokenizer measured
+  real savings at both scales (+12% small, +67% big at `medium`), bigger menus compressing more.
+  **Genuine cross-check discrepancy found:** the tool's own self-reported startup-banner
+  percentage disagreed with us on the small server — it claimed `medium` cost *more* than
+  original (103.8%) where our bucket-A count of that exact same output measured a real, if
+  modest, saving (+12%). Flagged honestly rather than smoothed over (likely a different internal
+  metric, e.g. raw bytes vs our tokenizer — not confirmed). Wrote `docs/MCP-COMPRESSOR.md`;
+  updated `docs/REAL-TOOLS.md` and README's real-tool table/links.  `[no key]`
+- [ ] **▶ S3 — Leaderboard expansion, 20 → 40+ real APIs.** Mechanical extension of
   `experiments/leaderboard.py`'s `CURATED` list; richer public dataset at near-zero cost (bucket
   A is free). _Done: `docs/LEADERBOARD.md` regenerated with ≥40 APIs._  `[no key]`
 - [ ] **S4 — `lap score before after` diff mode.** Score two versions of a spec and report the
@@ -323,10 +328,13 @@ verified via a fresh-venv install) and the GitHub release is published
 release step left is optional and UI-only: listing the Action on the GitHub Marketplace. **v0.5
 S1 done** — repeating R6's code-execution comparison 5× confirmed "heavier than naive" is a real
 pattern (5/5), driven by retried execution attempts from wrong sandboxed file-path guesses, not
-noise; docs + the profile's X1 rule updated accordingly. **▶ v0.5 S2** (test `mcp-compressor`, a
-real OSS optimizer, as a third real compression data point) is the current stage; order after:
-S2 → S3 → S4 → S5 → S6 → S7 → S8. Say "continue LAP" to keep going once a stage completes. v0.4
-pivoted the benchmark from our own interface variants to real third-party artifacts —
+noise. **v0.5 S2 done** — real `mcp-compressor` (Atlassian) on 2 real MCP servers at 2 scales:
+scale amplifies the win (+12% small server, +67% big server, our own tokenizer), and a genuine
+cross-check discrepancy surfaced — the tool's own self-reported percentage disagreed with us on
+the small server. **▶ v0.5 S3** (leaderboard expansion, 20 → 40+ real APIs) is the current stage;
+order after: S3 → S4 → S5 → S6 → S7 → S8. Say "continue LAP" to keep going once a stage
+completes. v0.4 pivoted the benchmark from our own interface variants to real third-party
+artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/
 efficient story holds **most, not all**, of the time:
 

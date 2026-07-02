@@ -34,7 +34,7 @@ Real tools that shrink an existing MCP surface — measure their **output**, don
 
 | tool | lang / install | what it does | in scope? |
 | --- | --- | --- | --- |
-| **mcp-compressor** (atlassian-labs) | Python/TS/Rust · `pip install mcp-compressor` | MCP proxy; shrinks tool descriptions 70–97% via progressive disclosure (small surface first, full schema on demand) | ✅ **best candidate** |
+| **mcp-compressor** (atlassian-labs) | Python/TS/Rust · `pip install mcp-compressor` | MCP proxy; shrinks tool descriptions 70–97% via progressive disclosure (small surface first, full schema on demand) | ✅ **tested, v0.5 S2** — [`docs/MCP-COMPRESSOR.md`](MCP-COMPRESSOR.md) |
 | **LLM-OpenAPI-minifier** (ShelbyJenkins) | Python · git | minifies an OpenAPI's *characters* for prompt-stuffing (LAP optimizes *tokens*) | ✅ candidate (contrast) |
 | **token-optimizer-mcp** (ooples) | · git | caching/compression aimed at Claude Code sessions | ⚠️ Claude-Code-specific, less API-menu-general |
 | StackOne / Speakeasy runtime | hosted | commercial gateways | ❌ account — cite only |
