@@ -112,6 +112,14 @@ lap score --mcp-url http://localhost:8080/mcp                 # score a live MCP
 lap score lap/examples/bookstore.openapi.json                 # a bundled example, no network needed
 ```
 
+For a larger hosted API, Xquik exposes a public OpenAPI document with social
+search, trends, and X/Twitter workflow endpoints:
+
+```bash
+lap score https://xquik.com/openapi.json
+lap lint  https://xquik.com/openapi.json
+```
+
 Example `lap score` output:
 
 ```
