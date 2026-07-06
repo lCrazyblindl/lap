@@ -402,8 +402,15 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   `estimated_b` in `--json`. Sanity-checked live: Bookstore mean ~18/heaviest PUT 31; Petstore
   mean ~21/heaviest `POST /user/createWithList` 52 — plausible shapes. +3 tests (tests/ 45, full
   suite 49).  `[no key]`
-- [ ] **N5 — Release 0.4.0.** Ship S4+S5+N1–N4: version bump, cut `[Unreleased]` in CHANGELOG,
-  build + twine + GH release, fresh-venv verify (same recipe as `RELEASING.md`).  `[release creds]`
+- [x] **N5 — Release 0.4.0. FULLY RELEASED, 2026-07-06.** Ships S4+S5+N1–N4: `lap stack`,
+  composite grade + `lap badge` (+ Action `badge-path`), MCP lint (M-rules), bucket-B estimate,
+  `score --diff`/`--max-growth`, `--string-len` + real-example preference, Windows fixes.
+  **PyPI:** https://pypi.org/project/lap-score/0.4.0/ (twine check PASSED ×2; verified in a
+  fresh venv — score/badge/`lint --mcp` all work from the published package). **GitHub:** tag
+  `v0.4.0` + release with both dist files:
+  https://github.com/lCrazyblindl/lap/releases/tag/v0.4.0. Action examples bumped to `@v0.4.0`.
+  Gotcha: PS 5.1 `Set-Content -Encoding utf8` writes a BOM → broke `pyproject.toml` TOML parsing
+  until stripped (recipe now in `RELEASING.md`).  `[release creds]`
 - [ ] **N6 — "State of the field" + claims registry** → `docs/FIELD.md`. Honest comparison table:
   LAP vs mcpx vs AgentDX vs MCPMark/MCP-Bench/MCP-Atlas vs vendor optimizers (StackOne, Bifrost,
   Cloudflare Code Mode, mcp-compressor, Speakeasy) — what each measures, what none do (neutral
@@ -518,8 +525,9 @@ letter, documented formula, calibrated on the leaderboard corpus) + `lap badge` 
 endpoint + Action `badge-path`; our README carries an honest B (72) for the bundled example.
 v0.6 N3 done — `lap lint --mcp-url/--mcp` lints live MCP servers (M1–M4 rules + grade;
 mcp-server-git B 71, mcp-server-time A 89). v0.6 N4 done — bucket-B call estimate in `lap
-score` (A/B/C in one command); 49 tests green. ▶ current stage: v0.6 N5 (release 0.4.0).** Say
-"continue LAP" to keep going once a stage completes.
+score` (A/B/C in one command); 49 tests green. v0.6 N5 done — **0.4.0 FULLY RELEASED
+2026-07-06** (PyPI + GitHub, fresh-venv verified). ▶ current stage: v0.6 N6 ("state of the
+field" doc + claims registry).** Say "continue LAP" to keep going once a stage completes.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/

@@ -3,6 +3,14 @@
 The toolkit and artifacts are prepared in-repo; publishing needs credentials only the owner
 holds (never pasted into chat — set as environment variables, or via `gh auth login`). Steps:
 
+**v0.4.0 status (2026-07-06): FULLY RELEASED.** `lap-score` 0.4.0 is live:
+https://pypi.org/project/lap-score/0.4.0/ (`twine check` PASSED ×2, uploaded, verified in a
+fresh venv — `pip install "lap-score[mcp]"` + `lap score`/`lap badge`/`lap lint --mcp` all work
+as documented). Tag `v0.4.0` pushed; GitHub release published with both dist files:
+https://github.com/lCrazyblindl/lap/releases/tag/v0.4.0. Gotcha fixed en route: PowerShell 5.1
+`Set-Content -Encoding utf8` writes a BOM, which breaks TOML parsing — strip it (or write via
+`[IO.File]::WriteAllText` with `UTF8Encoding($false)`).
+
 **v0.3.0 status (2026-07-01): FULLY RELEASED.** `lap-score` 0.3.0 is live:
 https://pypi.org/project/lap-score/0.3.0/ (built, `twine check` PASSED, uploaded, and verified
 in a fresh venv — `pip install lap-score` + `lap score <spec>` works). Git tag `v0.3.0` is
