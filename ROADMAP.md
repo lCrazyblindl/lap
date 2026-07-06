@@ -316,19 +316,14 @@ Post-release (0.3.0 is live on PyPI + GitHub). Same stop/resume model. `[key]` =
   real payload sizes wherever specs actually documented example values. Regenerated
   `docs/LEADERBOARD.md`, updated its methodology note, `CHANGELOG.md` `[Unreleased]`, and
   `lap/README.md`.  `[no key]`
-- [ ] **▶ S6 — Broader validation matrix.** Extend Stage 15(b)'s live success-rate matrix: add
-  Sonnet alongside Haiku, ≥2 tasks/category (reusing R16's grouped tasks), more repeats (k≈5).
-  _Done: an expanded `validation.md`._  `[key]`
-- [ ] **S7 — CONTRIBUTING.md + issue templates.** Now that the repo is public and released,
-  outside issues/PRs are actually possible — a short contributing guide + a bug-report /
-  feature-request issue template. _Done: `CONTRIBUTING.md` + `.github/ISSUE_TEMPLATE/`._  `[no key]`
-- [ ] **S8 — Profile L0 "be-discoverable" rule + NLWeb endpoint scoring.** Add a lightweight LAP
-  rule for exposing `llms.txt` / `.well-known` / an NLWeb `/mcp` endpoint, and extend `lap score
-  --mcp-url` (or a sibling flag) to also score a live NLWeb `/ask` endpoint — ties the real-tool
-  track to another real ecosystem player. _Done: rule + one real NLWeb site scored._  `[no key]`
+- [ ] **S6 — Broader validation matrix.** _(superseded → carried into v0.6 as **N8**, unchanged
+  in substance)_  `[key]`
+- [ ] **S7 — CONTRIBUTING.md + issue templates.** _(superseded → v0.7 Track C backlog)_  `[no key]`
+- [ ] **S8 — Profile L0 "be-discoverable" rule + NLWeb endpoint scoring.** _(superseded → v0.7
+  Track S backlog)_  `[no key]`
 
-Recommended order: **S1 → S2 → S3 → S4 → S5 → S6 → S7 → S8** (roughly: cheapest real-tool
-follow-ups first, then toolkit features, then the more involved validation/housekeeping work).
+Recommended order was **S1 → S2 → S3 → S4 → S5 → S6 → S7 → S8**; after S5 the plan was re-drawn
+from a fresh July-2026 landscape re-check (below), and the S6–S8 tail was folded into it.
 
 ### Further backlog (unscheduled, key-free)
 **Shipped after the v0.3 stages:** the LAP rules as a **Spectral ruleset**
@@ -342,6 +337,134 @@ token-bench); lint auto-fix (emit a suggested compact manifest); GitHub's offici
 (~94 tools/~17.6k, cited in R3 but never scored — Docker daemon was down; revisit if it comes
 up); a second real API for Tool Search/code-execution to check R5/R6 generalize beyond
 DigitalOcean/pet-zoo.
+
+## Stages — v0.6 (drafted 2026-07-06 from a fresh landscape re-check)
+
+**Why a new plan.** A July-2026 re-check of the field found: (1) the problem LAP measures went
+mainstream — "MCP context bloat" is now called an enterprise deployment blocker, Tool Search went
+GA (Feb 2026), "Code Mode" is everywhere (Cloudflare/Anthropic/Bifrost/StackOne); (2) the MCP spec
+itself has an open issue ([#2808](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/2808))
+about tool-schema token overhead, proposing tiered schemas / versioning / namespacing — with no
+measurement companion; (3) two direct competitors appeared, both far earlier-stage than LAP —
+**mcpx** (A–F linter, live-MCP-only, ~2 stars, opaque tokenizer) and **AgentDX** (18 static rules
++ LLM-judged DX score, early alpha); (4) the recognized MCP benchmarks (MCPMark, MCP-Bench,
+MCP-Atlas) all measure *accuracy/capability*, not token cost; (5) a StackOne survey of the 4
+optimization approaches explicitly notes **no neutral open-source measurement/scoring tooling
+exists** — which is exactly LAP. Conclusion: LAP's niche is validated and still open, but LAP is
+invisible and its MCP-side ergonomics lag its OpenAPI side. v0.6 = close the product gaps that
+make LAP demo-able and sticky, then take the public position while it's unclaimed.
+
+Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as before.
+
+- [ ] **▶ N1 — `lap stack`: score YOUR installed MCP stack.** New subcommand that reads the
+  user's real agent config (Claude Code `.mcp.json` / Claude Desktop `claude_desktop_config.json`
+  / a passed config path), connects to each server (stdio + HTTP via existing `lap/mcp_client.py`),
+  and reports per-server and total bucket-A: *"your agent pays N tokens before you type a word"* —
+  the 2026 headline number ("100–200k before the first prompt"), personalized and reproducible.
+  Include per-server compact/tool_search what-if savings. _Done: `lap stack` runs against a config
+  with ≥2 real servers; README section with sample output._  `[no key]`
+- [ ] **N2 — Composite LAP grade + badge.** Fold measured A (+ estimated C + lint findings) into
+  one documented 0–100 grade with a letter (`lap score --grade`), and a shields.io-compatible
+  JSON endpoint (`lap badge` → `lap-badge.json`) + GitHub Action wiring, so any repo can show
+  **"LAP A (92)"** in its README. At-a-glance comparable with mcpx/AgentDX grades, but backed by
+  the token decomposition; formula documented in the profile. _Done: grade in score/`--json`,
+  formula in profile, badge on our own repo (bundled example spec)._  `[no key]`
+- [ ] **N3 — Lint parity for MCP servers.** `lap lint --mcp-url <url>` / `--mcp <stdio cmd>`:
+  apply the description/naming/schema rules (D3/W1/E1/A1 + M-rules where MCP-specific) to a live
+  server's advertised tools, and grade it (N2). Closes the "OpenAPI-first" gap; direct answer to
+  mcpx/AgentDX territory with a deeper token model underneath. _Done: a real reference server
+  linted end-to-end + test._  `[no key]`
+- [ ] **N4 — Bucket-B estimate in `lap score`.** Synthesize a typical call (args instance à la
+  `estimate.py` + tool-call envelope) per op so `lap score` prints **A/B/C together** — completes
+  the bucket story in the shipped package instead of only in token-bench. _Done: B column +
+  tests._  `[no key]`
+- [ ] **N5 — Release 0.4.0.** Ship S4+S5+N1–N4: version bump, cut `[Unreleased]` in CHANGELOG,
+  build + twine + GH release, fresh-venv verify (same recipe as `RELEASING.md`).  `[release creds]`
+- [ ] **N6 — "State of the field" + claims registry** → `docs/FIELD.md`. Honest comparison table:
+  LAP vs mcpx vs AgentDX vs MCPMark/MCP-Bench/MCP-Atlas vs vendor optimizers (StackOne, Bifrost,
+  Cloudflare Code Mode, mcp-compressor, Speakeasy) — what each measures, what none do (neutral
+  A/B/C decomposition + leaderboard + live billed verification). Plus a registry of public
+  headline claims (92.8%, 98.7%, 85%, 99.9%…) each marked **verified-by-us / plausible-unverified /
+  not-reproducible-without-account**. Feeds positioning and the launch post. _Done: doc + README
+  link._  `[no key]`
+- [ ] **N7 — Empirical input to MCP spec issue #2808.** Simulate the issue's three proposals
+  (tiered discovery/invocation split; namespacing dedupe; versioning is cache-relevant only) over
+  the 50-API leaderboard corpus + the real MCP servers we already run; measure predicted savings
+  per proposal; draft a data-backed comment (the owner posts it under their account). _Done:
+  `docs/SPEC-2808.md` + ready-to-paste comment text._  `[no key]`
+- [ ] **N8 — Validation matrix v2** _(ex-S6)_. Sonnet + Haiku, all 10 grouped tasks, k≈5 →
+  expanded `validation.md`; add a **cost-per-correct-answer** metric per form (tokens spent ÷
+  successes) — the number that actually matters for buyers. `[key]`
+- [ ] **N9 — Leaderboard as a living page.** GitHub Pages (static, sortable table generated from
+  the same data) + a monthly Actions cron regenerating it, history kept under
+  `docs/leaderboard-history/` — so trends become visible ("is the ecosystem getting leaner?").
+  _Done: page live + cron merged._  `[no key]`
+- [ ] **N10 — Launch write-up.** A data-first post: *"We measured the agent-menu tax of 50 real
+  public APIs — 10.4M tokens"* + Show HN / r/mcp drafts; the owner publishes. LAP's biggest gap is
+  visibility, and the data is the hook. _Done: `docs/POST.md` ready to paste._  `[no key]`
+
+Recommended order: **N1 → N2 → N3 → N4 → N5 → N6 → N7 → N9 → N10 → N8** (product gaps → release →
+public position; the key-needing science stage last, as always).
+
+## Tracks — v0.7+ (unscheduled backlog, drawn from the same landscape re-check)
+
+Pick from these once v0.6 is done (or opportunistically). Grouped by track; each bullet is
+roughly one bounded session unless noted.
+
+**Track V — independent verification (the "Consumer Reports" role):**
+- GitHub's official MCP server (~94 tools / ~17.6k tokens — the number *everyone* cites): score
+  it directly once Docker is available (or via its hosted endpoint + PAT).
+- A 2nd/3rd real API for Tool Search + code-execution — do R5/R6 generalize beyond
+  DigitalOcean/pet-zoo?
+- Reproduce one vendor code-mode claim end-to-end with OSS parts (e.g. Bifrost's 92.8% at 508
+  tools) — verified or not-reproducible, either result is a finding.  `[key]`
+- Root-cause the mcp-compressor self-report discrepancy (bytes vs tokens?) and file an upstream
+  issue — turns a finding into an ecosystem contribution.
+- Live A/B of progressive disclosure: same task, tiered menu vs full menu, accuracy + tokens.  `[key]`
+- MCPMark-subset bridge: run a small recognized-benchmark slice under naive vs compact forms —
+  attaches *third-party* accuracy to our token findings.  `[key]`
+
+**Track M — measurement science (deepen the moat):**
+- Response-filtering scoring: detect field-projection affordances (`fields=`, `$select`, sparse
+  fieldsets) in specs and quantify the bucket-C reduction they enable (StackOne's approach #3 —
+  currently invisible to `lap score`).
+- Cache economics: amortized bucket-A under prompt caching (first-call vs cached vs
+  Tool-Search-deferred) — answers "doesn't caching make A free?" with a model + numbers.
+- Tokenizer sensitivity matrix: tiktoken vs Anthropic vs ≥1 more, same corpus — defuses "whose
+  tokens?" and likely explains vendor-number discrepancies (S2).
+- Namespacing/dedup measurement (spec-#2808 proposal 3) as a standalone score dimension.
+- Bucket-C pagination realism beyond `--page-size`: honor `limit`-param maxima and cursor
+  envelopes found in the spec.
+- Bucket-B *measured* (not just estimated) generalized outside token-bench.
+
+**Track S — standards & artifacts (from advisory to actionable):**
+- **Lint auto-fix as an OpenAPI Overlay**: emit a standard Overlay document that *applies* the
+  compact-menu fixes (trim descriptions, add pagination params, mark heavy ops) — authors apply
+  it with existing Overlay tooling; LAP stops being advice and becomes a patch.
+- Arazzo (OpenAPI workflows) scoring: multi-step bucket-B cost of a declared workflow vs ad-hoc
+  chaining.
+- Profile v1.1: crosswalk LAP rules ↔ 2026 vocabulary (AX, progressive disclosure, code mode,
+  tiered schemas) so newcomers find us from the terms they already know.
+- llms.txt / NLWeb "be-discoverable" L0 rule + scoring a live NLWeb `/ask` endpoint _(ex-S8)_.
+- An `x-lap-*` OpenAPI extension proposal (declare page-size maxima, projection params, heavy
+  ops) — strawman doc, gather feedback before implementing.
+
+**Track C — community & reach:**
+- CONTRIBUTING.md + issue templates + 3–5 curated good-first-issues _(ex-S7)_.
+- Outreach to mcpx/AgentDX authors with the N6 comparison — collaborate, don't compete (their
+  UX + our measurement).
+- Get listed: awesome-mcp lists, MCP.Directory, PyPI classifiers/keywords pass.
+- GitHub Action to the Marketplace (owner UI step, already release-ready).
+- Badge adoption drive: PR the LAP badge onto 2–3 friendly OSS API repos.
+
+**Track E — engineering health:**
+- Property-based tests (hypothesis) for IR/estimator — the fuzz corpus found the 2.0 gap; PBT
+  finds the next one cheaper.
+- Cross-OS CI matrix (ubuntu/windows/macos × 3.11–3.14).
+- Perf pass on 4M-token specs (Xero/K8s currently slow-ish paths in `inline_refs`).
+- Documented stable Python API (`lap.score_spec()` etc.) + written 1.0 criteria.
+- `lap score --diff --git HEAD~1` (diff directly against git refs, no temp files).
+- Pre-commit hook recipe.
 
 ## Status
 
@@ -362,10 +485,11 @@ surfaced. **v0.5 S4 done** — `lap score --diff <before> <after>`: real, shippe
 first v0.5 change to actually land in `lap/`, tracked in `CHANGELOG.md`'s new `[Unreleased]`
 section. **v0.5 S5 done** — bucket-C estimate now prefers real schema `example`/`examples` over
 synthetic placeholders, plus a configurable `--string-len`; leaderboard's total heaviest-result
-estimate rose ~41% (482,795 → 681,830 tokens) once real examples were honored. **▶ v0.5 S6**
-(broader validation matrix: +Sonnet, more repeats) is the current stage; order after: S6 → S7 →
-S8. Say "continue LAP" to keep going once a stage
-completes. v0.4 pivoted the benchmark from our own interface variants to real third-party
+estimate rose ~41% (482,795 → 681,830 tokens) once real examples were honored. **After S5 the
+plan was re-drawn (2026-07-06) from a fresh landscape re-check — see "Stages — v0.6" above; the
+S6–S8 tail is folded into it (S6→N8, S7/S8→v0.7 tracks). ▶ current stage: v0.6 N1 (`lap stack`:
+score the user's installed MCP stack).** Say "continue LAP" to keep going once a stage completes.
+v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/
 efficient story holds **most, not all**, of the time:
