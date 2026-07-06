@@ -4,7 +4,10 @@ All notable changes to **lap** (PyPI package `lap-score`) are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); loose semantic
 versioning while pre-1.0.
 
-## [Unreleased]
+## [0.4.0] — 2026-07-06
+
+The toolkit closes the loop: **A/B/C in one command**, a composite **LAP grade** with a README
+badge, and full **MCP-side parity** (score, lint, and your whole installed stack).
 
 ### Added
 - **Bucket-B (call) estimate in `lap score`** — the full A/B/C story in one command: for each
@@ -99,4 +102,5 @@ profile**, and a reproducible **token benchmark**.
   structural (`docs/CODE-EXEC.md`). See `docs/LEADERBOARD.md` for the 20-real-API dataset this
   release ships alongside the code.
 
+[0.4.0]: https://github.com/lCrazyblindl/lap/releases/tag/v0.4.0
 [0.3.0]: https://github.com/lCrazyblindl/lap/releases/tag/v0.3.0

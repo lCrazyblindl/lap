@@ -152,7 +152,7 @@ GitHub Actions:
 …or the bundled composite **Action** (one step, no manual install):
 
 ```yaml
-- uses: lCrazyblindl/lap@v0.3.0
+- uses: lCrazyblindl/lap@v0.4.0
   with:
     spec: api/openapi.json
     max-menu-tokens: "800"     # gate the compact_sig menu (omit = report only)

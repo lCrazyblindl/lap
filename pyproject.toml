@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lap-score"
-version = "0.3.0"
+version = "0.4.0"
 description = "lap - measure & improve the token-efficiency of agent-facing APIs (OpenAPI & MCP): scorer, linter, the LAP profile, and a token benchmark"
 readme = "lap/README.md"
 requires-python = ">=3.10"
