@@ -62,6 +62,26 @@ A provider adopts the highest level worth its task distribution.
 - **D2** When endpoints are many, expose them lazily / searchably (a search-then-fetch step) instead of dumping all definitions up front. *Evidence: industry Tool Search ≈ −85% (vendor-reported); we independently verified this live on a real 290-operation API — Anthropic's real Tool Search cut billed tokens ~90% versus the identical schemas without it, server-enforced regardless of model behavior (`docs/TOOL-SEARCH.md`). Caveat: not worth it below ~10 tools, where the search round-trip itself costs more than it saves.*
 - **D3** Do **not** encode operations as opaque codes/numbers. *Evidence: `numbered` total ≥ `compact_sig` total — a net loss, because the codebook still costs bucket A while saving only ~2 tokens of bucket B.*
 
+### MCP tools — bucket A (the MCP-side counterparts, checked by `lap lint --mcp-url/--mcp`)
+D3 carries over to MCP tool names unchanged. What an MCP tool can get wrong that an
+OpenAPI operation expresses differently:
+
+- **M1** Every tool needs a real description (≥ a sentence): the model decides *when to
+  call it* from that text — a wrong-tool call costs far more than the sentence.
+- **M2** Every input parameter needs a description; otherwise argument semantics get
+  guessed (`repo_path` on every tool of a well-known reference server ships undescribed).
+- **M3** Keep a single tool's definition under ~600 tokens — every session pays it,
+  used or not (MCP spec issue #2808 measured real production tools at 103–1024 tokens);
+  trim the description/schema or defer it behind tool search (D2).
+- **M4** If a tool declares parameters, mark which are `required` — the model can't
+  tell mandatory from optional otherwise.
+
+*(For MCP servers the LAP grade uses the menu + hygiene sub-scores only — result sizes
+aren't declared in MCP tool listings, so that sub-score is skipped and weights
+renormalize. Reference check, 2026-07: `mcp-server-time` grades **A (89)** — clean;
+`mcp-server-git` grades **B (71)** — two short descriptions, `repo_path` undescribed
+in 11 of 12 tools.)*
+
 ### Reads — bucket C
 - **R1** Support field projection (`?fields=` / OData `$select`). Default to a small curated field set; full object on opt-in.
 - **R2** Support server-side filtering (OData `$filter`-style).

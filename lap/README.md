@@ -27,6 +27,8 @@ real APIs.guru specs — re-run with [`../experiments/fuzz_corpus.py`](../experi
 lap score  https://petstore3.swagger.io/api/v3/openapi.json   # menu (bucket A) token cost
 lap lint   https://petstore3.swagger.io/api/v3/openapi.json   # flag LAP rule violations
 lap score  --mcp-url http://localhost:8080/mcp                # score a live MCP server's tools
+lap lint   --mcp-url http://localhost:8080/mcp                # lint a live MCP server (M-rules + grade)
+lap lint   --mcp "python -m mcp_server_git"                   # ...or over stdio
 lap score  lap/examples/bookstore.openapi.json
 
 # no install needed, from the repo root:
@@ -182,5 +184,5 @@ behind the compact form are the [LAP profile](../profile/llm-api-profile.md).
 | `estimate.py` | estimates bucket C (result size) from response schemas (`--page-size`) |
 | `tokens.py` | token counting (Anthropic endpoint, or tiktoken approx) |
 | `score.py` | the `lap score` CLI |
-| `lint.py` | the `lap lint` CLI — checks a spec against the LAP profile rules (D3/R1/R2/R3/W1/E1/A1) |
+| `lint.py` | the `lap lint` CLI — checks a spec against the LAP profile rules (D3/R1/R2/R3/W1/E1/A1), or a live MCP server's tools (`--mcp-url`/`--mcp`, rules D3/M1–M4 + grade) |
 | `examples/` | sample specs: a Bookstore API, a gnarly OpenAPI 3.1 (allOf / $ref-params / nullable / external-ref), and a Swagger 2.0 spec (`swagger2.json`) |

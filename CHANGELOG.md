@@ -7,6 +7,14 @@ versioning while pre-1.0.
 ## [Unreleased]
 
 ### Added
+- **`lap lint --mcp-url <url>` / `--mcp "<stdio command>"`** — lint a *live MCP server's*
+  advertised tools, not just OpenAPI: D3 (opaque names) carries over, plus new M-rules —
+  M1 missing/short tool description, M2 undescribed input parameters, M3 heavy tool
+  definition (>~600 tokens; MCP spec issue #2808 territory), M4 no `required` list — and
+  the composite LAP grade (menu + hygiene; the result sub-score is skipped since MCP tool
+  listings don't declare response shapes). Reference check: `mcp-server-time` **A (89)**,
+  `mcp-server-git` **B (71)**. Also fixed a Windows-console crash (`✓` on cp1251) and
+  stdio-subprocess teardown noise (`keep_alive=False`).
 - **The composite LAP grade + `lap badge`** — `lap score` now prints one documented 0–100
   grade with a letter (A–F): menu tokens/operation (0.45) + heaviest estimated response (0.30)
   + lint findings/operation (0.25), log-scaled, constants in `lap/grade.py`, formula in the

@@ -27,6 +27,9 @@ async def _fetch(target):
 
     async with Client(target) as client:
         tools = await client.list_tools()
+    # Let stdio subprocess transports finish closing inside the loop - avoids
+    # Windows Proactor "unclosed transport" teardown noise at GC time.
+    await asyncio.sleep(0.25)
     return [
         {"name": t.name, "description": t.description or "", "input_schema": (t.inputSchema or {})}
         for t in tools

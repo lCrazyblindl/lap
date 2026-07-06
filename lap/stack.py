@@ -68,7 +68,10 @@ def _target(server: dict):
         return server["url"]
     from fastmcp.client.transports import StdioTransport
 
-    return StdioTransport(server["command"], server["args"], env=server["env"] or None)
+    # keep_alive=False: tear the subprocess down inside the event loop when the client
+    # exits, instead of leaving it for GC (Windows Proactor teardown noise otherwise).
+    return StdioTransport(server["command"], server["args"], env=server["env"] or None,
+                          keep_alive=False)
 
 
 def _ok_row(s: dict, tools: list[dict]) -> dict:
@@ -103,9 +106,6 @@ async def _scan_async(servers: list[dict], timeout: float) -> list[dict]:
             rows.append(_ok_row(s, tools))
         except Exception as e:  # noqa: BLE001 — a dead server is a finding, not a crash
             rows.append(_err_row(s, e))
-    # Give stdio subprocess transports a beat to close inside the loop —
-    # avoids Windows Proactor "event loop is closed" teardown noise at GC time.
-    await asyncio.sleep(0.25)
     return rows
 
 

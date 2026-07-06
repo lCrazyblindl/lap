@@ -81,6 +81,62 @@ def lint(spec: dict) -> list[Finding]:
     return out
 
 
+HEAVY_TOOL_TOKENS = 600  # per-tool definition cost that dominates a session (spec issue #2808
+#                          measured real production tools at 103-1024 tokens; ~1000 = heavy)
+
+
+def lint_tools(tools: list[dict]) -> list[Finding]:
+    """Lint a live MCP server's advertised tools (name / description / inputSchema).
+
+    The MCP-side counterpart of `lint(spec)`: D3 carries over unchanged; the M-rules
+    cover what an MCP tool can get wrong that an OpenAPI op expresses differently.
+    Expects the `fetch_tools()` shape: {name, description, input_schema}.
+    """
+    from . import tokens
+
+    out: list[Finding] = []
+    for t in tools:
+        name, where = t.get("name", ""), t.get("name", "(unnamed)")
+        desc = (t.get("description") or "").strip()
+        schema = t.get("input_schema") or {}
+        props = schema.get("properties") or {}
+
+        # D3 - opaque tool name (same rule as OpenAPI operations)
+        if re.fullmatch(r"\d+", name) or not re.search(r"[A-Za-z]", name) or len(name) < 3:
+            out.append(Finding("D3", "warn", where,
+                               f"opaque tool name '{name}' - LLMs ground on readable names"))
+
+        # M1 - missing / too-short description
+        if len(desc) < 20:
+            out.append(Finding("M1", "warn", where,
+                               "tool description missing or under 20 chars - the model must guess "
+                               "when to call it (wrong-tool calls cost far more than a sentence)"))
+
+        # M2 - undescribed input parameters
+        undescribed = sorted(k for k, v in props.items()
+                             if not (isinstance(v, dict) and str(v.get("description", "")).strip()))
+        if undescribed:
+            shown = ", ".join(undescribed[:4]) + ("..." if len(undescribed) > 4 else "")
+            out.append(Finding("M2", "info", where,
+                               f"{len(undescribed)}/{len(props)} input parameter(s) have no "
+                               f"description ({shown}) - argument semantics get guessed"))
+
+        # M3 - heavy tool definition (every session pays it, used or not)
+        cost = tokens.count_tools([t])
+        if cost > HEAVY_TOOL_TOKENS:
+            out.append(Finding("M3", "warn", where,
+                               f"tool definition costs ~{cost} tokens (> {HEAVY_TOOL_TOKENS}) - "
+                               "every session pays this whether the tool is used or not; trim the "
+                               "description/schema or defer via tool search"))
+
+        # M4 - arguments declared but none marked required
+        if props and not schema.get("required"):
+            out.append(Finding("M4", "info", where,
+                               "inputSchema declares parameters but no 'required' list - the model "
+                               "can't tell mandatory from optional arguments"))
+    return out
+
+
 def filter_ignored(findings: list[Finding], ignore) -> list[Finding]:
     ignore = {r.upper() for r in ignore}
     return [f for f in findings if f.rule.upper() not in ignore]
@@ -97,7 +153,7 @@ def _load_ignore_file() -> set[str]:
 def _print_human(title: str, source: str, findings: list[Finding], warns: int, infos: int) -> None:
     print(f"\nLAP lint - {title}\nsource: {source}\n")
     if not findings:
-        print("  No LAP rule violations detected. ✓\n")
+        print("  No LAP rule violations detected. OK\n")  # ASCII: ✓ breaks cp1251 consoles
         return
     order = {"warn": 0, "info": 1}
     by_rule: dict[str, list[Finding]] = {}
@@ -116,30 +172,76 @@ def _print_human(title: str, source: str, findings: list[Finding], warns: int, i
 def main() -> None:
     import argparse
 
-    ap = argparse.ArgumentParser(description="Lint an OpenAPI against the LAP profile rules.")
-    ap.add_argument("source", help="OpenAPI spec: file path or http(s) URL")
+    ap = argparse.ArgumentParser(description="Lint an OpenAPI spec - or a live MCP server's "
+                                             "advertised tools - against the LAP profile rules.")
+    ap.add_argument("source", nargs="?", help="OpenAPI spec: file path or http(s) URL "
+                                              "(omit if --mcp-url/--mcp)")
+    ap.add_argument("--mcp-url", help="lint a live MCP server's advertised tools (HTTP URL)")
+    ap.add_argument("--mcp", help="lint a live MCP server over stdio: the full command, "
+                                  "e.g. --mcp \"python -m mcp_server_git\"")
+    ap.add_argument("--timeout", type=float, default=30.0,
+                    help="MCP connect timeout in seconds (default 30)")
     ap.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     ap.add_argument("--ignore", default="", help="comma-separated rule codes to suppress (also reads ./.lapignore)")
     ap.add_argument("--fail-on", choices=["none", "info", "warn"], default="none",
                     help="CI gate: exit 1 if any finding at/above this severity remains")
     args = ap.parse_args()
 
-    spec = ir.load_spec(args.source)
     ignore = _load_ignore_file() | {r.strip() for r in args.ignore.split(",") if r.strip()}
-    findings = filter_ignored(lint(spec), ignore)
-    title = spec.get("info", {}).get("title", "(untitled API)")
-    warns = sum(1 for f in findings if f.severity == "warn")
-    infos = len(findings) - warns
 
-    if args.json:
-        print(json.dumps({
-            "api": title, "source": args.source,
-            "findings": [{"rule": f.rule, "severity": f.severity, "where": f.where, "message": f.message}
-                         for f in findings],
-            "warnings": warns, "suggestions": infos,
-        }, indent=2))
+    if args.mcp_url or args.mcp:
+        import shlex
+        import sys
+
+        from . import grade as grade_mod
+        from . import mcp_client, tokens
+
+        if not mcp_client.available():
+            print("--mcp-url/--mcp needs fastmcp: pip install 'lap-score[mcp]'", file=sys.stderr)
+            raise SystemExit(2)
+        if args.mcp:
+            parts = [p.strip('"') for p in shlex.split(args.mcp, posix=(os.name != "nt"))]
+            from fastmcp.client.transports import StdioTransport
+
+            target = StdioTransport(parts[0], parts[1:], keep_alive=False)
+            source = args.mcp
+        else:
+            target = source = args.mcp_url
+        tools = mcp_client.fetch_tools(target, timeout=args.timeout)
+        findings = filter_ignored(lint_tools(tools), ignore)
+        warns = sum(1 for f in findings if f.severity == "warn")
+        infos = len(findings) - warns
+        g = grade_mod.compute_parts(len(tools), tokens.count_tools(tools), 0, warns, infos)
+        title = f"MCP server ({len(tools)} advertised tool(s))"
+        if args.json:
+            print(json.dumps({
+                "api": title, "source": source, "grade": g,
+                "findings": [{"rule": f.rule, "severity": f.severity, "where": f.where,
+                              "message": f.message} for f in findings],
+                "warnings": warns, "suggestions": infos,
+            }, indent=2))
+        else:
+            _print_human(title, source, findings, warns, infos)
+            subs = "  ".join(f"{k} {v}" for k, v in g["subscores"].items())
+            print(f"  LAP grade: {g['letter']} ({g['score']}/100)   [{subs}]\n")
     else:
-        _print_human(title, args.source, findings, warns, infos)
+        if not args.source:
+            ap.error("provide an OpenAPI source or --mcp-url/--mcp")
+        spec = ir.load_spec(args.source)
+        findings = filter_ignored(lint(spec), ignore)
+        title = spec.get("info", {}).get("title", "(untitled API)")
+        warns = sum(1 for f in findings if f.severity == "warn")
+        infos = len(findings) - warns
+
+        if args.json:
+            print(json.dumps({
+                "api": title, "source": args.source,
+                "findings": [{"rule": f.rule, "severity": f.severity, "where": f.where, "message": f.message}
+                             for f in findings],
+                "warnings": warns, "suggestions": infos,
+            }, indent=2))
+        else:
+            _print_human(title, args.source, findings, warns, infos)
 
     if (args.fail_on == "warn" and warns) or (args.fail_on == "info" and findings):
         raise SystemExit(1)

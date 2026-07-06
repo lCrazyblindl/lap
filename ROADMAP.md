@@ -381,11 +381,18 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   pagination/projection/error discipline, by design). Our own README now carries the badge for
   the bundled Bookstore example — an honest **B (72)**. +4 tests (tests/ 40, full suite 44).
   `[no key]`
-- [ ] **▶ N3 — Lint parity for MCP servers.** `lap lint --mcp-url <url>` / `--mcp <stdio cmd>`:
-  apply the description/naming/schema rules (D3/W1/E1/A1 + M-rules where MCP-specific) to a live
-  server's advertised tools, and grade it (N2). Closes the "OpenAPI-first" gap; direct answer to
-  mcpx/AgentDX territory with a deeper token model underneath. _Done: a real reference server
-  linted end-to-end + test._  `[no key]`
+- [x] **N3 — Lint parity for MCP servers.** Done. `lap lint --mcp-url <url>` / `--mcp "<stdio
+  command>"` lints a live server's advertised tools: D3 carries over; new **M-rules** — M1
+  missing/short tool description (warn), M2 undescribed input parameters (info), M3 heavy tool
+  definition >~600 tokens (warn; the spec-#2808 pathology), M4 params without a `required` list
+  (info) — documented in the profile ("MCP tools — bucket A"). Prints the composite grade
+  (menu + hygiene; result sub-score skipped — MCP listings don't declare response shapes).
+  `--ignore`/`.lapignore`/`--fail-on`/`--json` all work unchanged. Real end-to-end:
+  **mcp-server-git B (71)** — 2 tools with <20-char descriptions, `repo_path` undescribed in
+  11/12 tools; **mcp-server-time A (89)** — clean (the first A, honest contrast). Also fixed en
+  route: `keep_alive=False` on stdio transports (kills Windows Proactor teardown noise
+  everywhere, incl. `lap stack`) and a real latent crash — the `✓` in "no violations" broke
+  cp1251 Windows consoles. +2 tests (tests/ 42, full suite 46).  `[no key]`
 - [ ] **N4 — Bucket-B estimate in `lap score`.** Synthesize a typical call (args instance à la
   `estimate.py` + tool-call envelope) per op so `lap score` prints **A/B/C together** — completes
   the bucket story in the shipped package instead of only in token-bench. _Done: B column +
@@ -503,9 +510,10 @@ S6–S8 tail is folded into it (S6→N8, S7/S8→v0.7 tracks). v0.6 N1 done — 
 user's installed MCP stack from their own agent config ("N tokens before you type a word"; demo:
 2 real servers, 1701 naive → 184 compact, +89%). v0.6 N2 done — composite LAP grade (0–100 +
 letter, documented formula, calibrated on the leaderboard corpus) + `lap badge` shields.io
-endpoint + Action `badge-path`; our README carries an honest B (72) for the bundled example; 44
-tests green. ▶ current stage: v0.6 N3 (lint parity for MCP servers).** Say "continue LAP" to
-keep going once a stage completes.
+endpoint + Action `badge-path`; our README carries an honest B (72) for the bundled example.
+v0.6 N3 done — `lap lint --mcp-url/--mcp` lints live MCP servers (M1–M4 rules + grade;
+mcp-server-git B 71, mcp-server-time A 89); 46 tests green. ▶ current stage: v0.6 N4 (bucket-B
+estimate in `lap score`).** Say "continue LAP" to keep going once a stage completes.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/

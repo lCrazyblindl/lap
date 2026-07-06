@@ -507,3 +507,38 @@ def test_badge_shields_shape(spec):
     assert doc["schemaVersion"] == 1 and doc["label"] == "LAP"
     letter = doc["message"].split(" ")[0]
     assert letter in "ABCDF" and doc["color"] == grade.COLORS[letter]
+
+
+# --- lint parity for MCP servers (v0.6 N3) -----------------------------------
+def test_lint_tools_flags_mcp_rules():
+    tools = [
+        {"name": "do", "description": "", "input_schema":
+            {"type": "object", "properties": {"x": {"type": "string"}}}},
+        {"name": "get_weather_forecast",
+         "description": "Get the weather forecast for a city, next 7 days.",
+         "input_schema": {"type": "object",
+                          "properties": {"city": {"type": "string", "description": "City name"}},
+                          "required": ["city"]}},
+        {"name": "megatool", "description": "words " * 700, "input_schema": {}},
+    ]
+    found = lint.lint_tools(tools)
+    rules_by_tool = {}
+    for f in found:
+        rules_by_tool.setdefault(f.where, set()).add(f.rule)
+    assert {"D3", "M1", "M2", "M4"} <= rules_by_tool["do"]  # opaque, undescribed, no required
+    assert "get_weather_forecast" not in rules_by_tool      # the well-formed tool is clean
+    assert "M3" in rules_by_tool["megatool"]                # heavy definition
+
+
+def test_lint_tools_on_in_memory_mcp_server(spec):
+    pytest.importorskip("fastmcp")
+    import httpx
+    from fastmcp import FastMCP
+
+    from lap import mcp_client
+
+    server = FastMCP.from_openapi(openapi_spec=spec, client=httpx.AsyncClient(base_url="http://lap.invalid"))
+    tools = mcp_client.fetch_tools(server)
+    found = lint.lint_tools(tools)
+    assert all(f.rule in {"D3", "M1", "M2", "M3", "M4"} for f in found)
+    assert all(f.severity in {"warn", "info"} for f in found)
