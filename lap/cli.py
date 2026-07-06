@@ -8,10 +8,11 @@ from __future__ import annotations
 
 import sys
 
-_USAGE = "usage: lap {score|lint|stack} [<openapi-file-or-url> | <mcp-config>] [options]\n" \
-         "  score  measure the menu (bucket A) token cost\n" \
+_USAGE = "usage: lap {score|lint|stack|badge} [<openapi-file-or-url> | <mcp-config>] [options]\n" \
+         "  score  measure the menu (bucket A) token cost (incl. the LAP grade)\n" \
          "  lint   flag LAP profile rule violations\n" \
-         "  stack  score your installed MCP stack (Claude Code/Desktop config)"
+         "  stack  score your installed MCP stack (Claude Code/Desktop config)\n" \
+         "  badge  write a shields.io endpoint JSON with the API's LAP grade"
 
 
 def main() -> None:
@@ -33,6 +34,10 @@ def main() -> None:
         from . import stack
 
         stack.main()
+    elif cmd == "badge":
+        from . import grade
+
+        grade.main()
     else:
         print(f"lap: unknown command {cmd!r}\n{_USAGE}")
         sys.exit(2)

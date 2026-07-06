@@ -96,6 +96,28 @@ W1 / E1 / A1). For a full A/B/C run with tasks, use
 versus the naive OpenAPI→tools baseline. Use real-tokenizer mode (`ANTHROPIC_API_KEY`)
 for quotable numbers, and `--live` to check that the savings don't cost accuracy.
 
+### The LAP grade (composite 0–100 + letter)
+
+For an at-a-glance summary — and a README badge (`lap badge`) — `lap score` folds its
+measurements into one documented number. Three sub-scores, each 0–100:
+
+- **menu (weight 0.45)** — naive-menu (bucket A) tokens **per operation**: definition
+  cost per unit of capability. Log-scaled: 100 at ≤80 tok/op, 0 at ≥2400 tok/op
+  (calibrated on the [50-API leaderboard](../docs/LEADERBOARD.md): Swagger Petstore ≈92
+  tok/op; Kubernetes-style fully-inlined schemas run >3000).
+- **result (weight 0.30)** — the heaviest estimated single response (bucket C) at the
+  default page size — the recurring per-call cost. Log-scaled: 100 at ≤300 tokens, 0 at
+  ≥30 000. APIs with no estimable responses skip this sub-score (weights renormalize).
+- **hygiene (weight 0.25)** — lint findings per operation, warnings double-weighted:
+  100 at zero findings, 0 at ≥2 weighted findings/op.
+
+Composite = weighted mean → **A ≥85, B ≥70, C ≥55, D ≥40, F below**. The letter is
+only a summary: the full token decomposition behind it is one `lap score` away, and
+every constant lives in [`lap/grade.py`](../lap/grade.py). Calibration check (2026-07,
+tiktoken backend): Spotify and LaunchDarkly grade **B**, Postman **C**, GitHub and
+DynamoDB **D**, Google Drive **F** — no sampled real API reached **A**, which requires
+genuine pagination/projection/error discipline on top of a lean menu, by design.
+
 ## Non-goals (explicitly out of scope)
 
 LAP addresses only the **token-efficiency of the interface shape**. It does **not**

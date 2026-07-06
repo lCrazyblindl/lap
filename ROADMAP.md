@@ -369,13 +369,19 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   **1701 tokens** naive vs 184 compact / 193 stack tool_search (**+89%**); auto-discovery ran
   clean against the owner's real (empty) Claude configs. +3 tests (tests/ 36, full suite 40).
   README + lap/README + CHANGELOG `[Unreleased]` updated.  `[no key]`
-- [ ] **▶ N2 — Composite LAP grade + badge.** Fold measured A (+ estimated C + lint findings) into
-  one documented 0–100 grade with a letter (`lap score --grade`), and a shields.io-compatible
-  JSON endpoint (`lap badge` → `lap-badge.json`) + GitHub Action wiring, so any repo can show
-  **"LAP A (92)"** in its README. At-a-glance comparable with mcpx/AgentDX grades, but backed by
-  the token decomposition; formula documented in the profile. _Done: grade in score/`--json`,
-  formula in profile, badge on our own repo (bundled example spec)._  `[no key]`
-- [ ] **N3 — Lint parity for MCP servers.** `lap lint --mcp-url <url>` / `--mcp <stdio cmd>`:
+- [x] **N2 — Composite LAP grade + badge.** Done. New `lap/grade.py`: three documented
+  sub-scores — **menu** (naive tokens/op, weight 0.45), **result** (heaviest estimated response,
+  0.30; skipped+renormalized when nothing is estimable), **hygiene** (weighted lint findings/op,
+  0.25) — log-scaled with all constants in one place, composite → letter (A ≥85 … F). Grade is
+  always printed by `lap score` (human + `--json`); `lap badge <spec> -o file` writes a
+  shields.io endpoint JSON; the composite Action gained `badge-path`. Formula documented in the
+  profile ("The LAP grade" section) with a calibration snapshot over the cached leaderboard
+  corpus: sensible spread on real APIs — Spotify/LaunchDarkly **B**, SQS/Postman/SendGrid **C**,
+  GitHub/DynamoDB/Vimeo **D**, Google Drive **F (17)**; no sampled API reached **A** (needs real
+  pagination/projection/error discipline, by design). Our own README now carries the badge for
+  the bundled Bookstore example — an honest **B (72)**. +4 tests (tests/ 40, full suite 44).
+  `[no key]`
+- [ ] **▶ N3 — Lint parity for MCP servers.** `lap lint --mcp-url <url>` / `--mcp <stdio cmd>`:
   apply the description/naming/schema rules (D3/W1/E1/A1 + M-rules where MCP-specific) to a live
   server's advertised tools, and grade it (N2). Closes the "OpenAPI-first" gap; direct answer to
   mcpx/AgentDX territory with a deeper token model underneath. _Done: a real reference server
@@ -495,8 +501,11 @@ estimate rose ~41% (482,795 → 681,830 tokens) once real examples were honored.
 plan was re-drawn (2026-07-06) from a fresh landscape re-check — see "Stages — v0.6" above; the
 S6–S8 tail is folded into it (S6→N8, S7/S8→v0.7 tracks). v0.6 N1 done — `lap stack` scores the
 user's installed MCP stack from their own agent config ("N tokens before you type a word"; demo:
-2 real servers, 1701 naive → 184 compact, +89%; 40 tests green). ▶ current stage: v0.6 N2
-(composite LAP grade + badge).** Say "continue LAP" to keep going once a stage completes.
+2 real servers, 1701 naive → 184 compact, +89%). v0.6 N2 done — composite LAP grade (0–100 +
+letter, documented formula, calibrated on the leaderboard corpus) + `lap badge` shields.io
+endpoint + Action `badge-path`; our README carries an honest B (72) for the bundled example; 44
+tests green. ▶ current stage: v0.6 N3 (lint parity for MCP servers).** Say "continue LAP" to
+keep going once a stage completes.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/

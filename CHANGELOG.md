@@ -7,6 +7,14 @@ versioning while pre-1.0.
 ## [Unreleased]
 
 ### Added
+- **The composite LAP grade + `lap badge`** — `lap score` now prints one documented 0–100
+  grade with a letter (A–F): menu tokens/operation (0.45) + heaviest estimated response (0.30)
+  + lint findings/operation (0.25), log-scaled, constants in `lap/grade.py`, formula in the
+  profile. `lap badge <spec> -o lap-badge.json` writes a shields.io endpoint JSON so any repo
+  can carry an "LAP B (72)"-style README badge; the bundled GitHub Action gained a
+  `badge-path` input. Calibrated on the 50-API leaderboard corpus (Spotify **B**, Postman
+  **C**, GitHub **D**, Google Drive **F** — **A** requires real pagination/projection/error
+  discipline, by design).
 - **`lap stack`** — score *your installed MCP stack*: reads the agent's own config (Claude Code
   `.mcp.json` / `~/.claude.json`, Claude Desktop `claude_desktop_config.json`, or any JSON with
   an `mcpServers` map), connects to every listed server (stdio or HTTP), and totals the menu

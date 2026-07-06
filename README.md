@@ -1,6 +1,6 @@
 # lap — LLM-API Profile
 
-[![ci](https://github.com/lCrazyblindl/lap/actions/workflows/ci.yml/badge.svg)](https://github.com/lCrazyblindl/lap/actions/workflows/ci.yml) · MIT licensed ([LICENSE](LICENSE)) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md)
+[![ci](https://github.com/lCrazyblindl/lap/actions/workflows/ci.yml/badge.svg)](https://github.com/lCrazyblindl/lap/actions/workflows/ci.yml) [![LAP grade (bundled example)](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FlCrazyblindl%2Flap%2Fmain%2Fdocs%2Flap-badge.json)](profile/llm-api-profile.md) · MIT licensed ([LICENSE](LICENSE)) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md)
 
 **Measure and improve the token-efficiency of agent-facing APIs** (OpenAPI & MCP) — a free, open, neutral toolkit: a scorer (`lap score`), a linter (`lap lint`), a convention (the **LAP profile**), and a reproducible **benchmark**. Not a product, not a gateway, not a new protocol — a public-good measuring stick for a question nobody else answers with real numbers: *how many tokens does my agent-facing API cost, and how much of that is unnecessary?*
 
@@ -24,7 +24,7 @@ Every time an agent talks to an API — via OpenAPI-generated tools, an MCP serv
 
 | piece | what it does |
 | --- | --- |
-| **`lap score <api>`** | Reports an API's bucket-A menu cost across four rendering forms (naive OpenAPI→tools, compact signatures, a numbered dictionary, a lazy tool-search form), plus a real-MCP baseline (via FastMCP) and a bucket-C result-size estimate. Works on any OpenAPI file/URL, or a live MCP server (`--mcp-url`). |
+| **`lap score <api>`** | Reports an API's bucket-A menu cost across four rendering forms (naive OpenAPI→tools, compact signatures, a numbered dictionary, a lazy tool-search form), plus a real-MCP baseline (via FastMCP), a bucket-C result-size estimate, and a composite **LAP grade** (0–100 + letter; `lap badge` emits a shields.io README badge). Works on any OpenAPI file/URL, or a live MCP server (`--mcp-url`). |
 | **`lap lint <api>`** | Flags concrete violations of the LAP profile's rules (opaque names, no pagination/filtering/projection, no aggregation, verbose writes, ambiguous errors) — each citing the measurement that justifies it. |
 | **`lap stack`** | Scores **your installed MCP stack**: reads your agent's own config (Claude Code / Claude Desktop), connects to every server it lists, and totals the menu tokens your agent pays at session start — *"N tokens before you type a word"* — with compact / stack-wide tool-search what-ifs. |
 | **The LAP profile** ([`profile/`](profile/llm-api-profile.md)) | A short, opinionated set of conventions **on top of** HTTP/JSON/OpenAPI — not a new wire format — for exposing an API so an agent uses it in the fewest tokens. Every rule is backed by a number, not an opinion. |

@@ -20,6 +20,10 @@ inputs:
     description: "Fail on lint findings at/above this severity (none | info | warn). Empty = report only."
     required: false
     default: ""
+  badge-path:
+    description: "If set, write a shields.io endpoint JSON with the LAP grade to this path (commit/publish it yourself, then embed https://img.shields.io/endpoint?url=<raw-url>)."
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -48,3 +52,7 @@ runs:
         else
           lap lint "${{ inputs.spec }}"
         fi
+    - name: lap badge
+      if: ${{ inputs.badge-path != '' }}
+      shell: bash
+      run: lap badge "${{ inputs.spec }}" -o "${{ inputs.badge-path }}"

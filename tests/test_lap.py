@@ -468,3 +468,42 @@ def test_stack_tool_search_counted_once_across_stack():
     two = stack.stack_tool_search([row("a", ["x", "y"]), row("b", ["z"])])
     assert 0 < one < two  # the index grows with names...
     assert two - one < one  # ...but the fixed search/call tools are not paid twice
+
+
+# --- composite LAP grade + badge (v0.6 N2) -----------------------------------
+def test_grade_parts_monotonic_and_lettered():
+    from lap import grade
+
+    lean = grade.compute_parts(10, 800, 400, 0, 0)     # 80 tok/op, light results, clean
+    heavy = grade.compute_parts(10, 24000, 25000, 15, 10)
+    assert lean["score"] > heavy["score"]
+    assert lean["letter"] == "A" and lean["subscores"]["menu"] == 100
+    assert heavy["letter"] in ("D", "F")
+    assert grade.compute_parts(0, 0, 0, 0, 0)["letter"] == "F"  # degenerate spec
+
+
+def test_grade_skips_result_when_nothing_estimable():
+    from lap import grade
+
+    g = grade.compute_parts(10, 800, 0, 0, 0)
+    assert "result" not in g["subscores"]
+    assert g["score"] == 100  # menu 100 + hygiene 100, weights renormalized
+
+
+def test_grade_in_score_gather(spec):
+    class Args:
+        source = "x"; no_mcp = True; page_size = 20; string_len = 6  # noqa: E702
+
+    res = score_mod.gather(spec, Args())
+    g = res["grade"]
+    assert g["letter"] in "ABCDF" and 0 <= g["score"] <= 100
+    assert set(g["subscores"]) <= {"menu", "result", "hygiene"}
+
+
+def test_badge_shields_shape(spec):
+    from lap import grade
+
+    doc = grade.badge(grade.compute(spec))
+    assert doc["schemaVersion"] == 1 and doc["label"] == "LAP"
+    letter = doc["message"].split(" ")[0]
+    assert letter in "ABCDF" and doc["color"] == grade.COLORS[letter]

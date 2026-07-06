@@ -65,6 +65,24 @@ beating even compact signatures at scale (Petstore: 1740 → 207, −88%).
   endpoint; tool defs counted via the real `tools=` parameter). Without it, a GPT-style
   `tiktoken` approximation — absolute numbers approximate, **relative ordering robust**.
 
+## The LAP grade + badge
+
+`lap score` also prints a composite **LAP grade** — one documented 0–100 number (letter
+A–F) folding three sub-scores: **menu** (naive-menu tokens per operation, 0.45), **result**
+(heaviest estimated response, 0.30) and **hygiene** (lint findings per operation, 0.25);
+log-scaled, constants in [`grade.py`](grade.py), formula in the
+[profile](../profile/llm-api-profile.md#the-lap-grade-composite-0100--letter). Calibration on
+real APIs: Spotify/LaunchDarkly **B**, Postman **C**, GitHub/DynamoDB **D**, Google Drive **F**.
+
+`lap badge` turns it into a README badge (shields.io endpoint JSON):
+
+```bash
+lap badge api/openapi.json -o docs/lap-badge.json   # commit it, then embed:
+# https://img.shields.io/endpoint?url=<raw URL of docs/lap-badge.json>
+```
+
+…or from the bundled Action, add `badge-path: docs/lap-badge.json`.
+
 ## Score your installed MCP stack
 
 `lap stack` answers the 2026 headline question — *"how many tokens does my agent pay before I
@@ -160,6 +178,7 @@ behind the compact form are the [LAP profile](../profile/llm-api-profile.md).
 | `mcp_form.py` | real-MCP baseline via `FastMCP.from_openapi` (optional; `--no-mcp` to skip) |
 | `mcp_client.py` | scores a live MCP server's advertised tools (`lap score --mcp-url`) |
 | `stack.py` | `lap stack` — score the user's installed MCP stack from their agent config |
+| `grade.py` | the composite LAP grade (0–100 + letter) and `lap badge` (shields.io endpoint JSON) |
 | `estimate.py` | estimates bucket C (result size) from response schemas (`--page-size`) |
 | `tokens.py` | token counting (Anthropic endpoint, or tiktoken approx) |
 | `score.py` | the `lap score` CLI |

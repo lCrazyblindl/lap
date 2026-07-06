@@ -101,7 +101,17 @@ def gather(spec: dict, args) -> dict:
             ests.append({"where": f"{op.method} {op.path}", "kind": kind, "tokens": est})
     ests.sort(key=lambda e: e["tokens"], reverse=True)
 
+    from . import grade as grade_mod
+    from . import lint as lint_mod
+
+    findings = lint_mod.lint(spec)
+    warns = sum(1 for f in findings if f.severity == "warn")
+    g = grade_mod.compute_parts(len(ops), a_cost["openapi_full"],
+                                ests[0]["tokens"] if ests else 0,
+                                warns, len(findings) - warns)
+
     return {
+        "grade": g,
         "api": spec.get("info", {}).get("title", "(untitled API)"),
         "source": args.source,
         "tokenizer": tokens.backend_name(),
@@ -121,7 +131,11 @@ def _print_human(res: dict) -> None:
     print(f"\nLAP menu score - {res['api']}")
     print(f"source: {res['source']}")
     print(f"tokenizer: {res['tokenizer']}{approx}")
-    print(f"operations: {res['operations']}   referenced component schemas: {res['components']}\n")
+    print(f"operations: {res['operations']}   referenced component schemas: {res['components']}")
+    g = res["grade"]
+    subs = "  ".join(f"{k} {v}" for k, v in g["subscores"].items())
+    print(f"LAP grade: {g['letter']} ({g['score']}/100)   [{subs}]   "
+          f"(formula: see the LAP profile; badge: lap badge)\n")
     if res["mcp_error"]:
         print(f"  [mcp_fastmcp skipped: {res['mcp_error']}]")
     base_a = res["_a_cost"]["openapi_full"]
