@@ -33,8 +33,11 @@ async def _fetch(target):
     ]
 
 
-def fetch_tools(target) -> list[dict]:
-    return asyncio.run(_fetch(target))
+def fetch_tools(target, timeout: float | None = None) -> list[dict]:
+    coro = _fetch(target)
+    if timeout:
+        coro = asyncio.wait_for(coro, timeout)
+    return asyncio.run(coro)
 
 
 def _ptype(prop) -> str:

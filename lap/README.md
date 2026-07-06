@@ -65,6 +65,40 @@ beating even compact signatures at scale (Petstore: 1740 → 207, −88%).
   endpoint; tool defs counted via the real `tools=` parameter). Without it, a GPT-style
   `tiktoken` approximation — absolute numbers approximate, **relative ordering robust**.
 
+## Score your installed MCP stack
+
+`lap stack` answers the 2026 headline question — *"how many tokens does my agent pay before I
+type a word?"* — for **your** machine. It reads the agent's own MCP config (Claude Code project
+`.mcp.json`, Claude Code `~/.claude.json`, Claude Desktop `claude_desktop_config.json`, or any
+JSON with an `mcpServers` map), connects to every server it lists (stdio or HTTP), and totals
+the advertised tool menus:
+
+```bash
+lap stack                        # auto-discover Claude Code / Claude Desktop configs
+lap stack path/to/mcp.json       # or score an explicit config
+lap stack --only github,jira     # subset; --json for machine-readable; --timeout N per server
+```
+
+```
+LAP stack scan - tokenizer: tiktoken-approx
+
+demo-mcp-config.json
+  server        kind   tools  menu tokens  compact  note
+  time          stdio      2          283       31
+  git           stdio     12         1418      153
+  needs-node    stdio      -            -        -  RuntimeError: Client failed to connect: ...
+  TOTAL                    14         1701      184
+
+Your agent pays ~1,701 tokens of tool menus at session start - before you type a word
+(14 tools across 2 reachable server(s)).
+Compact signatures of the same tools would cost 184 (+89% saved); one lazy tool_search menu
+over the whole stack, 193 (+89% saved).
+```
+
+Unreachable servers (missing binary, no credentials) become annotated rows, not crashes. The
+stack-level `tool_search` what-if is counted honestly: the fixed search/call tools are paid
+**once** for the whole stack, plus a name index across all servers. Needs the `[mcp]` extra.
+
 ## Diff mode
 
 `lap score --diff <before> <after>` compares two versions of a spec instead of scoring one —
@@ -125,6 +159,7 @@ behind the compact form are the [LAP profile](../profile/llm-api-profile.md).
 | `menu.py` | render the menu forms (openapi_full / compact_sig / numbered) from the IR |
 | `mcp_form.py` | real-MCP baseline via `FastMCP.from_openapi` (optional; `--no-mcp` to skip) |
 | `mcp_client.py` | scores a live MCP server's advertised tools (`lap score --mcp-url`) |
+| `stack.py` | `lap stack` — score the user's installed MCP stack from their agent config |
 | `estimate.py` | estimates bucket C (result size) from response schemas (`--page-size`) |
 | `tokens.py` | token counting (Anthropic endpoint, or tiktoken approx) |
 | `score.py` | the `lap score` CLI |

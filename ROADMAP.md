@@ -356,14 +356,20 @@ make LAP demo-able and sticky, then take the public position while it's unclaime
 
 Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as before.
 
-- [ ] **▶ N1 — `lap stack`: score YOUR installed MCP stack.** New subcommand that reads the
-  user's real agent config (Claude Code `.mcp.json` / Claude Desktop `claude_desktop_config.json`
-  / a passed config path), connects to each server (stdio + HTTP via existing `lap/mcp_client.py`),
-  and reports per-server and total bucket-A: *"your agent pays N tokens before you type a word"* —
-  the 2026 headline number ("100–200k before the first prompt"), personalized and reproducible.
-  Include per-server compact/tool_search what-if savings. _Done: `lap stack` runs against a config
-  with ≥2 real servers; README section with sample output._  `[no key]`
-- [ ] **N2 — Composite LAP grade + badge.** Fold measured A (+ estimated C + lint findings) into
+- [x] **N1 — `lap stack`: score YOUR installed MCP stack.** Done. New `lap/stack.py` +
+  `lap stack` subcommand: reads the agent's own config (Claude Code project `.mcp.json`,
+  Claude Code `~/.claude.json`, Claude Desktop `claude_desktop_config.json` incl. macOS/Linux
+  paths, or an explicit path to any JSON with an `mcpServers` map; `${VAR}` env expansion),
+  connects to every listed server (stdio + HTTP, one shared event loop, per-server `--timeout`),
+  and totals bucket A: *"your agent pays N tokens before you type a word."* Unreachable servers
+  (missing binary/creds) become annotated rows, not crashes. What-ifs: per-server compact +
+  a stack-level `tool_search` counted honestly (fixed search/call tools paid **once** across the
+  whole stack + a cross-server name index). `--only`, `--json`. Verified end-to-end on a config
+  with 2 real reference servers + 1 dead one (recreated `.venv-srv`): time 283 + git 1418 =
+  **1701 tokens** naive vs 184 compact / 193 stack tool_search (**+89%**); auto-discovery ran
+  clean against the owner's real (empty) Claude configs. +3 tests (tests/ 36, full suite 40).
+  README + lap/README + CHANGELOG `[Unreleased]` updated.  `[no key]`
+- [ ] **▶ N2 — Composite LAP grade + badge.** Fold measured A (+ estimated C + lint findings) into
   one documented 0–100 grade with a letter (`lap score --grade`), and a shields.io-compatible
   JSON endpoint (`lap badge` → `lap-badge.json`) + GitHub Action wiring, so any repo can show
   **"LAP A (92)"** in its README. At-a-glance comparable with mcpx/AgentDX grades, but backed by
@@ -487,8 +493,10 @@ section. **v0.5 S5 done** — bucket-C estimate now prefers real schema `example
 synthetic placeholders, plus a configurable `--string-len`; leaderboard's total heaviest-result
 estimate rose ~41% (482,795 → 681,830 tokens) once real examples were honored. **After S5 the
 plan was re-drawn (2026-07-06) from a fresh landscape re-check — see "Stages — v0.6" above; the
-S6–S8 tail is folded into it (S6→N8, S7/S8→v0.7 tracks). ▶ current stage: v0.6 N1 (`lap stack`:
-score the user's installed MCP stack).** Say "continue LAP" to keep going once a stage completes.
+S6–S8 tail is folded into it (S6→N8, S7/S8→v0.7 tracks). v0.6 N1 done — `lap stack` scores the
+user's installed MCP stack from their own agent config ("N tokens before you type a word"; demo:
+2 real servers, 1701 naive → 184 compact, +89%; 40 tests green). ▶ current stage: v0.6 N2
+(composite LAP grade + badge).** Say "continue LAP" to keep going once a stage completes.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/

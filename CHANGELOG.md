@@ -7,6 +7,12 @@ versioning while pre-1.0.
 ## [Unreleased]
 
 ### Added
+- **`lap stack`** — score *your installed MCP stack*: reads the agent's own config (Claude Code
+  `.mcp.json` / `~/.claude.json`, Claude Desktop `claude_desktop_config.json`, or any JSON with
+  an `mcpServers` map), connects to every listed server (stdio or HTTP), and totals the menu
+  (bucket A) tokens the agent pays at session start — "N tokens before you type a word" — plus
+  compact and stack-wide `tool_search` what-ifs. Unreachable servers become annotated rows, not
+  crashes. Needs the `[mcp]` extra.
 - **`lap score --diff <before> <after>`** — compare two versions of a spec: the menu (bucket A)
   token delta per interface form, plus which LAP lint findings were newly introduced or fixed.
   `--max-growth` turns it into a CI gate ("did this PR make the API worse for agents?").

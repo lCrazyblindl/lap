@@ -222,3 +222,4 @@ __marimo__/
 
 # pet-zoo runtime data
 pet-zoo/data/*.json
+.venv-srv/

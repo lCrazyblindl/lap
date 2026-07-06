@@ -407,3 +407,64 @@ def test_mcp_client_scores_live_server():
     assert len(tools) == 6
     res = mcp_client.score_tools(tools)
     assert res["menu"]["tool_search"] < res["menu"]["mcp_live"]
+
+
+# --- lap stack: score the installed MCP stack (v0.6 N1) ----------------------
+def test_stack_load_servers_parses_stdio_and_http(tmp_path, monkeypatch):
+    from lap import stack
+
+    monkeypatch.setenv("LAP_TEST_ROOT", "C:/work")
+    cfg = tmp_path / "mcp.json"
+    cfg.write_text(
+        '{"mcpServers": {'
+        '"local": {"command": "python", "args": ["-m", "srv", "${LAP_TEST_ROOT}/repo"],'
+        ' "env": {"TOKEN_FILE": "${LAP_TEST_ROOT}/t"}},'
+        '"remote": {"type": "http", "url": "http://localhost:9/mcp"},'
+        '"junk": 42}}',
+        encoding="utf-8",
+    )
+    servers = stack.load_servers(cfg)
+    assert [s["name"] for s in servers] == ["local", "remote"]
+    local, remote = servers
+    assert local["kind"] == "stdio" and local["args"][-1] == "C:/work/repo"
+    assert local["env"]["TOKEN_FILE"] == "C:/work/t"
+    assert remote["kind"] == "http" and remote["url"].endswith("/mcp")
+
+
+def test_stack_scan_totals_and_error_rows():
+    pytest.importorskip("fastmcp")
+    from lap import stack
+
+    servers = [{"name": "good", "kind": "stdio"}, {"name": "dead", "kind": "http"}]
+    good_tools = [
+        {"name": "list_pets", "description": "List pets in the store", "input_schema":
+            {"type": "object", "properties": {"status": {"type": "string"}}}},
+        {"name": "add_pet", "description": "Add a pet", "input_schema":
+            {"type": "object", "properties": {"name": {"type": "string"}}}},
+    ]
+
+    def fetch(s):
+        if s["name"] == "dead":
+            raise ConnectionError("no route to host")
+        return good_tools
+
+    rows = stack.scan(servers, fetch=fetch)
+    assert rows[0]["tools"] == 2 and rows[0]["menu"] > 0 and rows[0]["error"] is None
+    assert rows[1]["error"].startswith("ConnectionError") and rows[1]["menu"] == 0
+    t = stack.totals(rows)
+    assert t["servers"] == 2 and t["reachable"] == 1 and t["tools"] == 2
+    assert t["menu"] == rows[0]["menu"]
+
+
+def test_stack_tool_search_counted_once_across_stack():
+    pytest.importorskip("fastmcp")
+    from lap import stack
+
+    def row(server, names):
+        return {"server": server, "tool_names": names, "error": None, "tools": len(names),
+                "menu": 0, "compact_sig": 0, "tool_search": 0}
+
+    one = stack.stack_tool_search([row("a", ["x", "y"])])
+    two = stack.stack_tool_search([row("a", ["x", "y"]), row("b", ["z"])])
+    assert 0 < one < two  # the index grows with names...
+    assert two - one < one  # ...but the fixed search/call tools are not paid twice
