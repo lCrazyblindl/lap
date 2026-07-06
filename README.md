@@ -24,7 +24,7 @@ Every time an agent talks to an API — via OpenAPI-generated tools, an MCP serv
 
 | piece | what it does |
 | --- | --- |
-| **`lap score <api>`** | Reports an API's bucket-A menu cost across four rendering forms (naive OpenAPI→tools, compact signatures, a numbered dictionary, a lazy tool-search form), plus a real-MCP baseline (via FastMCP), a bucket-C result-size estimate, and a composite **LAP grade** (0–100 + letter; `lap badge` emits a shields.io README badge). Works on any OpenAPI file/URL, or a live MCP server (`--mcp-url`). |
+| **`lap score <api>`** | Reports an API's bucket-A menu cost across four rendering forms (naive OpenAPI→tools, compact signatures, a numbered dictionary, a lazy tool-search form), plus a real-MCP baseline (via FastMCP), bucket-B (call) and bucket-C (result-size) estimates — the full A/B/C story in one command — and a composite **LAP grade** (0–100 + letter; `lap badge` emits a shields.io README badge). Works on any OpenAPI file/URL, or a live MCP server (`--mcp-url`). |
 | **`lap lint <api>`** | Flags concrete violations of the LAP profile's rules (opaque names, no pagination/filtering/projection, no aggregation, verbose writes, ambiguous errors) — each citing the measurement that justifies it. Also lints **live MCP servers** (`--mcp-url`/`--mcp`): missing tool/parameter descriptions, heavy definitions, no `required` list — plus the LAP grade. |
 | **`lap stack`** | Scores **your installed MCP stack**: reads your agent's own config (Claude Code / Claude Desktop), connects to every server it lists, and totals the menu tokens your agent pays at session start — *"N tokens before you type a word"* — with compact / stack-wide tool-search what-ifs. |
 | **The LAP profile** ([`profile/`](profile/llm-api-profile.md)) | A short, opinionated set of conventions **on top of** HTTP/JSON/OpenAPI — not a new wire format — for exposing an API so an agent uses it in the fewest tokens. Every rule is backed by a number, not an opinion. |
@@ -180,7 +180,7 @@ See [`spectral/README.md`](spectral/README.md) (custom-function rulesets must be
 
 ### What `lap score` measures (and doesn't)
 
-It measures **bucket A** (the definitions/menu the model carries in context) and **estimates C** (result size, from each response schema — a structural lower bound, envelope-aware for patterns like `{"data": [...]}`). **B** (the call itself) needs per-API tasks; for a full measured A/B/C run with real accuracy checks, see [`experiments/token-bench`](experiments/token-bench/README.md).
+It measures **bucket A** (the definitions/menu the model carries in context) and **estimates B and C** from the schemas: **B** — the call the model emits (tool name + required args in a minimal tool-use envelope), **C** — result size per response schema (envelope-aware for patterns like `{"data": [...]}`). Both are structural lower bounds. For *measured* B/C on live tasks with real accuracy checks, see [`experiments/token-bench`](experiments/token-bench/README.md).
 
 ---
 

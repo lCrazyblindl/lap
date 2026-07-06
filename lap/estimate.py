@@ -105,6 +105,33 @@ def _find_envelope_key(spec: dict, schema: dict) -> str | None:
     return candidates[0]
 
 
+def estimate_call(spec: dict, op: ir.Op, string_len: int = 6) -> int:
+    """Estimate bucket B - the tokens of the call the model *emits* for this operation.
+
+    Synthesizes a typical invocation: the tool name plus a JSON args object holding
+    the **required** parameters (path params always; query/header only when marked
+    required - agents usually omit optional ones) and the request body's required
+    fields (all fields when the schema declares no `required` list). Values come
+    from `example_instance`, so real schema examples win here too. Counted inside
+    a minimal tool-use envelope `{"name": ..., "input": {...}}` - a structural
+    lower bound: real harnesses add per-block overhead on top."""
+    args: dict = {}
+    for p in op.params:
+        if p.get("in") == "path" or p.get("required"):
+            args[p["name"]] = example_instance(spec, ir._param_schema(p), string_len=string_len)
+    body_schema = ir._json_body_schema(spec, op.raw)
+    if isinstance(body_schema, dict):
+        body = example_instance(spec, body_schema, string_len=string_len)
+        if isinstance(body, dict):
+            required = ir._deref(spec, body_schema).get("required")
+            if isinstance(required, list) and required:
+                body = {k: v for k, v in body.items() if k in required}
+            args.update(body)  # bridges flatten body fields into tool arguments
+        elif body is not None:
+            args["body"] = body
+    return tokens.count(_dumps({"name": op.name, "input": args}))
+
+
 def estimate(spec: dict, op: ir.Op, page_size: int = 20, string_len: int = 6) -> tuple[str, int, int]:
     """Returns (kind, per_unit_tokens, estimated_C_tokens) for an operation's
     success response. kind in {"void", "object", "list"}.

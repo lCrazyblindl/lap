@@ -393,10 +393,15 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   route: `keep_alive=False` on stdio transports (kills Windows Proactor teardown noise
   everywhere, incl. `lap stack`) and a real latent crash — the `✓` in "no violations" broke
   cp1251 Windows consoles. +2 tests (tests/ 42, full suite 46).  `[no key]`
-- [ ] **N4 — Bucket-B estimate in `lap score`.** Synthesize a typical call (args instance à la
-  `estimate.py` + tool-call envelope) per op so `lap score` prints **A/B/C together** — completes
-  the bucket story in the shipped package instead of only in token-bench. _Done: B column +
-  tests._  `[no key]`
+- [x] **N4 — Bucket-B estimate in `lap score`.** Done. `estimate.estimate_call(spec, op,
+  string_len)`: synthesizes a typical invocation — tool name + **required** args (path params
+  always, optional query params omitted, request-body `required` list honored, real schema
+  examples win here too) — counted in a minimal `{"name":..., "input":{...}}` tool-use envelope;
+  a structural lower bound like the C estimate. `lap score` now reports the full **A/B/C** story:
+  a new "Estimated call size (bucket B)" line (mean + heaviest call) in human output and
+  `estimated_b` in `--json`. Sanity-checked live: Bookstore mean ~18/heaviest PUT 31; Petstore
+  mean ~21/heaviest `POST /user/createWithList` 52 — plausible shapes. +3 tests (tests/ 45, full
+  suite 49).  `[no key]`
 - [ ] **N5 — Release 0.4.0.** Ship S4+S5+N1–N4: version bump, cut `[Unreleased]` in CHANGELOG,
   build + twine + GH release, fresh-venv verify (same recipe as `RELEASING.md`).  `[release creds]`
 - [ ] **N6 — "State of the field" + claims registry** → `docs/FIELD.md`. Honest comparison table:
@@ -512,8 +517,9 @@ user's installed MCP stack from their own agent config ("N tokens before you typ
 letter, documented formula, calibrated on the leaderboard corpus) + `lap badge` shields.io
 endpoint + Action `badge-path`; our README carries an honest B (72) for the bundled example.
 v0.6 N3 done — `lap lint --mcp-url/--mcp` lints live MCP servers (M1–M4 rules + grade;
-mcp-server-git B 71, mcp-server-time A 89); 46 tests green. ▶ current stage: v0.6 N4 (bucket-B
-estimate in `lap score`).** Say "continue LAP" to keep going once a stage completes.
+mcp-server-git B 71, mcp-server-time A 89). v0.6 N4 done — bucket-B call estimate in `lap
+score` (A/B/C in one command); 49 tests green. ▶ current stage: v0.6 N5 (release 0.4.0).** Say
+"continue LAP" to keep going once a stage completes.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/

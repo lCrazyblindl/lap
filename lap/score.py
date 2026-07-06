@@ -95,11 +95,15 @@ def gather(spec: dict, args) -> dict:
 
     ests = []
     string_len = getattr(args, "string_len", 6)
+    calls = []
     for op in ops:
         kind, _per, est = estimate.estimate(spec, op, args.page_size, string_len)
         if kind != "void":
             ests.append({"where": f"{op.method} {op.path}", "kind": kind, "tokens": est})
+        calls.append({"where": f"{op.method} {op.path}", "tokens": estimate.estimate_call(spec, op, string_len)})
     ests.sort(key=lambda e: e["tokens"], reverse=True)
+    calls.sort(key=lambda c: c["tokens"], reverse=True)
+    est_b = {"mean": round(sum(c["tokens"] for c in calls) / len(calls)), "heaviest": calls[0]} if calls else None
 
     from . import grade as grade_mod
     from . import lint as lint_mod
@@ -120,6 +124,7 @@ def gather(spec: dict, args) -> dict:
         "page_size": args.page_size,
         "menu": [{"variant": n, "a_tokens": a, "form": f} for n, a, f in menu_list],
         "compaction_pct": _pct_int(a_cost["compact_sig"], a_cost["openapi_full"]),
+        "estimated_b": est_b,
         "estimated_c": ests,
         "mcp_error": mcp_error,
         "_a_cost": a_cost,  # internal, for gating; stripped from JSON
@@ -149,14 +154,19 @@ def _print_human(res: dict) -> None:
     full, compact = res["_a_cost"]["openapi_full"], res["_a_cost"]["compact_sig"]
     print(f"\nMenu efficiency: compact signatures are {_pct_saved(compact, full)} vs naive "
           f"OpenAPI->tools ({full} -> {compact} tokens).")
+    if res.get("estimated_b"):
+        b = res["estimated_b"]
+        print(f"\nEstimated call size (bucket B, required args only; structural lower bound): "
+              f"mean ~{b['mean']} tokens/call, heaviest {b['heaviest']['where']} "
+              f"~{b['heaviest']['tokens']}.")
     if res["estimated_c"]:
         print(f"\nEstimated result size (bucket C, ~{res['page_size']} items/page; structural lower bound):")
         for e in res["estimated_c"][:8]:
             tag = "   <- heavy list" if e["kind"] == "list" else ""
             print(f"  {e['where']:34} ~{e['tokens']:>5} tokens ({e['kind']}){tag}")
         print("  Field projection (R1) and pagination (R3) cut list cost - see `lap lint`.")
-    print("\nNote: A (menu) is measured and C (results) is estimated above; B (the call) needs "
-          "per-API tasks - see experiments/token-bench for a full A/B/C run.\n")
+    print("\nNote: A (menu) is measured; B (the call) and C (results) are estimated above from "
+          "the schemas. For *measured* B/C on live tasks see experiments/token-bench.\n")
 
 
 def _print_diff(res: dict, before_src: str, after_src: str) -> None:

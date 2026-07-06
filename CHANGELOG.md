@@ -7,6 +7,11 @@ versioning while pre-1.0.
 ## [Unreleased]
 
 ### Added
+- **Bucket-B (call) estimate in `lap score`** — the full A/B/C story in one command: for each
+  operation a typical invocation is synthesized (tool name + **required** args — path params
+  always, optional query params omitted, request-body `required` fields honored, real schema
+  examples win) and counted in a minimal tool-use envelope; `lap score` reports the mean and the
+  heaviest call (human + `--json` `estimated_b`). A structural lower bound, like the C estimate.
 - **`lap lint --mcp-url <url>` / `--mcp "<stdio command>"`** — lint a *live MCP server's*
   advertised tools, not just OpenAPI: D3 (opaque names) carries over, plus new M-rules —
   M1 missing/short tool description, M2 undescribed input parameters, M3 heavy tool

@@ -509,6 +509,50 @@ def test_badge_shields_shape(spec):
     assert letter in "ABCDF" and doc["color"] == grade.COLORS[letter]
 
 
+# --- bucket-B call estimate (v0.6 N4) -----------------------------------------
+def test_estimate_call_includes_required_args(spec):
+    from lap import estimate
+
+    ops = {op.name: op for op in ir.operations(spec)}
+    create = next(op for name, op in ops.items() if op.method == "POST")
+    b = estimate.estimate_call(spec, create)
+    assert b > estimate.estimate_call(spec, next(op for op in ops.values() if not op.params
+                                                 and op.method == "GET" and "{" not in op.path))
+    assert b > 0
+
+
+def test_estimate_call_required_only_filters_optional():
+    from lap import estimate
+
+    def mini_spec(required):
+        return {
+            "openapi": "3.0.0", "info": {"title": "t", "version": "1"},
+            "paths": {"/x": {"get": {
+                "operationId": "listX",
+                "parameters": [
+                    {"name": "must", "in": "query", "required": True, "schema": {"type": "string"}},
+                    {"name": "maybe", "in": "query", "required": required, "schema": {"type": "string"}},
+                ],
+                "responses": {"200": {"description": "ok"}},
+            }}},
+        }
+
+    s_opt, s_req = mini_spec(False), mini_spec(True)
+    b_opt = estimate.estimate_call(s_opt, ir.operations(s_opt)[0])
+    b_req = estimate.estimate_call(s_req, ir.operations(s_req)[0])
+    assert b_opt < b_req  # optional query param is omitted from the typical call
+
+
+def test_gather_reports_estimated_b(spec):
+    class Args:
+        source = "x"; no_mcp = True; page_size = 20; string_len = 6  # noqa: E702
+
+    res = score_mod.gather(spec, Args())
+    b = res["estimated_b"]
+    assert b["mean"] > 0 and b["heaviest"]["tokens"] >= b["mean"]
+    assert " " in b["heaviest"]["where"]  # "METHOD /path"
+
+
 # --- lint parity for MCP servers (v0.6 N3) -----------------------------------
 def test_lint_tools_flags_mcp_rules():
     tools = [

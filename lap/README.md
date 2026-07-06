@@ -164,10 +164,11 @@ see [`../spectral/`](../spectral/README.md).
 
 ## What it measures (and what it doesn't)
 
-It measures **bucket A** (the definitions/menu the model carries in context) and **estimates
-C** (result size, from each response schema + an assumed `--page-size` — a structural lower
-bound that captures keys/nesting/types). **B** (the call) still depends on per-API tasks; for a
-full measured A/B/C run see
+It measures **bucket A** (the definitions/menu the model carries in context) and **estimates**
+the other two from the schemas: **B** (the call the model emits — tool name + required args in
+a minimal tool-use envelope; optional params omitted, real schema examples honored) and **C**
+(result size, from each response schema + an assumed `--page-size`). Both estimates are
+structural lower bounds that capture keys/nesting/types. For *measured* B/C on live tasks see
 [`../experiments/token-bench`](../experiments/token-bench/README.md). The conventions
 behind the compact form are the [LAP profile](../profile/llm-api-profile.md).
 
