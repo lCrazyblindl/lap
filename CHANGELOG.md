@@ -4,6 +4,16 @@ All notable changes to **lap** (PyPI package `lap-score`) are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); loose semantic
 versioning while pre-1.0.
 
+## [Unreleased]
+
+### Added
+- **Projected bucket-C estimate** — for every list response, `lap score` now also reports
+  what the page would cost under field projection (each item cut to its first 3 schema
+  fields, envelope metadata kept), and whether the operation actually advertises a
+  projection affordance (`fields=`/`$select`/sparse fieldsets). Rule R1's saving becomes a
+  per-endpoint number: `~465 tokens (list) -> ~305 if projection were added (R1)`. In
+  `--json` as `projected` + `has_projection` on list entries of `estimated_c`.
+
 ## [0.4.0] — 2026-07-06
 
 The toolkit closes the loop: **A/B/C in one command**, a composite **LAP grade** with a README

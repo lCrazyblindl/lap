@@ -553,6 +553,47 @@ def test_gather_reports_estimated_b(spec):
     assert " " in b["heaviest"]["where"]  # "METHOD /path"
 
 
+# --- field-projection scoring (v0.7 M1) ---------------------------------------
+def test_estimate_projected_cuts_list_cost(spec):
+    from lap import estimate
+
+    books = next(op for op in ir.operations(spec) if op.method == "GET" and op.path == "/books")
+    kind, _per, full = estimate.estimate(spec, books)
+    projected = estimate.estimate_projected(spec, books)
+    assert kind == "list" and 0 < projected < full
+
+
+def test_supports_projection_detects_query_param():
+    from lap import estimate
+
+    def mini(params):
+        return {
+            "openapi": "3.0.0", "info": {"title": "t", "version": "1"},
+            "paths": {"/x": {"get": {
+                "operationId": "listX", "parameters": params,
+                "responses": {"200": {"description": "ok", "content": {"application/json": {
+                    "schema": {"type": "array", "items": {"type": "object", "properties": {
+                        "id": {"type": "integer"}, "name": {"type": "string"},
+                        "bio": {"type": "string"}, "notes": {"type": "string"}}}}}}}},
+            }}},
+        }
+
+    with_proj = mini([{"name": "fields", "in": "query", "schema": {"type": "string"}}])
+    without = mini([{"name": "limit", "in": "query", "schema": {"type": "integer"}}])
+    assert estimate.supports_projection(ir.operations(with_proj)[0])
+    assert not estimate.supports_projection(ir.operations(without)[0])
+
+
+def test_gather_reports_projected_c(spec):
+    class Args:
+        source = "x"; no_mcp = True; page_size = 20; string_len = 6  # noqa: E702
+
+    res = score_mod.gather(spec, Args())
+    lists = [e for e in res["estimated_c"] if e["kind"] == "list"]
+    assert lists and all("projected" in e and "has_projection" in e for e in lists)
+    assert all(e["projected"] <= e["tokens"] for e in lists)
+
+
 # --- lint parity for MCP servers (v0.6 N3) -----------------------------------
 def test_lint_tools_flags_mcp_rules():
     tools = [

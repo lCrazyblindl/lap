@@ -105,6 +105,48 @@ def _find_envelope_key(spec: dict, schema: dict) -> str | None:
     return candidates[0]
 
 
+def supports_projection(op: ir.Op) -> bool:
+    """Does the operation advertise a field-projection affordance (`fields=`, OData
+    `$select`, sparse fieldsets)? Same name set lint rule R1 checks for."""
+    from .lint import PROJECTION
+
+    return any(p.get("name", "").lower() in PROJECTION for p in op.params
+               if p.get("in") == "query")
+
+
+def _project(instance, keep: int):
+    """Keep the first `keep` properties of an object - schema property order is
+    author-chosen and typically leads with identity fields (id, name, ...), so
+    "first N" models a curated small field set without inventing semantics."""
+    if isinstance(instance, dict) and len(instance) > keep:
+        return {k: v for i, (k, v) in enumerate(instance.items()) if i < keep}
+    return instance
+
+
+def estimate_projected(spec: dict, op: ir.Op, page_size: int = 20, string_len: int = 6,
+                       keep: int = 3) -> int:
+    """Bucket C under field projection: the same page, each item cut to its first
+    `keep` fields (envelope siblings kept - they're metadata, not projected away).
+    Mirrors `estimate()`'s three shapes; returns the projected token estimate."""
+    schema = _success_schema(spec, op)
+    if not isinstance(schema, dict):
+        return 0
+    deref = ir._deref(spec, schema)
+    if schema.get("type") == "array" or "items" in deref:
+        item = _project(example_instance(spec, deref.get("items", {}), string_len=string_len), keep)
+        return tokens.count(_dumps(item)) * page_size + 5
+
+    envelope_key = _find_envelope_key(spec, schema)
+    if envelope_key:
+        instance = example_instance(spec, schema, string_len=string_len)
+        arr = instance.get(envelope_key) if isinstance(instance, dict) else None
+        if isinstance(arr, list) and arr:
+            instance[envelope_key] = [_project(arr[0], keep)] * page_size
+            return tokens.count(_dumps(instance))
+
+    return tokens.count(_dumps(_project(example_instance(spec, schema, string_len=string_len), keep)))
+
+
 def estimate_call(spec: dict, op: ir.Op, string_len: int = 6) -> int:
     """Estimate bucket B - the tokens of the call the model *emits* for this operation.
 

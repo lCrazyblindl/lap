@@ -99,7 +99,11 @@ def gather(spec: dict, args) -> dict:
     for op in ops:
         kind, _per, est = estimate.estimate(spec, op, args.page_size, string_len)
         if kind != "void":
-            ests.append({"where": f"{op.method} {op.path}", "kind": kind, "tokens": est})
+            entry = {"where": f"{op.method} {op.path}", "kind": kind, "tokens": est}
+            if kind == "list":  # projection matters where responses repeat per item
+                entry["projected"] = estimate.estimate_projected(spec, op, args.page_size, string_len)
+                entry["has_projection"] = estimate.supports_projection(op)
+            ests.append(entry)
         calls.append({"where": f"{op.method} {op.path}", "tokens": estimate.estimate_call(spec, op, string_len)})
     ests.sort(key=lambda e: e["tokens"], reverse=True)
     calls.sort(key=lambda c: c["tokens"], reverse=True)
@@ -162,9 +166,13 @@ def _print_human(res: dict) -> None:
     if res["estimated_c"]:
         print(f"\nEstimated result size (bucket C, ~{res['page_size']} items/page; structural lower bound):")
         for e in res["estimated_c"][:8]:
-            tag = "   <- heavy list" if e["kind"] == "list" else ""
+            tag = ""
+            if e["kind"] == "list" and e.get("projected"):
+                verb = "with the advertised projection" if e.get("has_projection") \
+                    else "if projection were added (R1)"
+                tag = f"   -> ~{e['projected']} {verb}"
             print(f"  {e['where']:34} ~{e['tokens']:>5} tokens ({e['kind']}){tag}")
-        print("  Field projection (R1) and pagination (R3) cut list cost - see `lap lint`.")
+        print("  Projection = first 3 schema fields per item; pagination (R3) bounds the page - see `lap lint`.")
     print("\nNote: A (menu) is measured; B (the call) and C (results) are estimated above from "
           "the schemas. For *measured* B/C on live tasks see experiments/token-bench.\n")
 

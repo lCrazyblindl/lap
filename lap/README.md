@@ -168,7 +168,10 @@ It measures **bucket A** (the definitions/menu the model carries in context) and
 the other two from the schemas: **B** (the call the model emits — tool name + required args in
 a minimal tool-use envelope; optional params omitted, real schema examples honored) and **C**
 (result size, from each response schema + an assumed `--page-size`). Both estimates are
-structural lower bounds that capture keys/nesting/types. For *measured* B/C on live tasks see
+structural lower bounds that capture keys/nesting/types. For list responses the C table also
+shows a **projected** figure — the same page with each item cut to its first 3 schema fields —
+annotated with whether the API actually advertises a projection param (`fields=`/`$select`),
+so rule R1's saving is a number per endpoint, not advice. For *measured* B/C on live tasks see
 [`../experiments/token-bench`](../experiments/token-bench/README.md). The conventions
 behind the compact form are the [LAP profile](../profile/llm-api-profile.md).
 

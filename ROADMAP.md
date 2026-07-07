@@ -469,10 +469,21 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   bug report, feature request (asks which bucket + what measurement justifies it), and a
   **"Score my API"** form (community hook; disputes explicitly welcome) + PR template with the
   policy checklist. README's "no formal guide yet" line replaced.  `[no key]`
-- [ ] **▶ M1 — Response-filtering scoring** (Track M first bullet): detect field-projection
-  affordances (`fields=`/`$select`/sparse fieldsets) in specs and quantify the bucket-C
-  reduction they enable — the one mainstream optimization approach `lap score` can't see yet.
-  _Done: detection + a "projected C" column/number + tests._  `[no key]`
+- [x] **M1 — Response-filtering scoring.** Done. `estimate.supports_projection(op)` (reuses
+  lint's R1 name set) + `estimate.estimate_projected()` (same page, each item cut to its
+  **first 3 schema fields** — author-ordered properties typically lead with identity fields,
+  so "first N" models a curated field set without inventing semantics; envelope metadata
+  kept). `lap score`'s C table now shows per-list `-> ~N with the advertised projection` or
+  `-> ~N if projection were added (R1)` — the one mainstream optimization approach (StackOne's
+  #3) lap couldn't see, and R1's saving is now a per-endpoint number (Bookstore: 465 → 305 at
+  page 20). `projected`/`has_projection` in `--json`. +3 tests (tests/ 48, full suite 52).
+  `[no key]`
+- [ ] **▶ V1 — Root-cause the mcp-compressor self-report discrepancy** (Track V): S2 found the
+  tool's own startup-banner percentage disagreeing with our tokenizer on the same output
+  (claimed >100% cost where we measured +12% saving). Reproduce, inspect what its banner
+  actually reports (bytes? chars? a different tokenizer?), and file an upstream issue with the
+  data — turns a finding into an ecosystem contribution. _Done: explanation in
+  `docs/MCP-COMPRESSOR.md` + a filed issue (or a documented reason not to)._  `[no key]`
 
 Two owner actions stay pending meanwhile: post the SPEC-2808 comment and publish `docs/POST.md`.
 - [x] **N9 — Leaderboard as a living page.** Done. `experiments/leaderboard.py` now also emits a
@@ -595,10 +606,11 @@ Show HN + r/mcp drafts ready to paste (owner publishes). v0.6 N8 done — valida
 (Haiku k=5 complete: code_exec 50/50 AND cheapest right answer at 1977 tok, 2.9× cheaper than
 naive; numbered measurably worst; DSL gap category-shaped). N8b done after credit top-up —
 Sonnet complete (248/250): **cheapest right answer is model-dependent** (Sonnet's code runs
-cost 5345/correct, near-naive; its query wins at 1902). **v0.6 COMPLETE. v0.7 C1 done
-(CONTRIBUTING.md + issue/PR templates, policies codified). ▶ v0.7 M1: response-filtering
-scoring.** Owner actions pending: SPEC-2808 comment + POST.md publishing.** Say "continue LAP"
-to keep going.
+cost 5345/correct, near-naive; its query wins at 1902). **v0.6 COMPLETE. v0.7: C1 done
+(CONTRIBUTING + templates), M1 done (projected bucket-C — R1's saving is now a per-endpoint
+number). ▶ v0.7 V1: root-cause the mcp-compressor self-report discrepancy + upstream issue.**
+Owner actions pending: SPEC-2808 comment + POST.md publishing.** Say "continue LAP" to keep
+going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/
