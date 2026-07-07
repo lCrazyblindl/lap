@@ -163,6 +163,100 @@ def run_matrix(tasks: list[Task], repeats: int = 3, model: str | None = None,
     return "\n".join(out)
 
 
+V2_MODELS = ("claude-haiku-4-5-20251001", "claude-sonnet-4-6")
+
+
+def _run_one_retry(client, variant, task, model, attempts: int = 4) -> dict:
+    """Transient API errors (overloaded/529) must not kill a 500-run matrix, but they
+    also must not be silently counted as task failures - retry with backoff, then raise."""
+    import sys
+    import time
+
+    for i in range(attempts):
+        try:
+            return _run_one(client, variant, task, model=model)
+        except Exception as e:  # noqa: BLE001
+            status = getattr(e, "status_code", None)
+            if status is not None and 400 <= status < 500 and status != 429:
+                raise  # permanent (bad request / auth / credit exhausted) - retrying won't help
+            if i == attempts - 1:
+                raise
+            wait = 5 * (3 ** i)
+            print(f"[matrix-v2] retry {i + 1} after {type(e).__name__}: {str(e)[:60]} "
+                  f"(sleep {wait}s)", file=sys.stderr, flush=True)
+            time.sleep(wait)
+    raise RuntimeError("unreachable")
+
+
+def run_matrix_v2(tasks: list[Task], repeats: int = 5, models=V2_MODELS,
+                  variant_names=MATRIX_VARIANTS) -> str:
+    """v0.6 N8: the broader matrix - every grouped task (>=2 per category), several
+    models, k repeats. Adds the metric buyers actually need: **tokens per correct
+    answer** (total tokens spent across all runs of a form / number of correct runs) -
+    a form that answers cheaply but wrongly loses here, as it should."""
+    import sys
+
+    from anthropic import Anthropic
+
+    client = Anthropic()
+    variants = [V.BY_NAME[n] for n in variant_names]
+    vnames = [v.name for v in variants]
+    out: list[str] = []
+    summary: dict[tuple, dict] = {}  # (model, vname) -> ok/runs/tokens
+
+    for mdl in models:
+        succ: dict[tuple, int] = {}
+        toks: dict[tuple, int] = {}
+        for task in tasks:
+            for v in variants:
+                s_ok = t_sum = 0
+                for _ in range(repeats):
+                    r = _run_one_retry(client, v, task, mdl)
+                    s_ok += int(r["ok"])
+                    t_sum += r["tokens"]
+                succ[(task.name, v.name)] = s_ok
+                toks[(task.name, v.name)] = t_sum
+                agg = summary.setdefault((mdl, v.name), {"ok": 0, "runs": 0, "tokens": 0})
+                agg["ok"] += s_ok
+                agg["runs"] += repeats
+                agg["tokens"] += t_sum
+                print(f"[matrix-v2] {mdl:28} {task.name:18} {v.name:13} {s_ok}/{repeats} "
+                      f"(~{round(t_sum / repeats)} tok/run)", file=sys.stderr, flush=True)
+
+        denom = len(tasks) * repeats
+        out += [f"## Model `{mdl}` - success per task ({repeats} repeats each)", "",
+                "| category | task | " + " | ".join(vnames) + " |",
+                "| --- | --- | " + " | ".join("---" for _ in vnames) + " |"]
+        for task in tasks:
+            cells = [f"{succ[(task.name, vn)]}/{repeats}" for vn in vnames]
+            out.append(f"| {task.category} | {task.name} | " + " | ".join(cells) + " |")
+        out += ["", "**Overall correct:** " + ", ".join(
+            f"{vn} **{summary[(mdl, vn)]['ok']}/{denom}**" for vn in vnames), ""]
+        # checkpoint after each model - a killed 500-run matrix shouldn't lose everything
+        ckpt = os.path.join(os.path.dirname(os.path.abspath(__file__)), "validation-partial.md")
+        with open(ckpt, "w", encoding="utf-8") as f:
+            f.write("\n".join(out) + f"\n\n[checkpoint: model {mdl} done]\n")
+
+    out += ["## Tokens per correct answer (all runs, both models)", "",
+            "Total tokens spent across every run of a form, divided by its correct answers - "
+            "the price of a *right* answer, so cheap-but-wrong loses here.", "",
+            "| model | " + " | ".join(vnames) + " |",
+            "| --- | " + " | ".join("---" for _ in vnames) + " |"]
+    for mdl in models:
+        cells = []
+        for vn in vnames:
+            a = summary[(mdl, vn)]
+            cells.append(str(round(a["tokens"] / a["ok"])) if a["ok"] else "inf")
+        out.append(f"| {mdl} | " + " | ".join(cells) + " |")
+    out += ["", "Mean tokens per run (correct or not), for comparison:", "",
+            "| model | " + " | ".join(vnames) + " |",
+            "| --- | " + " | ".join("---" for _ in vnames) + " |"]
+    for mdl in models:
+        cells = [str(round(summary[(mdl, vn)]["tokens"] / summary[(mdl, vn)]["runs"])) for vn in vnames]
+        out.append(f"| {mdl} | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
 def run(tasks: list[Task], quick: bool = False) -> str:
     from anthropic import Anthropic
 

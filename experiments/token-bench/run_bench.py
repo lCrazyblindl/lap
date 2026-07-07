@@ -90,7 +90,12 @@ def main() -> None:
                     help="with --live: run a small variant/task subset (cheap model) to bound spend")
     ap.add_argument("--matrix", action="store_true",
                     help="live success-RATE matrix (per category x variant, --repeats each); needs key")
-    ap.add_argument("--repeats", type=int, default=3, help="repeats per cell for --matrix")
+    ap.add_argument("--matrix-v2", action="store_true",
+                    help="broader live matrix: ALL tasks x variants x --repeats, per model in "
+                         "--models, + tokens-per-correct-answer; needs key, spends real tokens")
+    ap.add_argument("--models", default="claude-haiku-4-5-20251001,claude-sonnet-4-6",
+                    help="comma-separated model ids for --matrix-v2")
+    ap.add_argument("--repeats", type=int, default=3, help="repeats per cell for --matrix/--matrix-v2")
     ap.add_argument("--model", help="override the live model id (default: cheap Haiku)")
     ap.add_argument("--out", default=os.path.join(HERE, "results.md"))
     args = ap.parse_args()
@@ -99,6 +104,25 @@ def main() -> None:
 
     if args.check_code:
         _check_code(tasks)
+        return
+
+    if args.matrix_v2:
+        import live_runs
+
+        models = tuple(m.strip() for m in args.models.split(",") if m.strip())
+        report = live_runs.run_matrix_v2(tasks, repeats=args.repeats, models=models)
+        header = ("# LAP honest validation v2 - live success rates + tokens-per-correct\n\n"
+                  f"- date: {date.today().isoformat()}\n"
+                  f"- models: {', '.join(f'`{m}`' for m in models)}; repeats: {args.repeats} per "
+                  f"task x variant; all {len(tasks)} grouped tasks (>=2 per category)\n"
+                  f"- fixture: {sum(s._FIXTURE_COUNTS.values())} animals\n"
+                  "- supersedes the k=3, one-task-per-category, Haiku-only matrix "
+                  "(Stage 15b; kept in git history)\n\n")
+        out_path = os.path.join(HERE, "validation.md")
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write(header + report + "\n")
+        print(header + report)
+        print(f"\n[written] {out_path}")
         return
 
     if args.matrix:
