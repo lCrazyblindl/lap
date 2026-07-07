@@ -525,9 +525,19 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   query-param-heavy APIs got honester grades), constants unchanged; profile + lap/README
   calibration text updated. Petstore quote now 1835→207 (−89%). Honest CHANGELOG "Fixed"
   entry (S5-style). +1 test (tests/ 52, full suite 56).  `[no key]`
+- [x] **M4 — Tokenizer sensitivity matrix.** Done →
+  [`docs/TOKENIZERS.md`](docs/TOKENIZERS.md) ([`experiments/tokenizer_matrix.py`]
+  (experiments/tokenizer_matrix.py)): the corpus's naive + compact menus re-encoded under 4
+  BPE vocabularies (cl100k baseline, o200k, p50k, gpt2). **Absolutes swing ≤8%; the mean
+  compact saving moves 3.0 pp (82.4→79.4%); the API ranking holds at Kendall τ ≥ 0.992** —
+  worst single-API saving spread 12.6 pp (CircleCI). Plus the Stage-13 faithful-Anthropic
+  citation (~60% higher absolutes, identical ordering). "Whose tokens?" now has a receipt:
+  the compressed-vs-verbose gap is a property of the text, not the ruler. POST.md's pushback
+  note and the README map point at it.  `[no key]`
 - [ ] **▶ Next — pick from the v0.7 tracks** (remaining highlights: Track V "2nd real API for
-  Tool Search/code-exec" `[key]` · Track M tokenizer sensitivity matrix · Track S llms.txt/
-  NLWeb rule (ex-S8) · Track C outreach/listings · Track E perf/PBT).
+  Tool Search/code-exec" `[key]` · Track S llms.txt/NLWeb rule (ex-S8) · Track C
+  outreach/listings · Track E perf/PBT · release 0.5.0 once the Unreleased section feels
+  round).
 
 Two owner actions stay pending meanwhile: post the SPEC-2808 comment and publish `docs/POST.md`.
 - [x] **N9 — Leaderboard as a living page.** Done. `experiments/leaderboard.py` now also emits a
@@ -655,7 +665,8 @@ cost 5345/correct, near-naive; its query wins at 1902). **v0.6 COMPLETE. v0.7: C
 root-caused), M2 done (cache economics), S1 done (`lap fix` — lint findings as an applicable
 OpenAPI Overlay; Bookstore B72 → A91 from its own patch), M3 done (query params in menu forms —
 naive total +7.2% → 11.2M, compact save now 82%/search 86%, Spotify B→C; all generated docs
-refreshed). ▶ pick next from the v0.7 tracks.**
+refreshed), M4 done (tokenizer sensitivity: 4 vocabularies, τ ≥ 0.992 — "whose tokens?"
+answered). ▶ pick next from the v0.7 tracks.**
 Owner actions pending: SPEC-2808 comment + POST.md publishing.** Say "continue LAP" to keep
 going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party

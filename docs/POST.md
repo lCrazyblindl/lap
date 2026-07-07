@@ -159,7 +159,9 @@ MIT, no product, no telemetry. If you maintain an API or MCP server and want it 
   [MCP-COMPRESSOR.md](https://github.com/lCrazyblindl/lap/blob/main/docs/MCP-COMPRESSOR.md);
   the honest framing ("workload-specific, k=5, one model, mechanism verified") is already
   in them.
-- If someone asks "why should I trust your tokenizer": offline mode is a tiktoken
-  approximation and says so; with `ANTHROPIC_API_KEY` set, counts come from Anthropic's
-  own `count_tokens` endpoint — same ordering, ~60% higher absolutes (measured in
-  [results-faithful.md](../experiments/token-bench/results-faithful.md)).
+- If someone asks "why should I trust your tokenizer": point at
+  [TOKENIZERS.md](https://github.com/lCrazyblindl/lap/blob/main/docs/TOKENIZERS.md) — the
+  whole corpus re-counted under 4 BPE vocabularies: absolutes swing ≤8%, the mean saving
+  moves 3 pp, the ranking holds at Kendall tau ≥ 0.992; and with `ANTHROPIC_API_KEY` set,
+  counts come from Anthropic's own `count_tokens` endpoint — same ordering, ~60% higher
+  absolutes ([results-faithful.md](../experiments/token-bench/results-faithful.md)).

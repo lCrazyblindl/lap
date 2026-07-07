@@ -194,6 +194,7 @@ It measures **bucket A** (the definitions/menu the model carries in context) and
 - [`docs/FIELD.md`](docs/FIELD.md) — **state of the field (July 2026)**: every tool/benchmark/optimizer in this space compared honestly, plus a registry of the public headline claims — which we verified, which we couldn't, and which our measurements dispute.
 - [`docs/SPEC-2808.md`](docs/SPEC-2808.md) — measured input for **MCP spec issue #2808**: the tiered-schema and namespacing proposals simulated over 51 real APIs + real MCP servers, with a ready-to-paste comment.
 - [`docs/CACHE-ECONOMICS.md`](docs/CACHE-ECONOMICS.md) — **"isn't the menu cached anyway?"**, priced: caching is at best a 0.10× price multiplier (fragile, and it doesn't free context); menu form is a ~0.2× token multiplier — they compose (~13–2000× per session on real menus).
+- [`docs/TOKENIZERS.md`](docs/TOKENIZERS.md) — **"whose tokens?"**, answered: the corpus re-counted under 4 BPE vocabularies — absolutes swing ≤8%, the savings claim moves 3 pp, the ranking holds at Kendall τ ≥ 0.992.
 - [`docs/LANDSCAPE.md`](docs/LANDSCAPE.md) — where LAP sits in the June-2026 agentic-web landscape (NLWeb, llms.txt, MCP gateways, the token-efficiency tools LAP builds on and credits), and what it deliberately doesn't rebuild.
 - [`spectral/`](spectral/README.md) — the LAP lint rules as a Spectral ruleset.
 - [`pet-zoo/`](pet-zoo/README.md) — the small FastAPI zoo-management API used as the benchmark's testbed.
