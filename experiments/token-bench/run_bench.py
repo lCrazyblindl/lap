@@ -95,6 +95,9 @@ def main() -> None:
                          "--models, + tokens-per-correct-answer; needs key, spends real tokens")
     ap.add_argument("--models", default="claude-haiku-4-5-20251001,claude-sonnet-4-6",
                     help="comma-separated model ids for --matrix-v2")
+    ap.add_argument("--tasks", default="",
+                    help="comma-separated task names to restrict --matrix-v2 to (resume/top-up "
+                         "runs; default: all)")
     ap.add_argument("--repeats", type=int, default=3, help="repeats per cell for --matrix/--matrix-v2")
     ap.add_argument("--model", help="override the live model id (default: cheap Haiku)")
     ap.add_argument("--out", default=os.path.join(HERE, "results.md"))
@@ -110,6 +113,12 @@ def main() -> None:
         import live_runs
 
         models = tuple(m.strip() for m in args.models.split(",") if m.strip())
+        if args.tasks:
+            wanted = {t.strip() for t in args.tasks.split(",") if t.strip()}
+            missing = wanted - {t.name for t in tasks}
+            if missing:
+                raise SystemExit(f"--tasks: unknown task name(s): {', '.join(sorted(missing))}")
+            tasks = [t for t in tasks if t.name in wanted]
         report = live_runs.run_matrix_v2(tasks, repeats=args.repeats, models=models)
         header = ("# LAP honest validation v2 - live success rates + tokens-per-correct\n\n"
                   f"- date: {date.today().isoformat()}\n"

@@ -1,15 +1,15 @@
 # LAP honest validation v2 - live success rates + tokens-per-correct
 
 - date: 2026-07-07
-- models: `claude-haiku-4-5-20251001` (complete), `claude-sonnet-4-6` (**partial - see note**);
+- models: `claude-haiku-4-5-20251001` and `claude-sonnet-4-6` (both complete);
   repeats: **5** per task x variant; all **10** grouped tasks (>=2 per category);
   variants: openapi_full / compact_sig / numbered / code_exec / odata_query
 - fixture: 50 animals; runner: `run_bench.py --matrix-v2 --repeats 5`
 - supersedes the k=3, one-task-per-category, Haiku-only matrix (Stage 15b; in git history)
-- **Interruption note:** the Sonnet pass stopped at cell 39/50 when the API account ran out of
-  credits (billing 400, not a code failure). The 38 completed Sonnet cells are reported below;
-  finishing is one command after a top-up:
-  `run_bench.py --matrix-v2 --repeats 5 --models claude-sonnet-4-6`.
+- _Run note: the Sonnet pass executed in two parts (the first stopped at 38/50 cells on API
+  credit exhaustion; the tail re-ran with `--tasks`, and the overlapping T4b cells were taken
+  from the fresh run - old vs new means differed by <=2 tokens). Token totals are reconstructed
+  from the per-cell means the runner logs; rounding error <=0.1%._
 
 ## Model `claude-haiku-4-5-20251001` - success per task (5 repeats each)
 
@@ -29,47 +29,68 @@
 **Overall correct:** openapi_full **49/50**, compact_sig **48/50**, numbered **46/50**,
 code_exec **50/50**, odata_query **45/50**
 
-### Tokens per correct answer (Haiku, all 250 runs)
+## Model `claude-sonnet-4-6` - success per task (5 repeats each)
+
+| category | task | openapi_full | compact_sig | numbered | code_exec | odata_query |
+| --- | --- | --- | --- | --- | --- | --- |
+| write | T1_create | 5/5 | 5/5 | 5/5 | 5/5 | 5/5 |
+| write | T1b_create_lion | 5/5 | 5/5 | 5/5 | 5/5 | 5/5 |
+| aggregate-read | T2_count_females | 5/5 | 5/5 | 5/5 | 5/5 | 5/5 |
+| aggregate-read | T2b_count_old_lions | 5/5 | 5/5 | 5/5 | 5/5 | 5/5 |
+| multi-step | T3_count_per_species | 5/5 | 5/5 | 5/5 | 5/5 | 5/5 |
+| multi-step | T3b_males_per_species | 5/5 | 5/5 | 5/5 | 5/5 | 5/5 |
+| peek-read | T4_peek_one | 5/5 | 5/5 | 5/5 | 5/5 | 5/5 |
+| peek-read | T4b_peek_female_monkey | 5/5 | 5/5 | 5/5 | 5/5 | 5/5 |
+| beyond-DSL | T5_longest_name | 5/5 | 4/5 | 5/5 | 5/5 | 5/5 |
+| beyond-DSL | T5b_avg_age | 5/5 | 5/5 | 5/5 | 5/5 | 4/5 |
+
+**Overall correct:** openapi_full **50/50**, compact_sig **49/50**, numbered **50/50**,
+code_exec **50/50**, odata_query **49/50**
+
+## Tokens per correct answer (all 500 runs)
 
 Total tokens spent across every run of a form / its correct answers - the price of a *right*
-answer, so cheap-but-wrong loses. _(Totals reconstructed from the per-cell means the runner
-logs; rounding error <=0.1%.)_
+answer, so cheap-but-wrong loses.
 
-| metric | openapi_full | compact_sig | numbered | code_exec | odata_query |
+| model | openapi_full | compact_sig | numbered | code_exec | odata_query |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| tokens per correct answer | 5759 | 4100 | 4366 | **1977** | 2069 |
-| mean tokens per run | 5644 | 3936 | 4017 | 1977 | 1862 |
+| claude-haiku-4-5 | 5759 | 4100 | 4366 | **1977** | 2069 |
+| claude-sonnet-4-6 | 5652 | 4005 | 4034 | 5345 | **1902** |
 
-## Model `claude-sonnet-4-6` - partial (38 of 50 cells; interrupted by credit exhaustion)
+Mean tokens per run (correct or not), for comparison:
 
-Every completed cell (T1 through T4b/numbered - writes, aggregate-reads, multi-step, peek)
-was **5/5**: **190/190 runs correct across all five forms.** The 12 unrun cells are
-T4b code_exec/odata_query and the whole beyond-DSL row (T5/T5b).
-
-Notable even in the partial data: Sonnet's **code_exec token cost is highly variable** -
-~1.7-3k tokens/run on most tasks but **~14.5k on T3b** (exploratory code retries), heavier
-than the naive form on that task. The same behavioral-cost variance we measured live on
-Anthropic's real code execution ([CODE-EXEC.md](../../docs/CODE-EXEC.md)) shows up on a
-strong model in our own sandbox too: the *structure* guarantees only the result stays small,
-not how much the model spends getting there.
+| model | openapi_full | compact_sig | numbered | code_exec | odata_query |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| claude-haiku-4-5 | 5644 | 3936 | 4017 | 1977 | 1862 |
+| claude-sonnet-4-6 | 5652 | 3925 | 4034 | 5345 | 1864 |
 
 ## Findings
 
-1. **The escape hatch is both the most reliable and the cheapest.** `code_exec` is the only
-   form at 100% (50/50 on Haiku) *and* has the lowest cost per correct answer (1977 tokens -
-   **2.9x cheaper than naive**, whose right answers cost 5759).
-2. **Compression does not cost accuracy** - compact_sig 48/50 vs naive 49/50 (a single-run
-   difference at k=5), at ~30% fewer tokens per run.
-3. **The `numbered` penalty is now measured, not anecdotal**: 46/50 overall, including a
-   **2/5** on the aggregate-count task - opaque codes lose accuracy on exactly the tasks
-   where grounding matters. (Profile rule D3.)
-4. **The DSL gap is category-shaped, not noise**: odata_query fails **0/5** on T5b (average
-   over a computed property - inexpressible in the query DSL) while scoring 5/5 everywhere
-   else. A declarative layer needs the code escape hatch for what it can't express (rule X1),
-   or the model fails rather than falling back.
-5. **A stronger model is form-insensitive for accuracy** (Sonnet: 190/190 partial) - but not
-   for *cost*: its exploratory code runs show 8x token variance on one task. Form choice
-   decides cost everywhere, and decides correctness mainly for small models.
+1. **The cheapest right answer depends on the model - and that's the headline.** On Haiku,
+   `code_exec` wins outright: the only 100% form (50/50) *and* the cheapest correct answer
+   (1977 tokens - 2.9x cheaper than naive's 5759). On Sonnet, the same sandbox costs
+   **5345 tokens per correct answer - 2.7x more than on Haiku and nearly naive-priced** -
+   because Sonnet writes exploratory, multi-attempt code (14.5k tokens on one task, 8.2k on
+   another) where Haiku writes one short script. Code-execution's saving is **behavioral**,
+   and stronger models can behave *more* expensively; the declarative query is Sonnet's
+   cheapest right answer (1902). Structure guarantees only that the *result* stays small,
+   not what the model spends getting there - the same mechanism we measured on Anthropic's
+   real code execution ([CODE-EXEC.md](../../docs/CODE-EXEC.md)), now reproduced in our own
+   sandbox on a strong model.
+2. **Compression does not cost accuracy on either model** - compact_sig 48/50 (Haiku) and
+   49/50 (Sonnet) vs naive 49/50 and 50/50, at ~30% fewer tokens per run.
+3. **The `numbered` penalty is a small-model phenomenon, now measured**: Haiku 46/50 with a
+   2/5 collapse on an aggregate-count task; Sonnet 50/50. Opaque codes (profile rule D3) tax
+   exactly the models most sensitive to grounding - and numbered still saves no tokens over
+   compact, so it loses on both axes.
+4. **The DSL gap is category-shaped, and its severity is model-dependent**: on the
+   query-inexpressible task (average over a computed property), Haiku's odata_query fails
+   **0/5** while Sonnet recovers **4/5**. A declarative layer needs the code escape hatch
+   (rule X1) for what it can't express - or a strong enough model to improvise around it.
+5. **Accuracy is form-insensitive for the stronger model** (Sonnet 248/250 overall, worst
+   cell 4/5) - form choice decides *cost* everywhere, and decides *correctness* mainly for
+   small models.
 
 Caveats: one toy API (pet-zoo), 2 models, k=5 (a 1-run gap is within noise), answer checking
-is substring-based. Live spend: ~343k tokens (Haiku ~250 runs, Sonnet ~190 runs).
+is substring-based. Live spend across both passes: ~625k tokens (Haiku 250 runs, Sonnet ~325
+runs including the interrupted first pass).

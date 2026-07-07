@@ -446,11 +446,23 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   showed 8× token variance on one task, echoing the behavioral-cost finding). The run was
   interrupted at Sonnet cell 39/50 by **API credit exhaustion** (billing 400) — a real budget
   boundary, not a code failure.  `[key]`
-- [ ] **▶ N8b — Finish the Sonnet pass** once the owner tops up API credits (~60 runs left:
-  T4b code/odata + the beyond-DSL row):
-  `run_bench.py --matrix-v2 --repeats 5 --models claude-sonnet-4-6`, then merge into
-  `validation.md` (replace the "partial" section + extend the tokens-per-correct table).
-  `[key + credit top-up]`
+- [x] **N8b — Finish the Sonnet pass.** Done after the owner's credit top-up: added a
+  `--tasks` resume filter to `run_bench.py` and re-ran only the 3 missing tasks (75 runs
+  instead of 250); merged into [`validation.md`](experiments/token-bench/validation.md) —
+  Sonnet now complete at **248/250** (worst cell 4/5). **The completed matrix flipped the
+  headline: the cheapest right answer is model-dependent.** Haiku: `code_exec` wins (1977
+  tok/correct, 2.9× cheaper than naive). Sonnet: the *same* sandbox costs **5345 tok/correct —
+  nearly naive-priced** — the stronger model writes exploratory multi-attempt code (14.5k on
+  one task); its cheapest right answer is `odata_query` (1902). Also: Sonnet recovers 4/5 on
+  the DSL-inexpressible task where Haiku was 0/5 (X1's gap severity is model-dependent), and
+  `numbered`'s accuracy penalty is Haiku-only (Sonnet 50/50) — a small-model tax, as D3
+  predicts. Profile X1 updated with the own-sandbox confirmation. **v0.6 COMPLETE (N1–N10 +
+  N8b).**  `[key]`
+
+**▶ Next (v0.7 kickoff): CONTRIBUTING.md + issue templates** (Track C first bullet — promoted
+after the first real spam PR arrived and was closed; codify the vendor-neutrality/no-promo-links
+policy the closure cited). Meanwhile two owner actions stay pending: post the SPEC-2808 comment
+and publish `docs/POST.md`.
 - [x] **N9 — Leaderboard as a living page.** Done. `experiments/leaderboard.py` now also emits a
   static **sortable** page (`docs/index.html`, vanilla JS, no build step), machine-readable
   `docs/leaderboard-data.json`, and a dated monthly snapshot under `docs/leaderboard-history/`
@@ -569,10 +581,11 @@ owner. v0.6 N9 done — **live leaderboard at https://lcrazyblindl.github.io/lap
 page + JSON + monthly history, cron refresh). v0.6 N10 done — `docs/POST.md`: blog post +
 Show HN + r/mcp drafts ready to paste (owner publishes). v0.6 N8 done — validation matrix v2
 (Haiku k=5 complete: code_exec 50/50 AND cheapest right answer at 1977 tok, 2.9× cheaper than
-naive; numbered measurably worst; DSL gap category-shaped). **▶ N8b — finish the Sonnet pass
-(~60 runs) after the owner tops up API credits** (the run hit credit exhaustion at Sonnet cell
-39/50). After N8b: v0.6 complete → pick from the v0.7 tracks.** Say "continue LAP" to keep
-going once a stage completes.
+naive; numbered measurably worst; DSL gap category-shaped). N8b done after credit top-up —
+Sonnet complete (248/250): **cheapest right answer is model-dependent** (Sonnet's code runs
+cost 5345/correct, near-naive; its query wins at 1902). **v0.6 COMPLETE. ▶ v0.7 kickoff:
+CONTRIBUTING.md + issue templates** (promoted after the spam-PR incident). Owner actions
+pending: SPEC-2808 comment + POST.md publishing.** Say "continue LAP" to keep going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/
