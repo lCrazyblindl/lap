@@ -71,13 +71,13 @@ This is the part that makes the numbers worth trusting: instead of only comparin
 
 | API | naive menu (bucket A) | LAP compact | saved |
 | --- | ---: | ---: | ---: |
-| Xero Accounting | 4,039,605 | 7,794 | **+99%** |
-| Kubernetes | 2,818,799 | 45,015 | **+98%** |
-| Amazon EC2 | 606,132 | 63,158 | **+90%** |
-| Google Sheets | 492,618 | 1,483 | **+99%** |
+| Xero Accounting | 4,041,667 | 7,800 | **+99%** |
+| Kubernetes | 2,864,414 | 45,015 | **+98%** |
+| Amazon EC2 | 1,046,048 | 86,031 | **+92%** |
+| Google Sheets | 495,263 | 1,483 | **+99%** |
 | _…46 more_ | | | |
 
-Across all 50, naive menus total **~10.4M tokens**; the compact form would cut **~80%** on average (the lazy `tool_search` form ~82% — it wins most where operation counts are high, and can cost more than naive on tiny 1-3 op APIs, matching the profile's own "not worth it below ~10 tools" caveat). None of these APIs ships a compact agent menu today — reproduce it with `python experiments/leaderboard.py`.
+Across all 50, naive menus total **~11.2M tokens**; the compact form would cut **~82%** on average (the lazy `tool_search` form ~86% — it wins most where operation counts are high, and can cost more than naive on tiny 1-3 op APIs, matching the profile's own "not worth it below ~10 tools" caveat). None of these APIs ships a compact agent menu today — reproduce it with `python experiments/leaderboard.py`.
 
 ---
 

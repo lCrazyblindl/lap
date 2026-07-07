@@ -61,7 +61,7 @@ The score also includes a lazy **`tool_search`** form (the Anthropic Tool Search
 Cloudflare Code Mode pattern: a fixed 2-tool menu + a name index, schemas loaded on
 demand). Because it doesn't preload schemas, its bucket A is ~flat in the number of
 operations — on a 120-operation API it collapses the menu ~83% vs full schemas,
-beating even compact signatures at scale (Petstore: 1740 → 207, −88%).
+beating even compact signatures at scale (Petstore: 1835 → 207, −89%).
 
 - **Faithful counts:** set `ANTHROPIC_API_KEY` (uses the free Anthropic `count_tokens`
   endpoint; tool defs counted via the real `tools=` parameter). Without it, a GPT-style
@@ -74,7 +74,8 @@ A–F) folding three sub-scores: **menu** (naive-menu tokens per operation, 0.45
 (heaviest estimated response, 0.30) and **hygiene** (lint findings per operation, 0.25);
 log-scaled, constants in [`grade.py`](grade.py), formula in the
 [profile](../profile/llm-api-profile.md#the-lap-grade-composite-0100--letter). Calibration on
-real APIs: Spotify/LaunchDarkly **B**, Postman **C**, GitHub/DynamoDB **D**, Google Drive **F**.
+real APIs (post-M3, query params counted): LaunchDarkly **B**, Spotify/SQS **C**,
+GitHub/Postman/DynamoDB **D**, Google Drive **F**.
 
 `lap badge` turns it into a README badge (shields.io endpoint JSON):
 

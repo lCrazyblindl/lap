@@ -553,6 +553,31 @@ def test_gather_reports_estimated_b(spec):
     assert " " in b["heaviest"]["where"]  # "METHOD /path"
 
 
+# --- query params in the menu forms (v0.7 M3) ----------------------------------
+def test_menu_forms_include_query_params():
+    spec = {
+        "openapi": "3.0.0", "info": {"title": "t", "version": "1"},
+        "paths": {"/x": {"get": {
+            "operationId": "listX",
+            "parameters": [
+                {"name": "must", "in": "query", "required": True, "schema": {"type": "string"}},
+                {"name": "maybe", "in": "query", "schema": {"type": "integer"}},
+                {"name": "X-Trace", "in": "header", "schema": {"type": "string"}},
+            ],
+            "responses": {"200": {"description": "ok"}},
+        }}},
+    }
+    tools, _ = menu.full(spec)
+    props = tools[0]["input_schema"]["properties"]
+    assert "must" in props and "maybe" in props    # full = every query param (real bridges do)
+    assert "X-Trace" not in props                  # headers stay transport-level
+    assert tools[0]["input_schema"]["required"] == ["must"]
+    _, compact_text = menu.compact(spec)
+    assert "must:str" in compact_text and "maybe" not in compact_text  # compact = required only
+    _, numbered_text = menu.numbered(spec)
+    assert "must:str" in numbered_text and "maybe" not in numbered_text
+
+
 # --- lint auto-fix as an OpenAPI Overlay (v0.7 S1) -----------------------------
 def test_overlay_actions_target_flagged_ops(spec):
     from lap import overlay

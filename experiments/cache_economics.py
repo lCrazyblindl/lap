@@ -58,8 +58,8 @@ def main() -> None:
         "**composes** with caching: compact+cached ~= 50x cheaper than naive uncached.",
         "- **Break-even vs a compact menu:** with compaction ratio `r = compact/naive`, an "
         "*uncached* compact menu beats a *cached* naive one while `T < 1.15 / (r - 0.10)` "
-        "turns (and at **any** T once `r <= 0.10`). At the leaderboard-average r ~= 0.20 "
-        "that's ~11 turns; on GitHub (r = 0.32) ~5 turns; on Xero (r = 0.002) - always. "
+        "turns (and at **any** T once `r <= 0.10`). At the leaderboard-average r ~= 0.18 "
+        "that's ~14 turns; on GitHub (r = 0.28) ~6 turns; on Xero (r = 0.002) - always. "
         "So even a caching refusenik wins with the leaner menu on typical sessions; and if "
         "you do cache, cache the leaner menu (the strategies compose, they don't compete).",
         "- **Caching pays in dollars, not context.** The cached definitions still occupy "

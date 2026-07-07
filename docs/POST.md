@@ -8,7 +8,7 @@ All numbers are reproducible from this repo at v0.4.0._
 
 ## 1. The post (blog / dev.to / GitHub discussion)
 
-# We measured the agent-menu tax of 50 real public APIs: 10.4M tokens
+# We measured the agent-menu tax of 50 real public APIs: 11.2M tokens
 
 Every time an LLM agent connects to an API, it pays a hidden tax before doing anything:
 the **tool definitions** — names, descriptions, JSON schemas — load into its context
@@ -22,14 +22,14 @@ same way, decomposed into three buckets: **A** (the menu of definitions, paid on
 session), **B** (each call the model emits), **C** (each result that comes back). Then I
 pointed it at 50 well-known public APIs. Highlights:
 
-- **The naive menus total 10,426,548 tokens.** That's what generic OpenAPI→MCP bridges
+- **The naive menus total 11,175,074 tokens.** That's what generic OpenAPI→MCP bridges
   emit for these 50 APIs — what an agent would pay just to *see* them.
 - **The heaviest single API menu is 4.04M tokens** (Xero Accounting; Kubernetes is 2.8M).
   These don't fit in *any* model's context window — an agent literally cannot load the
   API the way a naive bridge presents it.
-- **~80% of that is recoverable with zero server changes.** Rendering the *same
-  operations* as compact signatures saves +80% on average; a lazy tool-search menu saves
-  +82%. Real OpenAPI→MCP generators we tested (FastMCP and two others) all emit menus
+- **~82% of that is recoverable with zero server changes.** Rendering the *same
+  operations* as compact signatures saves +82% on average; a lazy tool-search menu saves
+  +86%. Real OpenAPI→MCP generators we tested (FastMCP and two others) all emit menus
   *heavier* than naive — the savings are still on the table across the ecosystem.
 - **Lazy loading flips negative on small APIs.** On 1–3-operation APIs, tool_search costs
   *more* than just showing the tools (NASA APOD: −311%). Anthropic's own "10+ tools"
@@ -107,7 +107,7 @@ MIT, no product, no telemetry. If you maintain an API or MCP server and want it 
 >
 > Why: every optimization vendor publishes its own percentage, measured its own way.
 > I wanted one neutral ruler. Pointing it at 50 real public APIs: their naive tool menus
-> total 10.4M tokens; ~80% is recoverable by re-rendering the same operations compactly;
+> total 11.2M tokens; ~82% is recoverable by re-rendering the same operations compactly;
 > the heaviest single menu (Xero, 4M tokens) can't fit any context window at all.
 >
 > The interesting part was verifying vendor claims live. Anthropic's Tool Search held up
@@ -137,7 +137,7 @@ MIT, no product, no telemetry. If you maintain an API or MCP server and want it 
 >   `required` list. (mcp-server-git grades B — `repo_path` is undescribed in 11 of 12
 >   tools; mcp-server-time grades A.)
 > - A leaderboard of 50 real public APIs, refreshed monthly:
->   https://lcrazyblindl.github.io/lap/ — 10.4M tokens of naive menus, ~80% recoverable.
+>   https://lcrazyblindl.github.io/lap/ — 11.2M tokens of naive menus, ~82% recoverable.
 >
 > Also simulated the tiered-schema proposal from spec issue #2808 over the corpus:
 > discovery tier saves a mean 85%, so if you want that in the protocol, there's data now.

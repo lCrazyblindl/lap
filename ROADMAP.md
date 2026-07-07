@@ -513,12 +513,21 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   surfaced a real measurement gap** (→ M3): `menu._input_schema` counts only path+body params,
   so query params are invisible to every menu form — the leaderboard's "naive" menus are
   *undercounted*, which also explains part of the "real MCP heavier than naive" gap.  `[no key]`
-- [ ] **▶ M3 — Query params in the menu forms (measurement fix).** Include query (+header?)
-  parameters in `menu._input_schema` and the compact/numbered signatures — real bridges ship
-  them, so our "naive" baseline undercounts. Then regenerate the leaderboard (+site), re-check
-  the grade calibration (menu tok/op will rise across the board), and write an honest
-  CHANGELOG "Fixed" entry with the before/after totals (like S5's +41% bucket-C entry).
-  _Done: menus include query params + regenerated numbers + tests._  `[no key]`
+- [x] **M3 — Query params in the menu forms (measurement fix).** Done. `menu._input_schema`
+  now carries every path+query parameter (headers stay transport-level — bridges map them to
+  transport, not arguments); compact/numbered add **required** query params only (the curated
+  calling surface, per D1). **Regenerated everything**: leaderboard naive total **+7.2%**
+  (10,426,548 → 11,175,074; Spotify +216%, EC2 +73%, Trello +52%, 5 rows unchanged), avg
+  compact save 80→**82%**, tool_search 82→**86%** (compact adds only required query params, so
+  the naive↔compact gap *widened*); site + history snapshot + SPEC-2808 tables +
+  CACHE-ECONOMICS (avg r now 0.179, GitHub break-even ~6 turns) + POST.md headline (11.2M) all
+  refreshed. Grade calibration re-checked: two letters shifted (Spotify B→C, Postman C→D —
+  query-param-heavy APIs got honester grades), constants unchanged; profile + lap/README
+  calibration text updated. Petstore quote now 1835→207 (−89%). Honest CHANGELOG "Fixed"
+  entry (S5-style). +1 test (tests/ 52, full suite 56).  `[no key]`
+- [ ] **▶ Next — pick from the v0.7 tracks** (remaining highlights: Track V "2nd real API for
+  Tool Search/code-exec" `[key]` · Track M tokenizer sensitivity matrix · Track S llms.txt/
+  NLWeb rule (ex-S8) · Track C outreach/listings · Track E perf/PBT).
 
 Two owner actions stay pending meanwhile: post the SPEC-2808 comment and publish `docs/POST.md`.
 - [x] **N9 — Leaderboard as a living page.** Done. `experiments/leaderboard.py` now also emits a
@@ -644,9 +653,9 @@ Sonnet complete (248/250): **cheapest right answer is model-dependent** (Sonnet'
 cost 5345/correct, near-naive; its query wins at 1902). **v0.6 COMPLETE. v0.7: C1 done
 (CONTRIBUTING + templates), M1 done (projected bucket-C), V1 done (compressor banner
 root-caused), M2 done (cache economics), S1 done (`lap fix` — lint findings as an applicable
-OpenAPI Overlay; Bookstore B72 → A91 from its own patch). ▶ M3: query params in the menu
-forms — S1 surfaced that every menu form counts only path+body params, so the naive baseline
-is undercounted; fix + regenerate leaderboard + recalibrate.**
+OpenAPI Overlay; Bookstore B72 → A91 from its own patch), M3 done (query params in menu forms —
+naive total +7.2% → 11.2M, compact save now 82%/search 86%, Spotify B→C; all generated docs
+refreshed). ▶ pick next from the v0.7 tracks.**
 Owner actions pending: SPEC-2808 comment + POST.md publishing.** Say "continue LAP" to keep
 going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party

@@ -142,9 +142,11 @@ measurements into one documented number. Three sub-scores, each 0–100:
 Composite = weighted mean → **A ≥85, B ≥70, C ≥55, D ≥40, F below**. The letter is
 only a summary: the full token decomposition behind it is one `lap score` away, and
 every constant lives in [`lap/grade.py`](../lap/grade.py). Calibration check (2026-07,
-tiktoken backend): Spotify and LaunchDarkly grade **B**, Postman **C**, GitHub and
-DynamoDB **D**, Google Drive **F** — no sampled real API reached **A**, which requires
-genuine pagination/projection/error discipline on top of a lean menu, by design.
+tiktoken backend, after the M3 query-param fix): LaunchDarkly grades **B**, Spotify and
+SQS **C**, GitHub, Postman and DynamoDB **D**, Google Drive **F** — no sampled real API
+reached **A**, which requires genuine pagination/projection/error discipline on top of a
+lean menu, by design. (Applying `lap fix`'s own overlay lifts the bundled Bookstore
+example from B (72) to **A (91)** — the bar is reachable, just not reached in the wild.)
 
 ## Non-goals (explicitly out of scope)
 

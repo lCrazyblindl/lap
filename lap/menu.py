@@ -21,12 +21,15 @@ from . import openapi_ir as ir
 
 
 def _input_schema(spec: dict, op: ir.Op) -> dict:
+    # v0.7 M3: path AND query parameters - real OpenAPI->tools bridges ship query params
+    # in tool schemas, so the naive baseline must too (before M3 it undercounted).
+    # Headers/cookies stay out: bridges typically map those to transport, not arguments.
     props: dict = {}
     required: list[str] = []
     for param in op.params:
-        if param.get("in") == "path":
+        if param.get("in") in ("path", "query"):
             props[param["name"]] = ir.inline_refs(spec, ir._param_schema(param))
-            if param.get("required", True):
+            if param.get("required", param.get("in") == "path"):
                 required.append(param["name"])
     body = ir._json_body_schema(spec, op.raw)
     if body:
@@ -34,6 +37,13 @@ def _input_schema(spec: dict, op: ir.Op) -> dict:
             props[fname] = ir.inline_refs(spec, prop)
         required.extend(ir._deref(spec, body).get("required", []))
     return {"type": "object", "properties": props, "required": required}
+
+
+def _required_query_params(spec: dict, op: ir.Op) -> list[tuple[str, str]]:
+    """Required query params only - the compact/numbered forms show the *curated* calling
+    surface (D1): everything you must send, nothing you merely may."""
+    return [(p["name"], ir._type_str(spec, ir._param_schema(p))) for p in op.params
+            if p.get("in") == "query" and p.get("required")]
 
 
 def full(spec: dict) -> tuple[list[dict], str]:
@@ -54,8 +64,9 @@ def _type_block(spec: dict, name: str) -> str:
     return f"type {name} = {{ {body} }}"
 
 
-def _signature(op: ir.Op) -> str:
+def _signature(spec: dict, op: ir.Op) -> str:
     params = [_field(n, t) for n, t in op.path_params]
+    params += [_field(n, t) for n, t in _required_query_params(spec, op)]
     params += [_field(n, t, c) for n, t, c in op.body_fields]
     return f"{op.name}({', '.join(params)}) -> {op.returns}"
 
@@ -65,7 +76,7 @@ def compact(spec: dict) -> tuple[list[dict], str]:
     for name in ir.referenced_component_names(spec):
         lines.append(_type_block(spec, name))
     lines.append("")
-    lines += [_signature(op) for op in ir.operations(spec)]
+    lines += [_signature(spec, op) for op in ir.operations(spec)]
     return [], "\n".join(lines)
 
 
@@ -73,6 +84,7 @@ def numbered(spec: dict) -> tuple[list[dict], str]:
     lines = ['# Endpoint dictionary. Call by number: {"name": "<n>", "input": {<args>}}.']
     for i, op in enumerate(ir.operations(spec), 1):
         args = [f"{n}:{t}" for n, t in op.path_params]
+        args += [f"{n}:{t}" for n, t in _required_query_params(spec, op)]
         args += [f"{n}:{t}" + (f" {c}" if c else "") for n, t, c in op.body_fields]
         arg_str = f" ({', '.join(args)})" if args else ""
         lines.append(f"{i} = {op.method} {op.path}{arg_str} -> {op.returns}")

@@ -6,6 +6,17 @@ versioning while pre-1.0.
 
 ## [Unreleased]
 
+### Fixed
+- **Menu forms now count query parameters.** `menu._input_schema` (the naive OpenAPI→tools
+  form) previously included only path parameters and body fields — but real bridges ship
+  query parameters in tool schemas, so the naive baseline was *undercounted*. The full form
+  now carries every path+query parameter (headers stay transport-level); the compact and
+  numbered forms add **required** query params only (the curated calling surface, per D1).
+  Regenerated leaderboard: naive total across 50 APIs rose **+7.2%** (10,426,548 →
+  11,175,074 tokens; Spotify **+216%**, EC2 **+73%**, Trello **+52%**; 5 rows unchanged);
+  average compact saving 80% → **82%**, tool_search 82% → **86%**. Grade calibration
+  re-checked: two letters shifted (Spotify B→C, Postman C→D — both query-param-heavy).
+
 ### Added
 - **`lap fix <spec>`** — emit the structurally fixable lint findings as an **OpenAPI Overlay
   1.0.0** document (R3 → `limit` param, R1 → `fields`, R2 → `filter`, E1 → declared `4XX`
