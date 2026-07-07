@@ -3,6 +3,13 @@
 The toolkit and artifacts are prepared in-repo; publishing needs credentials only the owner
 holds (never pasted into chat — set as environment variables, or via `gh auth login`). Steps:
 
+**v0.5.0 status (2026-07-07): FULLY RELEASED.** `lap-score` 0.5.0 is live:
+https://pypi.org/project/lap-score/0.5.0/ (`twine check` PASSED ×2, uploaded, fresh-venv
+verified — `lap fix --apply` + `lap score` work from the published package). Tag `v0.5.0` +
+GitHub release with both dists: https://github.com/lCrazyblindl/lap/releases/tag/v0.5.0.
+Ships `lap fix` (Overlay), projected bucket-C, and the query-param menu fix — the published
+leaderboard is generated with this code, so the package reproduces the published numbers.
+
 **v0.4.0 status (2026-07-06): FULLY RELEASED.** `lap-score` 0.4.0 is live:
 https://pypi.org/project/lap-score/0.4.0/ (`twine check` PASSED ×2, uploaded, verified in a
 fresh venv — `pip install "lap-score[mcp]"` + `lap score`/`lap badge`/`lap lint --mcp` all work

@@ -534,10 +534,16 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   citation (~60% higher absolutes, identical ordering). "Whose tokens?" now has a receipt:
   the compressed-vs-verbose gap is a property of the text, not the ruler. POST.md's pushback
   note and the README map point at it.  `[no key]`
+- [x] **R — Release 0.5.0. FULLY RELEASED, 2026-07-07.** Ships `lap fix` (Overlay + `--apply`),
+  projected bucket-C, and the M3 query-param menu fix — the key argument: the live leaderboard
+  is generated with M3 code, so the published package must reproduce the published numbers.
+  **PyPI:** https://pypi.org/project/lap-score/0.5.0/ (twine PASSED ×2; fresh-venv verified —
+  `lap fix --apply` runs from the published wheel, patched Bookstore scores A 91). **GitHub:**
+  tag + release https://github.com/lCrazyblindl/lap/releases/tag/v0.5.0. Action examples at
+  `@v0.5.0`.  `[release creds]`
 - [ ] **▶ Next — pick from the v0.7 tracks** (remaining highlights: Track V "2nd real API for
   Tool Search/code-exec" `[key]` · Track S llms.txt/NLWeb rule (ex-S8) · Track C
-  outreach/listings · Track E perf/PBT · release 0.5.0 once the Unreleased section feels
-  round).
+  outreach/listings · Track E perf/PBT).
 
 Two owner actions stay pending meanwhile: post the SPEC-2808 comment and publish `docs/POST.md`.
 - [x] **N9 — Leaderboard as a living page.** Done. `experiments/leaderboard.py` now also emits a
@@ -665,8 +671,9 @@ cost 5345/correct, near-naive; its query wins at 1902). **v0.6 COMPLETE. v0.7: C
 root-caused), M2 done (cache economics), S1 done (`lap fix` — lint findings as an applicable
 OpenAPI Overlay; Bookstore B72 → A91 from its own patch), M3 done (query params in menu forms —
 naive total +7.2% → 11.2M, compact save now 82%/search 86%, Spotify B→C; all generated docs
-refreshed), M4 done (tokenizer sensitivity: 4 vocabularies, τ ≥ 0.992 — "whose tokens?"
-answered). ▶ pick next from the v0.7 tracks.**
+refreshed), M4 done (tokenizer sensitivity: τ ≥ 0.992), **0.5.0 FULLY RELEASED 2026-07-07**
+(PyPI + GitHub, fresh-venv verified — the package now reproduces the published leaderboard).
+▶ pick next from the v0.7 tracks.**
 Owner actions pending: SPEC-2808 comment + POST.md publishing.** Say "continue LAP" to keep
 going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
