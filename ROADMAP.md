@@ -420,11 +420,19 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   **⚠ disputed** (two ⚠: Anthropic's 98.7% code-exec number vs our 5/5 heavier-than-naive, and
   mcp-compressor's self-report vs our +12%). Closes with the referee positioning. README project
   map links it; README status bumped to v0.4.0 en route.  `[no key]`
-- [ ] **N7 — Empirical input to MCP spec issue #2808.** Simulate the issue's three proposals
-  (tiered discovery/invocation split; namespacing dedupe; versioning is cache-relevant only) over
-  the 50-API leaderboard corpus + the real MCP servers we already run; measure predicted savings
-  per proposal; draft a data-backed comment (the owner posts it under their account). _Done:
-  `docs/SPEC-2808.md` + ready-to-paste comment text._  `[no key]`
+- [x] **N7 — Empirical input to MCP spec issue #2808.** Done →
+  [`docs/SPEC-2808.md`](docs/SPEC-2808.md) + [`experiments/spec_2808.py`](experiments/spec_2808.py)
+  (51 cached leaderboard APIs + 2 real MCP servers over stdio). **Tiered schemas (proposal 1):
+  discovery tier saves mean 85% / median 91% (range 32–100%)** — the issue's 60–70% estimate is
+  conservative at real-API scale; net saving at a typical 3-invocation session still ~70%;
+  break-even ~177 invoked tools. Caveat measured too: flips negative below ~10 tools (Events API,
+  3 tools: −68%) — same shape as our live Tool Search result. **Namespacing/dedupe (proposal 3):
+  mean 23% but range −10…94%** — the distribution is the finding: pays on *fat* repeated schemas
+  (Kubernetes 94%, Compute 69%, Jira 63%), goes negative on tiny ones (a `$ref` costs more than
+  `{"type":"string"}`; CircleCI −10%); and mcp-server-git — which repeats `repo_path` in ~every
+  tool — saves ~0%, so repetition alone doesn't pay. Doc includes a ready-to-paste comment
+  (owner posts it under their account; recommends a size threshold + small-server opt-in).
+  FIELD.md registry row updated to "simulated". `[no key]`
 - [ ] **N8 — Validation matrix v2** _(ex-S6)_. Sonnet + Haiku, all 10 grouped tasks, k≈5 →
   expanded `validation.md`; add a **cost-per-correct-answer** metric per form (tokens spent ÷
   successes) — the number that actually matters for buyers. `[key]`
@@ -529,9 +537,11 @@ v0.6 N3 done — `lap lint --mcp-url/--mcp` lints live MCP servers (M1–M4 rule
 mcp-server-git B 71, mcp-server-time A 89). v0.6 N4 done — bucket-B call estimate in `lap
 score` (A/B/C in one command); 49 tests green. v0.6 N5 done — **0.4.0 FULLY RELEASED
 2026-07-06** (PyPI + GitHub, fresh-venv verified). v0.6 N6 done — `docs/FIELD.md`: field
-comparison + 10-claim registry (2 disputed by our measurements). ▶ current stage: v0.6 N7
-(empirical input to MCP spec issue #2808).** Say "continue LAP" to keep going once a stage
-completes.
+comparison + 10-claim registry (2 disputed by our measurements). v0.6 N7 done —
+`docs/SPEC-2808.md`: tiered schemas save mean 85% over 51 real APIs (issue's estimate is
+conservative), dedupe −10…94% (only fat repeated schemas pay); ready-to-paste comment for the
+owner. ▶ current stage: v0.6 N9 (leaderboard as a living GitHub Pages page + monthly cron; N8
+`[key]` stays last).** Say "continue LAP" to keep going once a stage completes.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/

@@ -192,6 +192,7 @@ It measures **bucket A** (the definitions/menu the model carries in context) and
 - [`docs/LEADERBOARD.md`](docs/LEADERBOARD.md) — 50 real public APIs ranked by agent-menu token cost. `experiments/leaderboard.py` regenerates it.
 - [`docs/GENERATORS.md`](docs/GENERATORS.md) · [`docs/MCP-SERVERS.md`](docs/MCP-SERVERS.md) · [`docs/TOOL-SEARCH.md`](docs/TOOL-SEARCH.md) · [`docs/CODE-EXEC.md`](docs/CODE-EXEC.md) · [`docs/MCP-COMPRESSOR.md`](docs/MCP-COMPRESSOR.md) — the real-tool validation track: real generators, real MCP servers, two of Anthropic's real efficiency features, and a real third-party optimizer, tested live.
 - [`docs/FIELD.md`](docs/FIELD.md) — **state of the field (July 2026)**: every tool/benchmark/optimizer in this space compared honestly, plus a registry of the public headline claims — which we verified, which we couldn't, and which our measurements dispute.
+- [`docs/SPEC-2808.md`](docs/SPEC-2808.md) — measured input for **MCP spec issue #2808**: the tiered-schema and namespacing proposals simulated over 51 real APIs + real MCP servers, with a ready-to-paste comment.
 - [`docs/LANDSCAPE.md`](docs/LANDSCAPE.md) — where LAP sits in the June-2026 agentic-web landscape (NLWeb, llms.txt, MCP gateways, the token-efficiency tools LAP builds on and credits), and what it deliberately doesn't rebuild.
 - [`spectral/`](spectral/README.md) — the LAP lint rules as a Spectral ruleset.
 - [`pet-zoo/`](pet-zoo/README.md) — the small FastAPI zoo-management API used as the benchmark's testbed.
