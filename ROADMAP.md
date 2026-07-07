@@ -411,13 +411,15 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   https://github.com/lCrazyblindl/lap/releases/tag/v0.4.0. Action examples bumped to `@v0.4.0`.
   Gotcha: PS 5.1 `Set-Content -Encoding utf8` writes a BOM → broke `pyproject.toml` TOML parsing
   until stripped (recipe now in `RELEASING.md`).  `[release creds]`
-- [ ] **N6 — "State of the field" + claims registry** → `docs/FIELD.md`. Honest comparison table:
-  LAP vs mcpx vs AgentDX vs MCPMark/MCP-Bench/MCP-Atlas vs vendor optimizers (StackOne, Bifrost,
-  Cloudflare Code Mode, mcp-compressor, Speakeasy) — what each measures, what none do (neutral
-  A/B/C decomposition + leaderboard + live billed verification). Plus a registry of public
-  headline claims (92.8%, 98.7%, 85%, 99.9%…) each marked **verified-by-us / plausible-unverified /
-  not-reproducible-without-account**. Feeds positioning and the launch post. _Done: doc + README
-  link._  `[no key]`
+- [x] **N6 — "State of the field" + claims registry.** Done → [`docs/FIELD.md`](docs/FIELD.md).
+  Three tables: (1) measurement/linting tools — lap vs mcpx vs AgentDX vs MCP Inspector vs the
+  security scanners, with an honest "what they have that lap doesn't" paragraph; (2) optimizers
+  (Tool Search, Code Mode ×3 vendors, mcp-compressor, Speakeasy, response filtering) with
+  published claim vs our independent result side by side; (3) a **claims registry** — 10
+  widely-quoted numbers each marked ✅ verified-by-us / ≈ plausible-unverified / 🔒 needs-account /
+  **⚠ disputed** (two ⚠: Anthropic's 98.7% code-exec number vs our 5/5 heavier-than-naive, and
+  mcp-compressor's self-report vs our +12%). Closes with the referee positioning. README project
+  map links it; README status bumped to v0.4.0 en route.  `[no key]`
 - [ ] **N7 — Empirical input to MCP spec issue #2808.** Simulate the issue's three proposals
   (tiered discovery/invocation split; namespacing dedupe; versioning is cache-relevant only) over
   the 50-API leaderboard corpus + the real MCP servers we already run; measure predicted savings
@@ -526,8 +528,10 @@ endpoint + Action `badge-path`; our README carries an honest B (72) for the bund
 v0.6 N3 done — `lap lint --mcp-url/--mcp` lints live MCP servers (M1–M4 rules + grade;
 mcp-server-git B 71, mcp-server-time A 89). v0.6 N4 done — bucket-B call estimate in `lap
 score` (A/B/C in one command); 49 tests green. v0.6 N5 done — **0.4.0 FULLY RELEASED
-2026-07-06** (PyPI + GitHub, fresh-venv verified). ▶ current stage: v0.6 N6 ("state of the
-field" doc + claims registry).** Say "continue LAP" to keep going once a stage completes.
+2026-07-06** (PyPI + GitHub, fresh-venv verified). v0.6 N6 done — `docs/FIELD.md`: field
+comparison + 10-claim registry (2 disputed by our measurements). ▶ current stage: v0.6 N7
+(empirical input to MCP spec issue #2808).** Say "continue LAP" to keep going once a stage
+completes.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/

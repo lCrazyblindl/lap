@@ -191,6 +191,7 @@ It measures **bucket A** (the definitions/menu the model carries in context) and
 - [`experiments/token-bench/`](experiments/token-bench/README.md) — the full A/B/C benchmark on a real FastAPI testbed ([`pet-zoo/`](pet-zoo/README.md)), 10 tasks across 5 categories, an optional live accuracy check.
 - [`docs/LEADERBOARD.md`](docs/LEADERBOARD.md) — 50 real public APIs ranked by agent-menu token cost. `experiments/leaderboard.py` regenerates it.
 - [`docs/GENERATORS.md`](docs/GENERATORS.md) · [`docs/MCP-SERVERS.md`](docs/MCP-SERVERS.md) · [`docs/TOOL-SEARCH.md`](docs/TOOL-SEARCH.md) · [`docs/CODE-EXEC.md`](docs/CODE-EXEC.md) · [`docs/MCP-COMPRESSOR.md`](docs/MCP-COMPRESSOR.md) — the real-tool validation track: real generators, real MCP servers, two of Anthropic's real efficiency features, and a real third-party optimizer, tested live.
+- [`docs/FIELD.md`](docs/FIELD.md) — **state of the field (July 2026)**: every tool/benchmark/optimizer in this space compared honestly, plus a registry of the public headline claims — which we verified, which we couldn't, and which our measurements dispute.
 - [`docs/LANDSCAPE.md`](docs/LANDSCAPE.md) — where LAP sits in the June-2026 agentic-web landscape (NLWeb, llms.txt, MCP gateways, the token-efficiency tools LAP builds on and credits), and what it deliberately doesn't rebuild.
 - [`spectral/`](spectral/README.md) — the LAP lint rules as a Spectral ruleset.
 - [`pet-zoo/`](pet-zoo/README.md) — the small FastAPI zoo-management API used as the benchmark's testbed.
@@ -198,4 +199,4 @@ It measures **bucket A** (the definitions/menu the model carries in context) and
 
 ## 5. Status, license, contributing
 
-**v0.3.0**, pre-1.0, actively maintained. MIT licensed ([LICENSE](LICENSE)) — use it, fork it, ship its rules in your own linter, no attribution required (though a star or a mention helps the public-good goal). See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`RELEASING.md`](RELEASING.md) for the release process. Issues and PRs welcome — there's no formal contributing guide yet; open an issue to discuss before a large change.
+**v0.4.0**, pre-1.0, actively maintained. MIT licensed ([LICENSE](LICENSE)) — use it, fork it, ship its rules in your own linter, no attribution required (though a star or a mention helps the public-good goal). See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`RELEASING.md`](RELEASING.md) for the release process. Issues and PRs welcome — there's no formal contributing guide yet; open an issue to discuss before a large change.
