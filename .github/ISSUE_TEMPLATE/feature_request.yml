@@ -1,0 +1,22 @@
+name: Feature request
+description: A new measurement, rule, form, or CLI capability
+labels: [enhancement]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What should lap measure or do that it doesn't?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: The measurement behind it
+      description: lap's rules are measured, not asserted (see CONTRIBUTING.md). If you're
+        proposing a lint/profile rule, what experiment would justify it? If you have
+        numbers already, paste them with methodology.
+  - type: dropdown
+    id: bucket
+    attributes:
+      label: Which token bucket does it affect?
+      options: ["A (definitions/menu)", "B (the call)", "C (the result)", "other/meta"]

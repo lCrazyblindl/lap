@@ -1,0 +1,32 @@
+name: Bug report
+description: A crash, a wrong parse, or a number that can't be right
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: lap version
+      description: "`pip show lap-score` (or the commit hash if running from the repo)"
+      placeholder: "0.4.0"
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Command
+      placeholder: "lap score https://example.com/openapi.json --json"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened / what you expected
+      description: Paste the traceback or the wrong output. If the input spec/server is
+        public, link it — a reproducible input turns a report into a fix.
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "Windows 10 / Python 3.11 / tiktoken backend"

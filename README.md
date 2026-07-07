@@ -200,4 +200,4 @@ It measures **bucket A** (the definitions/menu the model carries in context) and
 
 ## 5. Status, license, contributing
 
-**v0.4.0**, pre-1.0, actively maintained. MIT licensed ([LICENSE](LICENSE)) — use it, fork it, ship its rules in your own linter, no attribution required (though a star or a mention helps the public-good goal). See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`RELEASING.md`](RELEASING.md) for the release process. Issues and PRs welcome — there's no formal contributing guide yet; open an issue to discuss before a large change.
+**v0.4.0**, pre-1.0, actively maintained. MIT licensed ([LICENSE](LICENSE)) — use it, fork it, ship its rules in your own linter, no attribution required (though a star or a mention helps the public-good goal). See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`RELEASING.md`](RELEASING.md) for the release process. Issues and PRs welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md) (dev setup, the vendor-neutrality and claims-need-receipts policies, and a "score my API" issue template for getting your interface measured).

@@ -1,0 +1,27 @@
+name: Score my API / MCP server
+description: Want your interface measured (or think our number for it is unfair)?
+labels: [scoring]
+body:
+  - type: input
+    id: target
+    attributes:
+      label: Spec URL or MCP endpoint
+      description: A public OpenAPI URL, an APIs.guru key, or a reachable MCP server.
+        (Leaderboard inclusion requires the spec to be in APIs.guru — that keeps the
+        corpus neutral and reproducible.)
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything we should know
+      description: e.g. "our number looks wrong because X", "we ship a compact menu at a
+        different endpoint", "auth needed for tools/list". Disputes welcome — bring your
+        measurement and we'll rerun both sides.
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Confirm
+      options:
+        - label: This is my/our API or a public one; scoring it and publishing the result is fine.
+          required: true

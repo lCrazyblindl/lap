@@ -459,10 +459,22 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   predicts. Profile X1 updated with the own-sandbox confirmation. **v0.6 COMPLETE (N1–N10 +
   N8b).**  `[key]`
 
-**▶ Next (v0.7 kickoff): CONTRIBUTING.md + issue templates** (Track C first bullet — promoted
-after the first real spam PR arrived and was closed; codify the vendor-neutrality/no-promo-links
-policy the closure cited). Meanwhile two owner actions stay pending: post the SPEC-2808 comment
-and publish `docs/POST.md`.
+## Stages — v0.7 (rolling; drawn from the tracks below as they're picked up)
+
+- [x] **C1 — CONTRIBUTING.md + issue templates + PR template.** Done (promoted after spam PR #1).
+  [`CONTRIBUTING.md`](CONTRIBUTING.md): dev setup, and four codified policies — **vendor
+  neutrality** (no promo links; leaderboard = the real-API example; corpus additions must be in
+  APIs.guru), **claims need receipts** (script + corpus + tokenizer), **honest reporting**
+  (counter-examples ship), **measured-not-asserted** (rule PRs cite an experiment). Issue forms:
+  bug report, feature request (asks which bucket + what measurement justifies it), and a
+  **"Score my API"** form (community hook; disputes explicitly welcome) + PR template with the
+  policy checklist. README's "no formal guide yet" line replaced.  `[no key]`
+- [ ] **▶ M1 — Response-filtering scoring** (Track M first bullet): detect field-projection
+  affordances (`fields=`/`$select`/sparse fieldsets) in specs and quantify the bucket-C
+  reduction they enable — the one mainstream optimization approach `lap score` can't see yet.
+  _Done: detection + a "projected C" column/number + tests._  `[no key]`
+
+Two owner actions stay pending meanwhile: post the SPEC-2808 comment and publish `docs/POST.md`.
 - [x] **N9 — Leaderboard as a living page.** Done. `experiments/leaderboard.py` now also emits a
   static **sortable** page (`docs/index.html`, vanilla JS, no build step), machine-readable
   `docs/leaderboard-data.json`, and a dated monthly snapshot under `docs/leaderboard-history/`
@@ -583,9 +595,10 @@ Show HN + r/mcp drafts ready to paste (owner publishes). v0.6 N8 done — valida
 (Haiku k=5 complete: code_exec 50/50 AND cheapest right answer at 1977 tok, 2.9× cheaper than
 naive; numbered measurably worst; DSL gap category-shaped). N8b done after credit top-up —
 Sonnet complete (248/250): **cheapest right answer is model-dependent** (Sonnet's code runs
-cost 5345/correct, near-naive; its query wins at 1902). **v0.6 COMPLETE. ▶ v0.7 kickoff:
-CONTRIBUTING.md + issue templates** (promoted after the spam-PR incident). Owner actions
-pending: SPEC-2808 comment + POST.md publishing.** Say "continue LAP" to keep going.
+cost 5345/correct, near-naive; its query wins at 1902). **v0.6 COMPLETE. v0.7 C1 done
+(CONTRIBUTING.md + issue/PR templates, policies codified). ▶ v0.7 M1: response-filtering
+scoring.** Owner actions pending: SPEC-2808 comment + POST.md publishing.** Say "continue LAP"
+to keep going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/
