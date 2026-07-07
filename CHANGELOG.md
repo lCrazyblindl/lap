@@ -7,6 +7,11 @@ versioning while pre-1.0.
 ## [Unreleased]
 
 ### Added
+- **`lap fix <spec>`** — emit the structurally fixable lint findings as an **OpenAPI Overlay
+  1.0.0** document (R3 → `limit` param, R1 → `fields`, R2 → `filter`, E1 → declared `4XX`
+  response), applying with any Overlay-aware tool or the built-in `--apply` merge. Advice
+  becomes a patch: the bundled Bookstore example goes 15 → 3 findings and **B (72) → A (91)**
+  once its own overlay is applied.
 - **Projected bucket-C estimate** — for every list response, `lap score` now also reports
   what the page would cost under field projection (each item cut to its first 3 schema
   fields, envelope metadata kept), and whether the operation actually advertises a

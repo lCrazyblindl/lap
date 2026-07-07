@@ -503,9 +503,22 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   compact+cached **2126×** cheaper than naive uncached per 8-turn session ($96.95 → $0.046),
   GitHub 13×, Notion 39×. Profile gained a "but isn't it cached?" call-out under Discovery;
   README project map links the doc.  `[no key]`
-- [ ] **▶ Next — pick from the v0.7 tracks** (suggested: Track S "lint auto-fix as an OpenAPI
-  Overlay" — turns advice into an applicable patch; or Track V "second real API for Tool
-  Search/code-exec" `[key]`).
+- [x] **S1 — Lint auto-fix as an OpenAPI Overlay.** Done. New `lap/overlay.py` + `lap fix
+  <spec>`: emits the *structurally fixable* findings as an **Overlay 1.0.0** document — R3 →
+  `limit` query param, R1 → `fields`, R2 → `filter`, E1 → declared `4XX` response; one action
+  per operation, D3/A1 honestly left advisory (renames/new endpoints are semantic). `--apply`
+  does the Overlay-spec structured merge (dicts merge, lists append) and reports the finding
+  delta. Live: Bookstore 15 → 3 findings, grade **B (72) → A (91)** — the first A, earned by
+  the tool's own patch; live Petstore 16 → 8. +3 tests (tests/ 51, full suite 55). **Also
+  surfaced a real measurement gap** (→ M3): `menu._input_schema` counts only path+body params,
+  so query params are invisible to every menu form — the leaderboard's "naive" menus are
+  *undercounted*, which also explains part of the "real MCP heavier than naive" gap.  `[no key]`
+- [ ] **▶ M3 — Query params in the menu forms (measurement fix).** Include query (+header?)
+  parameters in `menu._input_schema` and the compact/numbered signatures — real bridges ship
+  them, so our "naive" baseline undercounts. Then regenerate the leaderboard (+site), re-check
+  the grade calibration (menu tok/op will rise across the board), and write an honest
+  CHANGELOG "Fixed" entry with the before/after totals (like S5's +41% bucket-C entry).
+  _Done: menus include query params + regenerated numbers + tests._  `[no key]`
 
 Two owner actions stay pending meanwhile: post the SPEC-2808 comment and publish `docs/POST.md`.
 - [x] **N9 — Leaderboard as a living page.** Done. `experiments/leaderboard.py` now also emits a
@@ -630,9 +643,10 @@ naive; numbered measurably worst; DSL gap category-shaped). N8b done after credi
 Sonnet complete (248/250): **cheapest right answer is model-dependent** (Sonnet's code runs
 cost 5345/correct, near-naive; its query wins at 1902). **v0.6 COMPLETE. v0.7: C1 done
 (CONTRIBUTING + templates), M1 done (projected bucket-C), V1 done (compressor banner
-root-caused), M2 done (CACHE-ECONOMICS.md — caching is a fragile ≤10× price discount that
-composes with, not replaces, menu form; Xero worked example 2126×/session). ▶ pick next from
-the v0.7 tracks (suggested: Overlay auto-fix, or 2nd Tool-Search API `[key]`).**
+root-caused), M2 done (cache economics), S1 done (`lap fix` — lint findings as an applicable
+OpenAPI Overlay; Bookstore B72 → A91 from its own patch). ▶ M3: query params in the menu
+forms — S1 surfaced that every menu form counts only path+body params, so the naive baseline
+is undercounted; fix + regenerate leaderboard + recalibrate.**
 Owner actions pending: SPEC-2808 comment + POST.md publishing.** Say "continue LAP" to keep
 going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party

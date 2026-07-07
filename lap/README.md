@@ -119,6 +119,23 @@ Unreachable servers (missing binary, no credentials) become annotated rows, not 
 stack-level `tool_search` what-if is counted honestly: the fixed search/call tools are paid
 **once** for the whole stack, plus a name index across all servers. Needs the `[mcp]` extra.
 
+## Auto-fix as an OpenAPI Overlay
+
+`lap fix` turns the *structurally fixable* lint findings into an
+[OpenAPI Overlay 1.0.0](https://spec.openapis.org/overlay/v1.0.0) document — advice becomes an
+applicable patch: R3 → a `limit` parameter, R1 → `fields`, R2 → `filter`, E1 → a declared
+`4XX` error response. (D3/A1 stay advisory — renames and new endpoints are semantic
+decisions.) The overlay declares the *contract*; your server still has to implement it.
+
+```bash
+lap fix api/openapi.json -o lap-overlay.yaml          # apply with any Overlay-aware tool
+lap fix api/openapi.json --apply patched.json         # ...or the built-in merge
+```
+
+On the bundled Bookstore example: 15 lint findings → 3 after applying, and the LAP grade
+jumps **B (72) → A (91)**. _(The menu forms currently count path+body parameters only, so the
+added query params don't change bucket A — see the roadmap for the query-param menu fix.)_
+
 ## Diff mode
 
 `lap score --diff <before> <after>` compares two versions of a spec instead of scoring one —
@@ -189,4 +206,5 @@ behind the compact form are the [LAP profile](../profile/llm-api-profile.md).
 | `tokens.py` | token counting (Anthropic endpoint, or tiktoken approx) |
 | `score.py` | the `lap score` CLI |
 | `lint.py` | the `lap lint` CLI — checks a spec against the LAP profile rules (D3/R1/R2/R3/W1/E1/A1), or a live MCP server's tools (`--mcp-url`/`--mcp`, rules D3/M1–M4 + grade) |
+| `overlay.py` | `lap fix` — the fixable lint findings as an OpenAPI Overlay 1.0.0 (+ built-in `--apply`) |
 | `examples/` | sample specs: a Bookstore API, a gnarly OpenAPI 3.1 (allOf / $ref-params / nullable / external-ref), and a Swagger 2.0 spec (`swagger2.json`) |

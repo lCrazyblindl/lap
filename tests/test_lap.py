@@ -553,6 +553,36 @@ def test_gather_reports_estimated_b(spec):
     assert " " in b["heaviest"]["where"]  # "METHOD /path"
 
 
+# --- lint auto-fix as an OpenAPI Overlay (v0.7 S1) -----------------------------
+def test_overlay_actions_target_flagged_ops(spec):
+    from lap import overlay
+
+    doc = overlay.build_overlay(spec)
+    assert doc["overlay"] == "1.0.0" and doc["actions"]
+    books = next(a for a in doc["actions"] if a["target"] == "$.paths['/books'].get")
+    names = [p["name"] for p in books["update"].get("parameters", [])]
+    assert "limit" in names and "fields" in names  # R3 + R1 fixes for the collection GET
+
+
+def test_overlay_apply_reduces_lint_findings(spec):
+    from lap import overlay
+
+    before = {(f.rule, f.where) for f in lint.lint(spec)}
+    patched = overlay.apply_overlay(spec, overlay.build_overlay(spec))
+    after = {(f.rule, f.where) for f in lint.lint(patched)}
+    assert after < before  # strictly fewer findings, none added
+    assert not any(r in {"R1", "R2", "R3", "E1"} for r, _ in after)  # fixables all fixed
+
+
+def test_overlay_apply_appends_not_replaces(spec):
+    from lap import overlay
+
+    patched = overlay.apply_overlay(spec, overlay.build_overlay(spec))
+    op = patched["paths"]["/authors/{author_id}/books"]["get"]
+    names = [p.get("name") for p in op.get("parameters", [])]
+    assert "author_id" in names and "limit" in names  # original params kept, fixes appended
+
+
 # --- field-projection scoring (v0.7 M1) ---------------------------------------
 def test_estimate_projected_cuts_list_cost(spec):
     from lap import estimate
