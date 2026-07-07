@@ -444,9 +444,15 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   A monthly cron (`.github/workflows/leaderboard.yml`, 3rd of each month + `workflow_dispatch`)
   regenerates everything and commits as github-actions[bot]. Gotcha: Pages doesn't list
   directories — the page's "history" link points at the GitHub tree instead.  `[no key]`
-- [ ] **N10 — Launch write-up.** A data-first post: *"We measured the agent-menu tax of 50 real
-  public APIs — 10.4M tokens"* + Show HN / r/mcp drafts; the owner publishes. LAP's biggest gap is
-  visibility, and the data is the hook. _Done: `docs/POST.md` ready to paste._  `[no key]`
+- [x] **N10 — Launch write-up.** Done → [`docs/POST.md`](docs/POST.md): three ready-to-paste
+  drafts — (1) a data-first blog post ("We measured the agent-menu tax of 50 real public APIs:
+  10.4M tokens" — leaderboard numbers, the verified/disputed vendor claims, structural-vs-
+  behavioral, spec-#2808 input, try-it section, honest caveats); (2) a **Show HN** (title + the
+  author first-comment, linking the live leaderboard page as the submission URL); (3) an
+  **r/mcp** post (community-angled: `lap stack`, `lap lint --mcp`, the git/time A-vs-B grades).
+  Plus posting notes for the owner (order, timing, where the pushback will come and which
+  receipts answer it). **Publishing is the owner's action** — like the SPEC-2808 comment, it
+  goes out under their name, not the agent's.  `[no key]`
 
 Recommended order: **N1 → N2 → N3 → N4 → N5 → N6 → N7 → N9 → N10 → N8** (product gaps → release →
 public position; the key-needing science stage last, as always).
@@ -545,8 +551,10 @@ comparison + 10-claim registry (2 disputed by our measurements). v0.6 N7 done �
 `docs/SPEC-2808.md`: tiered schemas save mean 85% over 51 real APIs (issue's estimate is
 conservative), dedupe −10…94% (only fat repeated schemas pay); ready-to-paste comment for the
 owner. v0.6 N9 done — **live leaderboard at https://lcrazyblindl.github.io/lap/** (sortable
-page + JSON + monthly history, cron refresh). ▶ current stage: v0.6 N10 (launch write-up); then
-N8 `[key]` last.** Say "continue LAP" to keep going once a stage completes.
+page + JSON + monthly history, cron refresh). v0.6 N10 done — `docs/POST.md`: blog post +
+Show HN + r/mcp drafts ready to paste (owner publishes). ▶ current stage: v0.6 N8 (validation
+matrix v2, the last v0.6 stage) — `[key]`, live billed calls.** Say "continue LAP" to keep
+going once a stage completes.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/
