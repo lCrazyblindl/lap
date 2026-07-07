@@ -14,6 +14,7 @@ set ANTHROPIC_API_KEY for faithful counts.
 from __future__ import annotations
 
 import hashlib
+import json
 import pathlib
 import tempfile
 from datetime import date
@@ -178,9 +179,88 @@ def main() -> None:
             "`python experiments/leaderboard.py`._",
         ]
 
-    out = pathlib.Path(__file__).resolve().parents[1] / "docs" / "LEADERBOARD.md"
+    docs = pathlib.Path(__file__).resolve().parents[1] / "docs"
+    out = docs / "LEADERBOARD.md"
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"\n[written] {out}  ({len(rows)} APIs)")
+    _write_site(rows, backend, docs)
+
+
+_HTML = """<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LAP efficiency leaderboard - agent-menu token cost of real public APIs</title>
+<style>
+ body{font:15px/1.5 system-ui,sans-serif;margin:2rem auto;max-width:70rem;padding:0 1rem;color:#1c2430}
+ h1{font-size:1.5rem} .sub{color:#5a6572}
+ table{border-collapse:collapse;width:100%;margin-top:1rem}
+ th,td{padding:.35rem .6rem;text-align:right;border-bottom:1px solid #e3e7ec;white-space:nowrap}
+ th{cursor:pointer;user-select:none;position:sticky;top:0;background:#fff}
+ th:hover{background:#f2f5f8} td:nth-child(2),th:nth-child(2),td:nth-child(3),th:nth-child(3){text-align:left}
+ .neg{color:#b03030} .pos{color:#207540}
+ footer{margin:2rem 0;color:#5a6572;font-size:.9rem}
+ a{color:#2059c0}
+</style></head><body>
+<h1>LAP efficiency leaderboard</h1>
+<p class="sub">The <b>bucket-A menu tax</b> of real public APIs: what an agent pays in tokens,
+once per session, just to <i>see</i> each API as naive OpenAPI&rarr;tools definitions - and what
+LAP-style <b>compact</b> / lazy <b>tool_search</b> menus of the same operations would cost.
+Generated <b id="gen"></b> &middot; tokenizer <b id="tok"></b> (relative ranking is the signal)
+&middot; <a href="https://github.com/lCrazyblindl/lap">github.com/lCrazyblindl/lap</a> &middot;
+<a href="leaderboard-data.json">raw data</a> &middot;
+<a href="https://github.com/lCrazyblindl/lap/tree/main/docs/leaderboard-history">history</a>
+&middot; click a column header to sort.</p>
+<p id="totals"></p>
+<table id="t"><thead><tr>
+<th>#</th><th>API</th><th>provider</th><th>ops</th><th>menu A (full)</th><th>compact</th>
+<th>saved</th><th>tool_search</th><th>saved</th><th>heaviest result (C)</th>
+</tr></thead><tbody></tbody></table>
+<footer>lap - measure &amp; improve the token-efficiency of agent-facing APIs (OpenAPI &amp; MCP):
+scorer, linter, the LAP profile, and a reproducible token benchmark.
+<code>pip install lap-score</code> &middot; MIT.</footer>
+<script>
+const DATA = __DATA__;
+document.getElementById("gen").textContent = DATA.generated;
+document.getElementById("tok").textContent = DATA.tokenizer;
+const rows = DATA.apis, tb = document.querySelector("#t tbody");
+const fmt = n => n.toLocaleString("en-US");
+const sgn = p => `<span class="${p<0?"neg":"pos"}">${p>=0?"+":""}${p}%</span>`;
+const total = rows.reduce((s,r)=>s+r.full,0);
+const avgC = Math.round(rows.reduce((s,r)=>s+r.save_compact,0)/rows.length);
+const avgS = Math.round(rows.reduce((s,r)=>s+r.save_search,0)/rows.length);
+document.getElementById("totals").innerHTML =
+ `<b>${rows.length} APIs</b> &middot; naive menus total <b>${fmt(total)} tokens</b> &middot; ` +
+ `compact saves <b>+${avgC}%</b> avg &middot; tool_search <b>+${avgS}%</b> avg`;
+function render(list){
+ tb.innerHTML = list.map((r,i)=>`<tr><td>${i+1}</td><td>${r.api}</td><td>${r.provider}</td>`+
+  `<td>${fmt(r.ops)}</td><td>${fmt(r.full)}</td><td>${fmt(r.compact)}</td><td>${sgn(r.save_compact)}</td>`+
+  `<td>${fmt(r.tool_search)}</td><td>${sgn(r.save_search)}</td><td>${r.c_max?fmt(r.c_max):"-"}</td></tr>`).join("");
+}
+const keys = [null,"api","provider","ops","full","compact","save_compact","tool_search","save_search","c_max"];
+let dir = -1;
+document.querySelectorAll("th").forEach((th,i)=>{ if(!keys[i]) return;
+ th.onclick = ()=>{ dir=-dir; const k=keys[i];
+  rows.sort((a,b)=> typeof a[k]==="string" ? dir*a[k].localeCompare(b[k]) : dir*(a[k]-b[k]));
+  render(rows); };});
+render(rows);
+</script></body></html>
+"""
+
+
+def _write_site(rows: list[dict], backend: str, docs: pathlib.Path) -> None:
+    """The same data as LEADERBOARD.md, as a static sortable page (GitHub Pages serves
+    /docs) + dated JSON snapshots so month-over-month trends stay diffable."""
+    generated = date.today().isoformat()
+    data = {"generated": generated, "tokenizer": backend, "apis": rows}
+    (docs / "leaderboard-data.json").write_text(
+        json.dumps(data, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    hist = docs / "leaderboard-history"
+    hist.mkdir(exist_ok=True)
+    (hist / f"{generated[:7]}.json").write_text(
+        json.dumps(data, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    (docs / "index.html").write_text(
+        _HTML.replace("__DATA__", json.dumps(data, ensure_ascii=False)), encoding="utf-8")
+    print(f"[written] {docs / 'index.html'} + leaderboard-data.json + history/{generated[:7]}.json")
 
 
 if __name__ == "__main__":

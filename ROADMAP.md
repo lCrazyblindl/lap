@@ -436,10 +436,14 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
 - [ ] **N8 — Validation matrix v2** _(ex-S6)_. Sonnet + Haiku, all 10 grouped tasks, k≈5 →
   expanded `validation.md`; add a **cost-per-correct-answer** metric per form (tokens spent ÷
   successes) — the number that actually matters for buyers. `[key]`
-- [ ] **N9 — Leaderboard as a living page.** GitHub Pages (static, sortable table generated from
-  the same data) + a monthly Actions cron regenerating it, history kept under
-  `docs/leaderboard-history/` — so trends become visible ("is the ecosystem getting leaner?").
-  _Done: page live + cron merged._  `[no key]`
+- [x] **N9 — Leaderboard as a living page.** Done. `experiments/leaderboard.py` now also emits a
+  static **sortable** page (`docs/index.html`, vanilla JS, no build step), machine-readable
+  `docs/leaderboard-data.json`, and a dated monthly snapshot under `docs/leaderboard-history/`
+  (`2026-07.json` is the first) — so month-over-month trends stay diffable. **GitHub Pages
+  enabled via `gh api`** (main → `/docs`, `.nojekyll` added): **https://lcrazyblindl.github.io/lap/**.
+  A monthly cron (`.github/workflows/leaderboard.yml`, 3rd of each month + `workflow_dispatch`)
+  regenerates everything and commits as github-actions[bot]. Gotcha: Pages doesn't list
+  directories — the page's "history" link points at the GitHub tree instead.  `[no key]`
 - [ ] **N10 — Launch write-up.** A data-first post: *"We measured the agent-menu tax of 50 real
   public APIs — 10.4M tokens"* + Show HN / r/mcp drafts; the owner publishes. LAP's biggest gap is
   visibility, and the data is the hook. _Done: `docs/POST.md` ready to paste._  `[no key]`
@@ -540,8 +544,9 @@ score` (A/B/C in one command); 49 tests green. v0.6 N5 done — **0.4.0 FULLY RE
 comparison + 10-claim registry (2 disputed by our measurements). v0.6 N7 done —
 `docs/SPEC-2808.md`: tiered schemas save mean 85% over 51 real APIs (issue's estimate is
 conservative), dedupe −10…94% (only fat repeated schemas pay); ready-to-paste comment for the
-owner. ▶ current stage: v0.6 N9 (leaderboard as a living GitHub Pages page + monthly cron; N8
-`[key]` stays last).** Say "continue LAP" to keep going once a stage completes.
+owner. v0.6 N9 done — **live leaderboard at https://lcrazyblindl.github.io/lap/** (sortable
+page + JSON + monthly history, cron refresh). ▶ current stage: v0.6 N10 (launch write-up); then
+N8 `[key]` last.** Say "continue LAP" to keep going once a stage completes.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/

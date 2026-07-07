@@ -1,0 +1,34 @@
+name: leaderboard
+
+# Monthly refresh of the public leaderboard: regenerates docs/LEADERBOARD.md,
+# the GitHub Pages site (docs/index.html + leaderboard-data.json) and appends
+# a dated snapshot to docs/leaderboard-history/ - so trends stay visible.
+on:
+  schedule:
+    - cron: "17 6 3 * *" # 3rd of each month, 06:17 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install lap
+        run: pip install -e .
+      - name: Regenerate leaderboard + site
+        run: python experiments/leaderboard.py
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git diff --cached --quiet && echo "no changes" || {
+            git commit -m "leaderboard: scheduled refresh ($(date -u +%Y-%m-%d))"
+            git push
+          }

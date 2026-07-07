@@ -1,6 +1,6 @@
 # LAP efficiency leaderboard — agent-menu token cost of real public APIs
 
-_Generated 2026-07-02 by [`experiments/leaderboard.py`](../experiments/leaderboard.py) over specs from [APIs.guru](https://apis.guru)._
+_Generated 2026-07-07 by [`experiments/leaderboard.py`](../experiments/leaderboard.py) over specs from [APIs.guru](https://apis.guru)._
 
 **How to read it.** Each row is a real public API. **menu (full)** is the bucket-A token cost of the naive OpenAPI→tools menu a generic MCP/OpenAPI bridge emits — what an agent pays, once per session, just to *see* the API. **compact** and **tool_search** are the LAP-style menus (compact signatures; lazy search+execute) generated from the same spec, with the % saved vs full. Sorted by the naive menu cost (heaviest first): the APIs at the top cost agents the most tokens up front and have the most to gain from a leaner menu. **heaviest result (C)** is the largest single response (bucket C) the estimator finds for the API - the *recurring* per-call cost that field projection and pagination (LAP R1/R3) target. It's a structural lower bound at ~20 items/page, envelope-aware: a list wrapped in an envelope (`{data:[...]}`, k8s `items`) is scaled to a full page too, with its sibling fields (counts, cursors, kind/apiVersion, ...) counted once alongside it. Where a schema carries a real `example`/`examples` value, that's used instead of a synthetic placeholder - real data an API author wrote down beats a guess.
 
