@@ -1,205 +1,101 @@
-# lap — LLM-API Profile
+# lap — how many tokens does your API cost an LLM agent?
 
-[![ci](https://github.com/lCrazyblindl/lap/actions/workflows/ci.yml/badge.svg)](https://github.com/lCrazyblindl/lap/actions/workflows/ci.yml) [![LAP grade (bundled example)](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FlCrazyblindl%2Flap%2Fmain%2Fdocs%2Flap-badge.json)](profile/llm-api-profile.md) · MIT licensed ([LICENSE](LICENSE)) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md)
+[![ci](https://github.com/lCrazyblindl/lap/actions/workflows/ci.yml/badge.svg)](https://github.com/lCrazyblindl/lap/actions/workflows/ci.yml) [![LAP grade (bundled example)](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FlCrazyblindl%2Flap%2Fmain%2Fdocs%2Flap-badge.json)](profile/llm-api-profile.md) [![PyPI](https://img.shields.io/pypi/v/lap-score)](https://pypi.org/project/lap-score/) · MIT · [Changelog](CHANGELOG.md) · [Live leaderboard](https://lcrazyblindl.github.io/lap/)
 
-**Measure and improve the token-efficiency of agent-facing APIs** (OpenAPI & MCP) — a free, open, neutral toolkit: a scorer (`lap score`), a linter (`lap lint`), a convention (the **LAP profile**), and a reproducible **benchmark**. Not a product, not a gateway, not a new protocol — a public-good measuring stick for a question nobody else answers with real numbers: *how many tokens does my agent-facing API cost, and how much of that is unnecessary?*
+Every agent session starts by paying for tool definitions it mostly won't use — and pays
+again for every call and every response. **lap** measures that, for any OpenAPI spec, live
+MCP server, or your own agent config: the token cost decomposed (**A** menu / **B** call /
+**C** result), a **0–100 grade**, the rule violations driving the cost, and an applicable
+patch for the fixable ones. Free, neutral, reproducible — a measuring stick, not a product.
 
-## Table of contents
+## Try it (60 seconds)
 
-1. [What we did — TL;DR](#1-what-we-did--tldr)
-2. [Why this is useful](#2-why-this-is-useful)
-3. [Install & usage](#3-install--usage)
-4. [Project map](#4-project-map)
-5. [Status, license, contributing](#5-status-license-contributing)
+```bash
+pip install "lap-score[mcp]"
 
----
+lap stack                                   # YOUR installed MCP servers: tokens paid before you type a word
+lap score  openapi.json                     # A/B/C decomposition + grade (also --mcp-url for live servers)
+lap lint   openapi.json                     # the violations driving the cost (also --mcp "cmd" for servers)
+lap fix    openapi.json --apply patched.json  # fixable findings as an OpenAPI Overlay patch
+lap badge  openapi.json                     # shields.io grade badge for your README
+```
 
-## 1. What we did — TL;DR
+```
+$ lap stack
+  server        kind   tools  menu tokens  compact
+  time          stdio      2          283       31
+  git           stdio     12         1418      153
+  TOTAL                    14         1701      184
+Your agent pays ~1,701 tokens of tool menus at session start - before you type a word.
 
-### The problem, in one paragraph
+$ lap fix api/openapi.json --apply patched.json
+[written] lap-overlay.yaml  (6 action(s))
+[written] patched.json  (lint findings: 15 -> 3)     # grade: B (72) -> A (91)
+```
 
-Every time an agent talks to an API — via OpenAPI-generated tools, an MCP server, or a hand-rolled integration — it pays **tokens**: once per session for the menu of what it *can* call (bucket **A**), a little for each call it makes (bucket **B**), and repeatedly for every result that comes back (bucket **C**). Nobody was publishing real, reproducible numbers for this. Vendors cite their own best-case headline figures on their own setups; nobody scores a random real API and tells you where it stands. **lap does that** — for any OpenAPI spec or live MCP server, in one command, for free.
+Everything is `--json`-able and CI-gateable (`--max-menu-tokens`, `--diff --max-growth`,
+`--fail-on`; a composite [GitHub Action](action.yml) and a [Spectral ruleset](spectral/README.md)
+ship in-repo). Full CLI docs: [`lap/README.md`](lap/README.md).
 
-### The toolkit
+## What the measurements show
 
-| piece | what it does |
-| --- | --- |
-| **`lap score <api>`** | Reports an API's bucket-A menu cost across four rendering forms (naive OpenAPI→tools, compact signatures, a numbered dictionary, a lazy tool-search form), plus a real-MCP baseline (via FastMCP), bucket-B (call) and bucket-C (result-size) estimates — the full A/B/C story in one command — and a composite **LAP grade** (0–100 + letter; `lap badge` emits a shields.io README badge). Works on any OpenAPI file/URL, or a live MCP server (`--mcp-url`). |
-| **`lap lint <api>`** | Flags concrete violations of the LAP profile's rules (opaque names, no pagination/filtering/projection, no aggregation, verbose writes, ambiguous errors) — each citing the measurement that justifies it. Also lints **live MCP servers** (`--mcp-url`/`--mcp`): missing tool/parameter descriptions, heavy definitions, no `required` list — plus the LAP grade. |
-| **`lap stack`** | Scores **your installed MCP stack**: reads your agent's own config (Claude Code / Claude Desktop), connects to every server it lists, and totals the menu tokens your agent pays at session start — *"N tokens before you type a word"* — with compact / stack-wide tool-search what-ifs. |
-| **The LAP profile** ([`profile/`](profile/llm-api-profile.md)) | A short, opinionated set of conventions **on top of** HTTP/JSON/OpenAPI — not a new wire format — for exposing an API so an agent uses it in the fewest tokens. Every rule is backed by a number, not an opinion. |
-| **The benchmark** ([`experiments/token-bench/`](experiments/token-bench/README.md)) | A full A/B/C token accounting across 10 tasks in 5 categories, comparing 6 interface variants (naive, real MCP, compact, numbered, code-execution, declarative query) on a real FastAPI testbed — plus an optional live run against a real model to check that compression doesn't cost accuracy. |
-
-### What we found on our own testbed
-
-Six ways of exposing the same API, measured on identical tasks (tiktoken-approx; faithful Anthropic counts run ~60% higher, same ordering):
-
-| variant | menu (bucket A) | "count females" task total |
-| --- | --- | --- |
-| `openapi_full` (naive OpenAPI→tools, the baseline) | 1637 | 2809 |
-| `mcp_fastmcp` (a **real** MCP server, via FastMCP) | 1689 | 2865 |
-| `mcp_fastmcp` + output schemas forwarded | 3762 | — |
-| `compact_sig` (readable names, dense signatures) | 401 | 1573 |
-| `numbered` (endpoint → integer dictionary) | 466 | 1636 |
-| `code_exec` (one `run_python` tool + a compact client doc) | 183 | **217** |
-| `odata_query` (one declarative `query` tool, server-side) | 219 | **239** |
-
-**Takeaways:** numbering endpoints is a net loss (the codebook still costs bucket A, while saving ~2 tokens of the cheapest bucket); the real wins are shaping the menu (A) and the result (C); a real MCP generator is *not* a strawman — it's slightly heavier than our hand-rolled naive baseline; and declarative queries match code-execution almost everywhere, until a task needs a computed property the query DSL can't express (then code wins by ~40×). Full tables: [`experiments/token-bench/results.md`](experiments/token-bench/results.md).
-
-A later **live success-rate matrix** (Claude Haiku, k=3 repeats) confirmed this isn't just a token story: **compression didn't cost accuracy** — `numbered`/`code_exec`/`odata_query` scored 15/15, `compact_sig` 14/15, and the naive baseline came in *last* at 13/15, while spending 3–4× more tokens. ([`validation.md`](experiments/token-bench/validation.md))
-
-### What we found when we stopped testing our own code and measured *real* tools
-
-This is the part that makes the numbers worth trusting: instead of only comparing our own interface variants, we pointed the same measurement at **real OpenAPI→MCP generators, real published MCP servers, a real hosted API, and two of Anthropic's own real efficiency features** — live, with real HTTP calls and real billed tokens, not simulated.
-
-| what we tested | result | evidence |
-| --- | --- | --- |
-| 3 real OpenAPI→MCP generators (FastMCP, `openapi-to-mcp`, `openapi-mcp`) | All three emit a menu **heavier than our naive baseline**, and **5–28× heavier than compact** — none ships the compact form | [`docs/GENERATORS.md`](docs/GENERATORS.md) |
-| 3 real published MCP servers (git, fetch, time, over stdio) | Even small reference servers pay a real menu tax; a compact rendering of the *same* advertised tools cuts it **~89%** | [`docs/MCP-SERVERS.md`](docs/MCP-SERVERS.md) |
-| End-to-end on the live hosted Swagger Petstore (real HTTP, real model) | The naive menu was both the **heaviest and the least reliable** — it failed a count task 0/3 while compact and a real FastMCP server hit 3/3 | [`validation-real.md`](experiments/token-bench/validation-real.md) |
-| Anthropic's real **Tool Search**, live, on a real 290-operation API | Cut **billed** input tokens **~90%** vs. the identical schemas without it — the saving is *structural* (server-enforced) — but cost *more* than a compact menu on a small 19-op API, matching Anthropic's own "10+ tools" guidance | [`docs/TOOL-SEARCH.md`](docs/TOOL-SEARCH.md) |
-| Anthropic's real **code-execution** tool, live, repeated 5× on a validated task | Came in **heavier** than both the naive baseline and our own sandbox on **every one of 5 runs** — the model consistently needed 2-4 execution attempts to get the sandboxed file path right; its saving is *behavioral* (it only holds if the model's own code never prints the raw data and doesn't need retries), not guaranteed like Tool Search's | [`docs/CODE-EXEC.md`](docs/CODE-EXEC.md) |
-| A real third-party optimizer, **`mcp-compressor`** (Atlassian), on 2 real MCP servers at 2 scales | Real savings at **both** scales by our own tokenizer (+12% on a 2-tool server, +67% on a 12-tool server) — bigger menus compress more, confirming the scale effect independently of Anthropic — but the tool's *own* self-reported percentage disagreed with us on the small server (claiming a loss where we measured a gain), a genuine cross-check discrepancy worth flagging | [`docs/MCP-COMPRESSOR.md`](docs/MCP-COMPRESSOR.md) |
-| A parser fuzz pass over **175+ real specs** (APIs.guru) | Zero crashes; found and fixed real bugs (Swagger 2.0 support, non-JSON media types, a `tiktoken` crash on a literal `<|endoftext|>` in OpenAI's own spec) | [`experiments/fuzz_corpus.py`](experiments/fuzz_corpus.py) |
-| Bucket-C estimate against real, enveloped API responses (`{"data":[...]}`, Kubernetes `{"items":[...]}`) | Fixed a real undercount — 15 of 20 leaderboard rows changed once envelopes were handled correctly | `lap/estimate.py` |
-
-**We report the two real results that *don't* flatter the thesis as prominently as the ones that do.** Tool Search's saving is enforced by the server regardless of what the model does; code-execution's saving depends on the model's own discipline, and across 5 repeated runs it consistently didn't materialize. That distinction — structural vs. behavioral savings — is now written into the LAP profile itself (rules D2 and X1), not just this README.
-
-### The leaderboard
-
-[**`docs/LEADERBOARD.md`**](docs/LEADERBOARD.md) scores **50 real public APIs** — Kubernetes, EC2, Jira, Stripe, GitHub, OpenAI, Slack, Notion, and more — by what their naive agent menu costs today:
+**[The leaderboard](https://lcrazyblindl.github.io/lap/)** — 50 real public APIs, refreshed
+monthly. Their naive agent menus total **~11.2M tokens**; rendering the *same operations*
+compactly recovers **~82%** on average (lazy tool-search: ~86%). Nobody ships the compact form.
 
 | API | naive menu (bucket A) | LAP compact | saved |
 | --- | ---: | ---: | ---: |
 | Xero Accounting | 4,041,667 | 7,800 | **+99%** |
 | Kubernetes | 2,864,414 | 45,015 | **+98%** |
 | Amazon EC2 | 1,046,048 | 86,031 | **+92%** |
-| Google Sheets | 495,263 | 1,483 | **+99%** |
-| _…46 more_ | | | |
+| _…47 more, sortable, with history_ | | | |
 
-Across all 50, naive menus total **~11.2M tokens**; the compact form would cut **~82%** on average (the lazy `tool_search` form ~86% — it wins most where operation counts are high, and can cost more than naive on tiny 1-3 op APIs, matching the profile's own "not worth it below ~10 tools" caveat). None of these APIs ships a compact agent menu today — reproduce it with `python experiments/leaderboard.py`.
+**Real tools, not just our own variants** — the same accounting pointed at the ecosystem,
+live, with billed calls where it matters:
 
----
+- **3 real OpenAPI→MCP generators** all emit menus *heavier* than the naive baseline, 5–28×
+  heavier than compact ([GENERATORS](docs/GENERATORS.md), [MCP-SERVERS](docs/MCP-SERVERS.md)).
+- **Anthropic's Tool Search: verified live** — ~90% billed-token cut on a real 290-op API,
+  server-enforced ([TOOL-SEARCH](docs/TOOL-SEARCH.md)). **Their code-execution: disputed on
+  our workload** — heavier than naive in 5/5 repeats; its saving is *behavioral*, not
+  structural ([CODE-EXEC](docs/CODE-EXEC.md)).
+- **A third-party optimizer's self-reported % was mismeasuring** — root-caused in its own
+  source: character counts with an asymmetric formula ([MCP-COMPRESSOR](docs/MCP-COMPRESSOR.md)).
+- **Compression doesn't cost accuracy** — a 500-run live matrix (2 models × 10 tasks × 5
+  forms): every compressed form matched or beat the naive menu; the *cheapest correct answer*
+  turned out to be model-dependent ([validation.md](experiments/token-bench/validation.md)).
 
-## 2. Why this is useful
+Results that don't flatter the thesis ship as prominently as the ones that do — the
+verified/disputed registry of the field's headline claims is [docs/FIELD.md](docs/FIELD.md),
+and the standard objections are priced out in [CACHE-ECONOMICS](docs/CACHE-ECONOMICS.md)
+("isn't it cached?") and [TOKENIZERS](docs/TOKENIZERS.md) ("whose tokens?").
 
-- **If you run an API or MCP server:** `lap score`/`lap lint` tell you, in one command, exactly how many tokens your agent-facing menu costs and which concrete, measured rule violations are driving that cost — not vague advice, a number and a citation. Wire it into CI (`--gate-form`/`--max-menu-tokens`, `--fail-on`) so a schema change that blows up the menu fails the build instead of shipping.
-- **If you build agents or pick which APIs to wire up:** the leaderboard and the real-tool findings above are due-diligence data — before you integrate an API or an MCP server, you can know whether its menu is going to eat your context window, without running your own experiment first.
-- **If you already lint OpenAPI with Spectral:** the same LAP rules ship as a [Spectral ruleset](spectral/README.md) — one line in your existing setup, no new tool to adopt.
-- **If you're deciding between MCP/Tool Search/code-execution/a query DSL:** this is the one place that measured all of them, on the same tasks, with the same accounting, including the vendor features' real behavior (not just their marketing numbers) — see [`docs/LANDSCAPE.md`](docs/LANDSCAPE.md) for how LAP sits next to NLWeb, MCP gateways, and the other efficiency tooling that's emerged since 2025, and what it deliberately does *not* rebuild (auth, discovery, hosting).
-- **Because it's free and it stays free.** MIT-licensed, no telemetry, no paid tier, no company behind it. The goal is a shared, reproducible number the whole agentic-web ecosystem can use — a public good, not a product.
+## Who it's for
 
-## 3. Install & usage
+- **You ship an API or MCP server** → `lap score`/`lint`/`fix` give you a number, the
+  violations behind it, and a patch; the Action gates PRs that bloat the menu; `lap badge`
+  shows the grade in your README.
+- **You build agents** → `lap stack` audits what your own config burns; the leaderboard is
+  due-diligence before wiring up an API.
+- **You're choosing between MCP / Tool Search / code-execution / a query DSL** → this repo
+  measured all of them on the same tasks with the same accounting
+  ([token-bench](experiments/token-bench/README.md), [LANDSCAPE](docs/LANDSCAPE.md)).
+- **You design API conventions** → the [LAP profile](profile/llm-api-profile.md) is the rule
+  set behind the linter; every rule cites its measurement, including the two that earned
+  honest caveats.
 
-### Install
+## Project map
 
-```bash
-pip install lap-score                 # PyPI (once published — see CHANGELOG.md for the version)
-# or, from a clone of this repo:
-pip install -e .                      # editable install for local development
-pip install -e ".[mcp]"               # + a real-MCP baseline in `lap score` (needs fastmcp)
-pip install -e ".[faithful]"          # + faithful Anthropic token counts (needs an API key)
-pip install -e ".[all]"               # both extras
-```
+- [`lap/`](lap/README.md) — the pip-installable toolkit (start here).
+- [`profile/`](profile/llm-api-profile.md) — the LAP profile: measured conventions, L1–L4 levels, the grade formula.
+- [`experiments/`](experiments/token-bench/README.md) — the benchmark ([pet-zoo](pet-zoo/README.md) testbed) + every measurement script behind the docs (leaderboard, spec-#2808 simulation, cache economics, tokenizer matrix, …).
+- [`docs/`](docs/LEADERBOARD.md) — the receipts: leaderboard, real-tool tests, [FIELD](docs/FIELD.md) claims registry, [SPEC-2808](docs/SPEC-2808.md) input for the MCP spec discussion.
+- [`spectral/`](spectral/README.md) — the lint rules for existing Spectral setups.
+- [`ROADMAP.md`](ROADMAP.md) — the full staged history and what's next.
 
-Core dependencies are just `httpx` + `tiktoken` + `pyyaml` — `fastmcp` and `anthropic` are optional. `lap` is robust to real-world spec mess: `allOf`/`oneOf`/`anyOf`, `$ref` anywhere, OpenAPI 3.1 nullable types, external refs, YAML input, **Swagger/OpenAPI 2.0**, and non-JSON media types — verified crash-free across 175+ real specs (`experiments/fuzz_corpus.py`).
+## Status & contributing
 
-### Quickstart
-
-```bash
-lap score https://petstore3.swagger.io/api/v3/openapi.json    # menu (bucket A) token cost
-lap lint  https://petstore3.swagger.io/api/v3/openapi.json    # flag LAP rule violations
-lap score --mcp-url http://localhost:8080/mcp                 # score a live MCP server's tools
-lap stack                                                     # score your installed MCP stack (agent config)
-lap score lap/examples/bookstore.openapi.json                 # a bundled example, no network needed
-```
-
-Example `lap score` output:
-
-```
-LAP menu score - Bookstore API
-operations: 6   referenced component schemas: 2
-
-  variant       A tokens  saved vs full  form
-  openapi_full  418       +0%            6 tool(s)
-  compact_sig   205       +51%           manifest text
-  numbered      168       +60%           manifest text
-
-Menu efficiency: compact signatures are +51% vs naive OpenAPI->tools (418 -> 205 tokens).
-```
-
-With `fastmcp` installed, the score adds a **real-MCP baseline** (what an actual MCP generator emits) — on the live Swagger Petstore, that's **2226** menu tokens (**3844** with output schemas) vs **415** for compact signatures. With `ANTHROPIC_API_KEY` set, counts switch from a `tiktoken` approximation to Anthropic's real, free `count_tokens` endpoint — absolute numbers change (~60% higher), relative ordering doesn't.
-
-### Lint output
-
-```bash
-lap lint api/openapi.json
-```
-
-Flags rule violations (opaque operation names, missing pagination/filtering/projection, no server-side aggregation, verbose write responses, ambiguous error handling) with a plain-language message and a citation into the [LAP profile](profile/llm-api-profile.md), e.g. `[WARN R3] collection GET has no pagination (limit/offset/cursor) — agents pull the whole list`.
-
-### CI gate
-
-`--json` makes both commands machine-readable; thresholds turn them into a build gate:
-
-```bash
-lap score openapi.json --gate-form compact_sig --max-menu-tokens 800   # exit 1 if the menu is too heavy
-lap lint  openapi.json --fail-on warn                                  # exit 1 on any warning
-lap lint  openapi.json --ignore R2,A1                                  # suppress specific rules (or a ./.lapignore file)
-```
-
-As a raw GitHub Actions step:
-
-```yaml
-- run: pip install lap-score
-- run: lap score api/openapi.json --gate-form compact_sig --max-menu-tokens 800
-- run: lap lint  api/openapi.json --fail-on warn
-```
-
-…or the bundled composite **Action** (one step, no manual install):
-
-```yaml
-- uses: lCrazyblindl/lap@v0.5.0
-  with:
-    spec: api/openapi.json
-    max-menu-tokens: "800"     # gate the compact_sig menu (omit = report only)
-    fail-on: warn              # fail on any lint warning (omit = report only)
-```
-
-### Already using Spectral?
-
-The same rules ship as a **Spectral ruleset** — no new tool, one line in your existing lint config:
-
-```yaml
-extends:
-  - spectral:oas
-  - ./path/to/spectral/lap.spectral.yaml
-```
-
-See [`spectral/README.md`](spectral/README.md) (custom-function rulesets must be referenced locally, not by URL).
-
-### What `lap score` measures (and doesn't)
-
-It measures **bucket A** (the definitions/menu the model carries in context) and **estimates B and C** from the schemas: **B** — the call the model emits (tool name + required args in a minimal tool-use envelope), **C** — result size per response schema (envelope-aware for patterns like `{"data": [...]}`). Both are structural lower bounds. For *measured* B/C on live tasks with real accuracy checks, see [`experiments/token-bench`](experiments/token-bench/README.md).
-
----
-
-## 4. Project map
-
-- [`lap/`](lap/README.md) — the standalone, pip-installable **toolkit** (`lap score`, `lap lint`). Start here for day-to-day use.
-- [`profile/`](profile/llm-api-profile.md) — the **LAP profile**: the conventions, with every rule backed by a measurement.
-- [`experiments/token-bench/`](experiments/token-bench/README.md) — the full A/B/C benchmark on a real FastAPI testbed ([`pet-zoo/`](pet-zoo/README.md)), 10 tasks across 5 categories, an optional live accuracy check.
-- [`docs/LEADERBOARD.md`](docs/LEADERBOARD.md) — 50 real public APIs ranked by agent-menu token cost; **live sortable version: [lcrazyblindl.github.io/lap](https://lcrazyblindl.github.io/lap/)**, auto-refreshed monthly (history in [`docs/leaderboard-history/`](docs/leaderboard-history)). `experiments/leaderboard.py` regenerates it all.
-- [`docs/GENERATORS.md`](docs/GENERATORS.md) · [`docs/MCP-SERVERS.md`](docs/MCP-SERVERS.md) · [`docs/TOOL-SEARCH.md`](docs/TOOL-SEARCH.md) · [`docs/CODE-EXEC.md`](docs/CODE-EXEC.md) · [`docs/MCP-COMPRESSOR.md`](docs/MCP-COMPRESSOR.md) — the real-tool validation track: real generators, real MCP servers, two of Anthropic's real efficiency features, and a real third-party optimizer, tested live.
-- [`docs/FIELD.md`](docs/FIELD.md) — **state of the field (July 2026)**: every tool/benchmark/optimizer in this space compared honestly, plus a registry of the public headline claims — which we verified, which we couldn't, and which our measurements dispute.
-- [`docs/SPEC-2808.md`](docs/SPEC-2808.md) — measured input for **MCP spec issue #2808**: the tiered-schema and namespacing proposals simulated over 51 real APIs + real MCP servers, with a ready-to-paste comment.
-- [`docs/CACHE-ECONOMICS.md`](docs/CACHE-ECONOMICS.md) — **"isn't the menu cached anyway?"**, priced: caching is at best a 0.10× price multiplier (fragile, and it doesn't free context); menu form is a ~0.2× token multiplier — they compose (~13–2000× per session on real menus).
-- [`docs/TOKENIZERS.md`](docs/TOKENIZERS.md) — **"whose tokens?"**, answered: the corpus re-counted under 4 BPE vocabularies — absolutes swing ≤8%, the savings claim moves 3 pp, the ranking holds at Kendall τ ≥ 0.992.
-- [`docs/LANDSCAPE.md`](docs/LANDSCAPE.md) — where LAP sits in the June-2026 agentic-web landscape (NLWeb, llms.txt, MCP gateways, the token-efficiency tools LAP builds on and credits), and what it deliberately doesn't rebuild.
-- [`spectral/`](spectral/README.md) — the LAP lint rules as a Spectral ruleset.
-- [`pet-zoo/`](pet-zoo/README.md) — the small FastAPI zoo-management API used as the benchmark's testbed.
-- [`ROADMAP.md`](ROADMAP.md) — the full staged history of how this was built, stop/resume friendly.
-
-## 5. Status, license, contributing
-
-**v0.5.0**, pre-1.0, actively maintained. MIT licensed ([LICENSE](LICENSE)) — use it, fork it, ship its rules in your own linter, no attribution required (though a star or a mention helps the public-good goal). See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`RELEASING.md`](RELEASING.md) for the release process. Issues and PRs welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md) (dev setup, the vendor-neutrality and claims-need-receipts policies, and a "score my API" issue template for getting your interface measured).
+**0.5.x**, pre-1.0, actively maintained, MIT — no telemetry, no paid tier, no company. Issues
+and PRs welcome: [CONTRIBUTING.md](CONTRIBUTING.md) covers dev setup and the house policies
+(vendor neutrality, claims need receipts), and there's a **"Score my API"** issue template —
+disputes of our numbers are explicitly invited.
