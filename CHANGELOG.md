@@ -4,7 +4,11 @@ All notable changes to **lap** (PyPI package `lap-score`) are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); loose semantic
 versioning while pre-1.0.
 
-## [Unreleased]
+## [0.5.0] — 2026-07-07
+
+Advice becomes patches (`lap fix` → OpenAPI Overlay), rule R1 becomes a per-endpoint number
+(projected bucket-C), and the naive baseline gets honester (query parameters counted — the
+published leaderboard is regenerated with this code, so `pip install lap-score` reproduces it).
 
 ### Fixed
 - **Menu forms now count query parameters.** `menu._input_schema` (the naive OpenAPI→tools
@@ -128,5 +132,6 @@ profile**, and a reproducible **token benchmark**.
   structural (`docs/CODE-EXEC.md`). See `docs/LEADERBOARD.md` for the 20-real-API dataset this
   release ships alongside the code.
 
+[0.5.0]: https://github.com/lCrazyblindl/lap/releases/tag/v0.5.0
 [0.4.0]: https://github.com/lCrazyblindl/lap/releases/tag/v0.4.0
 [0.3.0]: https://github.com/lCrazyblindl/lap/releases/tag/v0.3.0
