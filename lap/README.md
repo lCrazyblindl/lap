@@ -1,211 +1,118 @@
-# lap — token-efficiency scorer for agent-facing APIs
+# lap — how many tokens does your API cost an LLM agent?
 
-`lap` is the open, neutral, standalone toolkit (no pet-zoo dependency) that measures
-how many **tokens** an API's definitions cost an LLM. It answers: *is my agent-API
-menu efficient, and by how much could it shrink?* — an open, reproducible number to set
-beside the fast-growing MCP/OpenAPI tooling (see [`../docs/LANDSCAPE.md`](../docs/LANDSCAPE.md)
-for the neighbors LAP builds on and credits).
-
-## Install
+Point `lap` at any OpenAPI spec, live MCP server, or your own agent config and get the
+**token cost decomposed** (definitions / call / result), a **0–100 grade**, the concrete
+**rule violations** driving the cost — and an **applicable patch** for the fixable ones.
+Neutral, offline-capable, MIT.
 
 ```bash
-pip install -e .                  # from the repo root (or: pip install lap-score once published)
-pip install -e ".[mcp]"           # + real-MCP baseline (fastmcp)
-pip install -e ".[faithful]"      # + faithful Anthropic count_tokens
+pip install "lap-score[mcp]"
 ```
 
-Core deps are just `httpx` + `tiktoken` + `pyyaml`; `fastmcp` and `anthropic` are optional extras.
-Robust to real specs: `allOf`/`oneOf`/`anyOf`, `$ref` in params/requestBodies/responses,
-path-item-level parameters, OpenAPI 3.1 `type` lists, external `$ref`s (left intact), YAML input,
-**Swagger/OpenAPI 2.0** (response `schema`, `in: body` params, type-on-parameter, `#/definitions`),
-and non-JSON media types (`*+json`, form, XML). Verified crash-free + non-degenerate across 175+
-real APIs.guru specs — re-run with [`../experiments/fuzz_corpus.py`](../experiments/fuzz_corpus.py).
-
-## Quickstart
+## The five commands
 
 ```bash
-lap score  https://petstore3.swagger.io/api/v3/openapi.json   # menu (bucket A) token cost
-lap lint   https://petstore3.swagger.io/api/v3/openapi.json   # flag LAP rule violations
-lap score  --mcp-url http://localhost:8080/mcp                # score a live MCP server's tools
-lap lint   --mcp-url http://localhost:8080/mcp                # lint a live MCP server (M-rules + grade)
-lap lint   --mcp "python -m mcp_server_git"                   # ...or over stdio
-lap score  lap/examples/bookstore.openapi.json
-
-# no install needed, from the repo root:
-python -m lap.score lap/examples/bookstore.openapi.json
+lap stack                                  # YOUR installed MCP servers: "N tokens before you type a word"
+lap score  openapi.json                    # A/B/C token decomposition + the LAP grade
+lap lint   openapi.json                    # which rule violations drive the cost (CI-gateable)
+lap lint   --mcp "python -m mcp_server_git"   # ...same for a live MCP server (stdio or --mcp-url)
+lap fix    openapi.json --apply patched.json  # the fixable findings as an OpenAPI Overlay patch
 ```
 
-Example output:
+What that looks like:
 
 ```
-LAP menu score - Bookstore API
-operations: 6   referenced component schemas: 2
-
-  variant       A tokens  saved vs full  form
-  openapi_full  418       +0%            6 tool(s)
-  compact_sig   205       +51%           manifest text
-  numbered      168       +60%           manifest text
-
-Menu efficiency: compact signatures are +51% vs naive OpenAPI->tools (418 -> 205 tokens).
-```
-
-When `fastmcp` is installed, the score also includes a **real-MCP baseline**
-(`FastMCP.from_openapi`) — what an actual MCP generator emits — plus its
-output-schema-inclusive figure (`--no-mcp` to skip). On a real public API
-(**Swagger Petstore**, 19 ops) the real MCP server costs **2226** menu tokens
-(**3844** with output schemas) vs **415** for compact signatures — an ~81%
-reduction. The toy finding holds in the wild: a real MCP generator is *heavier*
-than the naive baseline.
-
-The score also includes a lazy **`tool_search`** form (the Anthropic Tool Search /
-Cloudflare Code Mode pattern: a fixed 2-tool menu + a name index, schemas loaded on
-demand). Because it doesn't preload schemas, its bucket A is ~flat in the number of
-operations — on a 120-operation API it collapses the menu ~83% vs full schemas,
-beating even compact signatures at scale (Petstore: 1835 → 207, −89%).
-
-- **Faithful counts:** set `ANTHROPIC_API_KEY` (uses the free Anthropic `count_tokens`
-  endpoint; tool defs counted via the real `tools=` parameter). Without it, a GPT-style
-  `tiktoken` approximation — absolute numbers approximate, **relative ordering robust**.
-
-## The LAP grade + badge
-
-`lap score` also prints a composite **LAP grade** — one documented 0–100 number (letter
-A–F) folding three sub-scores: **menu** (naive-menu tokens per operation, 0.45), **result**
-(heaviest estimated response, 0.30) and **hygiene** (lint findings per operation, 0.25);
-log-scaled, constants in [`grade.py`](grade.py), formula in the
-[profile](../profile/llm-api-profile.md#the-lap-grade-composite-0100--letter). Calibration on
-real APIs (post-M3, query params counted): LaunchDarkly **B**, Spotify/SQS **C**,
-GitHub/Postman/DynamoDB **D**, Google Drive **F**.
-
-`lap badge` turns it into a README badge (shields.io endpoint JSON):
-
-```bash
-lap badge api/openapi.json -o docs/lap-badge.json   # commit it, then embed:
-# https://img.shields.io/endpoint?url=<raw URL of docs/lap-badge.json>
-```
-
-…or from the bundled Action, add `badge-path: docs/lap-badge.json`.
-
-## Score your installed MCP stack
-
-`lap stack` answers the 2026 headline question — *"how many tokens does my agent pay before I
-type a word?"* — for **your** machine. It reads the agent's own MCP config (Claude Code project
-`.mcp.json`, Claude Code `~/.claude.json`, Claude Desktop `claude_desktop_config.json`, or any
-JSON with an `mcpServers` map), connects to every server it lists (stdio or HTTP), and totals
-the advertised tool menus:
-
-```bash
-lap stack                        # auto-discover Claude Code / Claude Desktop configs
-lap stack path/to/mcp.json       # or score an explicit config
-lap stack --only github,jira     # subset; --json for machine-readable; --timeout N per server
-```
-
-```
-LAP stack scan - tokenizer: tiktoken-approx
-
-demo-mcp-config.json
-  server        kind   tools  menu tokens  compact  note
+$ lap stack
+  server        kind   tools  menu tokens  compact
   time          stdio      2          283       31
   git           stdio     12         1418      153
-  needs-node    stdio      -            -        -  RuntimeError: Client failed to connect: ...
   TOTAL                    14         1701      184
+Your agent pays ~1,701 tokens of tool menus at session start - before you type a word.
+Compact signatures of the same tools would cost 184 (+89% saved).
 
-Your agent pays ~1,701 tokens of tool menus at session start - before you type a word
-(14 tools across 2 reachable server(s)).
-Compact signatures of the same tools would cost 184 (+89% saved); one lazy tool_search menu
-over the whole stack, 193 (+89% saved).
+$ lap score api/openapi.json
+LAP grade: B (72/100)   [menu 100  result 90  hygiene 0]
+  variant       A tokens  saved vs full
+  openapi_full  418       +0%
+  compact_sig   205       +51%
+  tool_search   163       +61%
+Estimated call size (bucket B): mean ~18 tokens/call ...
+Estimated result size (bucket C): GET /books ~465 tokens (list) -> ~305 if projection were added (R1)
+
+$ lap fix api/openapi.json --apply patched.json
+[written] lap-overlay.yaml  (6 action(s))
+[written] patched.json  (lint findings: 15 -> 3)      # grade: B (72) -> A (91)
 ```
 
-Unreachable servers (missing binary, no credentials) become annotated rows, not crashes. The
-stack-level `tool_search` what-if is counted honestly: the fixed search/call tools are paid
-**once** for the whole stack, plus a name index across all servers. Needs the `[mcp]` extra.
+`lap fix` emits a standard [OpenAPI Overlay 1.0.0](https://spec.openapis.org/overlay/v1.0.0)
+(R3 → `limit` param, R1 → `fields`, R2 → `filter`, E1 → declared `4XX`) — it declares the
+contract; your server still implements it. `lap badge <spec>` writes a shields.io endpoint
+JSON so your README can carry the grade.
 
-## Auto-fix as an OpenAPI Overlay
+## CI gates
 
-`lap fix` turns the *structurally fixable* lint findings into an
-[OpenAPI Overlay 1.0.0](https://spec.openapis.org/overlay/v1.0.0) document — advice becomes an
-applicable patch: R3 → a `limit` parameter, R1 → `fields`, R2 → `filter`, E1 → a declared
-`4XX` error response. (D3/A1 stay advisory — renames and new endpoints are semantic
-decisions.) The overlay declares the *contract*; your server still has to implement it.
+Every command is `--json`-able and can fail a build:
 
 ```bash
-lap fix api/openapi.json -o lap-overlay.yaml          # apply with any Overlay-aware tool
-lap fix api/openapi.json --apply patched.json         # ...or the built-in merge
+lap score openapi.json --gate-form compact_sig --max-menu-tokens 800   # menu too heavy
+lap score --diff old.json new.json --max-growth 500                    # this PR bloated the menu
+lap lint  openapi.json --fail-on warn                                  # rule violations (--ignore R2,A1 / .lapignore)
 ```
 
-On the bundled Bookstore example: 15 lint findings → 3 after applying, and the LAP grade
-jumps **B (72) → A (91)**. _(The menu forms currently count path+body parameters only, so the
-added query params don't change bucket A — see the roadmap for the query-param menu fix.)_
-
-## Diff mode
-
-`lap score --diff <before> <after>` compares two versions of a spec instead of scoring one —
-"did this PR make the API worse for agents?" Reports the menu token delta per form, plus which
-LAP lint findings were newly introduced or fixed:
-
-```bash
-lap score --diff old_openapi.json new_openapi.json
-lap score --diff old_openapi.json new_openapi.json --gate-form compact_sig --max-growth 500
-```
-
-## CI gate
-
-`--json` makes both commands machine-readable; thresholds set the exit code so LAP can fail a build:
-
-```bash
-lap score openapi.json --gate-form compact_sig --max-menu-tokens 800   # exit 1 if the menu is too heavy
-lap score --diff old.json new.json --gate-form compact_sig --max-growth 500  # exit 1 if the menu grew too much
-lap lint  openapi.json --fail-on warn                                  # exit 1 on any warning
-lap lint  openapi.json --ignore R2,A1                                  # suppress rules (or a ./.lapignore file)
-```
-
-GitHub Actions:
-
-```yaml
-- run: pip install lap-score          # or: pip install -e .
-- run: lap score api/openapi.json --gate-form compact_sig --max-menu-tokens 800
-- run: lap lint  api/openapi.json --fail-on warn
-```
-
-…or the bundled composite **Action** (one step, no manual install):
+…or the bundled composite Action:
 
 ```yaml
 - uses: lCrazyblindl/lap@v0.5.0
   with:
     spec: api/openapi.json
-    max-menu-tokens: "800"     # gate the compact_sig menu (omit = report only)
-    fail-on: warn              # fail on any lint warning (omit = report only)
+    max-menu-tokens: "800"
+    fail-on: warn
+    badge-path: docs/lap-badge.json   # optional: grade badge JSON
 ```
 
-Already lint OpenAPI with **Spectral**? The same LAP rules ship as a ruleset —
-see [`../spectral/`](../spectral/README.md).
+(Prefer Spectral? The same rules ship as a
+[Spectral ruleset](https://github.com/lCrazyblindl/lap/tree/main/spectral).)
 
-## What it measures (and what it doesn't)
+## Reading the numbers
 
-It measures **bucket A** (the definitions/menu the model carries in context) and **estimates**
-the other two from the schemas: **B** (the call the model emits — tool name + required args in
-a minimal tool-use envelope; optional params omitted, real schema examples honored) and **C**
-(result size, from each response schema + an assumed `--page-size`). Both estimates are
-structural lower bounds that capture keys/nesting/types. For list responses the C table also
-shows a **projected** figure — the same page with each item cut to its first 3 schema fields —
-annotated with whether the API actually advertises a projection param (`fields=`/`$select`),
-so rule R1's saving is a number per endpoint, not advice. For *measured* B/C on live tasks see
-[`../experiments/token-bench`](../experiments/token-bench/README.md). The conventions
-behind the compact form are the [LAP profile](../profile/llm-api-profile.md).
+- **Bucket A** (measured) — the tool-definition menu the model carries *every session*,
+  under four renderings: naive OpenAPI→tools, compact signatures, numbered, lazy
+  `tool_search`. With `fastmcp` installed, a real-MCP baseline row too.
+- **Buckets B / C** (estimated from the schemas) — the call the model emits (required args
+  in a tool-use envelope) and the result that comes back (per response schema, page-size
+  aware, envelope-aware, real `example` values honored). Structural lower bounds. List
+  responses also get a **projected** figure — what field projection would save, per endpoint.
+- **The grade** — menu tokens/operation (weight 0.45) + heaviest result (0.30) + lint
+  findings/operation (0.25), log-scaled;
+  [formula](https://github.com/lCrazyblindl/lap/blob/main/profile/llm-api-profile.md).
+  Calibration: LaunchDarkly **B**, Spotify **C**, GitHub **D**, Google Drive **F**.
+- **Tokenizer** — offline = tiktoken approximation (absolutes ≈, ordering robust: checked
+  under [4 BPE vocabularies](https://github.com/lCrazyblindl/lap/blob/main/docs/TOKENIZERS.md),
+  Kendall τ ≥ 0.992). Set `ANTHROPIC_API_KEY` for faithful `count_tokens` figures.
+- Parses OpenAPI 3.x **and** Swagger 2.0, YAML, `allOf/oneOf/anyOf`, `$ref`s, non-JSON media
+  types; crash-free across 175+ real APIs.guru specs.
 
-## Files
+## The receipts
+
+Every number and rule has a reproducible measurement behind it:
+the [live leaderboard of 50 real APIs](https://lcrazyblindl.github.io/lap/) (naive menus
+total ~11.2M tokens; ~82% recoverable),
+the [LAP profile](https://github.com/lCrazyblindl/lap/blob/main/profile/llm-api-profile.md)
+(every rule cites its experiment), and the
+[state of the field](https://github.com/lCrazyblindl/lap/blob/main/docs/FIELD.md) —
+which vendor claims we verified live, and which our measurements dispute.
+Issues/PRs: [CONTRIBUTING](https://github.com/lCrazyblindl/lap/blob/main/CONTRIBUTING.md)
+(there's a "Score my API" issue template — disputes welcome).
+
+## Module map
 
 | file | role |
 | --- | --- |
-| `openapi_ir.py` | load any OpenAPI (file/URL) → normalized operations + `inline_refs` |
-| `menu.py` | render the menu forms (openapi_full / compact_sig / numbered) from the IR |
-| `mcp_form.py` | real-MCP baseline via `FastMCP.from_openapi` (optional; `--no-mcp` to skip) |
-| `mcp_client.py` | scores a live MCP server's advertised tools (`lap score --mcp-url`) |
-| `stack.py` | `lap stack` — score the user's installed MCP stack from their agent config |
-| `grade.py` | the composite LAP grade (0–100 + letter) and `lap badge` (shields.io endpoint JSON) |
-| `estimate.py` | estimates bucket C (result size) from response schemas (`--page-size`) |
-| `tokens.py` | token counting (Anthropic endpoint, or tiktoken approx) |
-| `score.py` | the `lap score` CLI |
-| `lint.py` | the `lap lint` CLI — checks a spec against the LAP profile rules (D3/R1/R2/R3/W1/E1/A1), or a live MCP server's tools (`--mcp-url`/`--mcp`, rules D3/M1–M4 + grade) |
-| `overlay.py` | `lap fix` — the fixable lint findings as an OpenAPI Overlay 1.0.0 (+ built-in `--apply`) |
-| `examples/` | sample specs: a Bookstore API, a gnarly OpenAPI 3.1 (allOf / $ref-params / nullable / external-ref), and a Swagger 2.0 spec (`swagger2.json`) |
+| `openapi_ir.py` | any OpenAPI (file/URL) → normalized operations |
+| `menu.py` | the menu forms (naive / compact / numbered / tool_search) |
+| `estimate.py` | bucket B/C estimates (+ projection what-ifs) |
+| `lint.py` / `overlay.py` | rules (OpenAPI + live-MCP M-rules) / `lap fix` Overlay |
+| `grade.py` | the composite grade + `lap badge` |
+| `stack.py` / `mcp_client.py` / `mcp_form.py` | your MCP stack / live servers / real-MCP baseline |
+| `tokens.py` / `score.py` | counting backends / the `lap score` CLI |
+| `examples/` | bundled sample specs (Bookstore, gnarly 3.1, Swagger 2.0) |

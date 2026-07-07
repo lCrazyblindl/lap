@@ -4,6 +4,14 @@ All notable changes to **lap** (PyPI package `lap-score`) are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); loose semantic
 versioning while pre-1.0.
 
+## [0.5.1] — 2026-07-07
+
+### Changed
+- **PyPI page rewritten** (docs-only release): compact, most-useful-first — the five commands
+  with real output up top, then CI gates, then how to read the numbers; all links absolute
+  (the previous page's relative links were broken on PyPI); removed a stale note about query
+  params (fixed in 0.5.0) and dev-flavored install instructions.
+
 ## [0.5.0] — 2026-07-07
 
 Advice becomes patches (`lap fix` → OpenAPI Overlay), rule R1 becomes a per-endpoint number
@@ -132,6 +140,7 @@ profile**, and a reproducible **token benchmark**.
   structural (`docs/CODE-EXEC.md`). See `docs/LEADERBOARD.md` for the 20-real-API dataset this
   release ships alongside the code.
 
+[0.5.1]: https://github.com/lCrazyblindl/lap/releases/tag/v0.5.1
 [0.5.0]: https://github.com/lCrazyblindl/lap/releases/tag/v0.5.0
 [0.4.0]: https://github.com/lCrazyblindl/lap/releases/tag/v0.4.0
 [0.3.0]: https://github.com/lCrazyblindl/lap/releases/tag/v0.3.0
