@@ -19,3 +19,9 @@ benchmark. (GitHub repo: `lap`; local folder is still `LLMToHTTP`.)
 - Dependencies live in a gitignored `.venv`; use `./.venv/Scripts/python.exe`.
 - Positioning: LAP **complements** MCP/NLWeb; it does **not** rebuild gateways/auth/discovery
   (those are covered by Microsoft NLWeb, AWS/Hypr MCP gateways, NIST/IETF auth).
+- **Git commits on this box (PowerShell 5.1): NEVER `git commit -m @'...'@`.** Any `"` inside
+  the here-string breaks PS 5.1's native-arg quoting — git sees the message as pathspecs
+  (has bitten 3×). Instead: Write the message to
+  `<scratchpad>/commit-msg.txt` with the Write tool, then `git commit -F <that path>`.
+  Same rule for any multi-line/quoted text passed to a native exe (gh, twine): file + `-F`/
+  `--notes-file`, not inline args.
