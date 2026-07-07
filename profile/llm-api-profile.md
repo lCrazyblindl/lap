@@ -60,7 +60,15 @@ A provider adopts the highest level worth its task distribution.
 ### Discovery — bucket A
 - **D1** Describe operations as compact, familiar signatures (TS-like) or trimmed OpenAPI, not full JSON-Schema dumps. *Evidence: 401 vs 1637 tokens (compact_sig vs openapi_full); a real FastMCP server is 1689, or 3762 with output schemas.*
 - **D2** When endpoints are many, expose them lazily / searchably (a search-then-fetch step) instead of dumping all definitions up front. *Evidence: industry Tool Search ≈ −85% (vendor-reported); we independently verified this live on a real 290-operation API — Anthropic's real Tool Search cut billed tokens ~90% versus the identical schemas without it, server-enforced regardless of model behavior (`docs/TOOL-SEARCH.md`). Caveat: not worth it below ~10 tools, where the search round-trip itself costs more than it saves.*
-- **D3** Do **not** encode operations as opaque codes/numbers. *Evidence: `numbered` total ≥ `compact_sig` total — a net loss, because the codebook still costs bucket A while saving only ~2 tokens of bucket B.*
+- **D3** Do **not** encode operations as opaque codes/numbers. *Evidence: `numbered` total ≥ `compact_sig` total — a net loss, because the codebook still costs bucket A while saving only ~2 tokens of bucket B. The v2 validation matrix adds an accuracy penalty on small models (46/50 vs compact's 48/50, with a 2/5 collapse on an aggregate task).*
+
+> **"But isn't the menu prompt-cached anyway?"** Caching is a *price* multiplier (≥0.10×,
+> and fragile — any tool change or a TTL-length idle gap re-bills the 1.25× write), while
+> menu form is a *token* multiplier (~0.2×, robust, and it also frees context-window
+> capacity, which caching does not). They multiply rather than compete: lean menu (D1),
+> defer where possible (D2), then cache what remains. Priced out with real menus in
+> [`docs/CACHE-ECONOMICS.md`](../docs/CACHE-ECONOMICS.md) — compact+cached runs ~13–2000×
+> cheaper per 8-turn session than naive uncached, depending on API size.
 
 ### MCP tools — bucket A (the MCP-side counterparts, checked by `lap lint --mcp-url/--mcp`)
 D3 carries over to MCP tool names unchanged. What an MCP tool can get wrong that an
