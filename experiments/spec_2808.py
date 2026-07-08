@@ -175,6 +175,10 @@ def main() -> None:
     disc_saves = [r["disc_save"] for r in rows]
     tiered_saves = [r["tiered_save"] for r in rows]
     dd = [r["dedupe_save"] for r in rows if r["hoisted"]]
+    dd_rows = sorted((r for r in rows if r["hoisted"]),
+                     key=lambda r: r["dedupe_save"], reverse=True)
+    dd_top = ", ".join(f"{r['title']} {r['dedupe_save']}%" for r in dd_rows[:3])
+    dd_worst = f"{dd_rows[-1]['title']} {dd_rows[-1]['dedupe_save']}%"
     be = [r["break_even"] for r in rows]
     rows.sort(key=lambda r: r["full"], reverse=True)
 
@@ -244,9 +248,9 @@ def main() -> None:
         f"{statistics.mean(dd):.0f}%, median {statistics.median(dd):.0f}%, range "
         f"{min(dd)}–{max(dd)}%**.",
         "- **The distribution is the finding**: dedupe pays where the repeated declaration is "
-        "*fat* (Kubernetes 94%, Compute Engine 69%, Jira 63% — big shared object schemas) and "
+        f"*fat* ({dd_top} — big shared object schemas) and "
         "goes slightly **negative** where repeated parameters are tiny — a `$ref` replacement "
-        "costs more tokens than `{\"type\":\"string\"}` itself (CircleCI −10%). Repetition alone "
+        f"costs more tokens than `{{\"type\":\"string\"}}` itself ({dd_worst}). Repetition alone "
         "doesn't pay; if the spec adopts this, it should apply only above a size threshold.",
         "",
     ]
@@ -302,7 +306,7 @@ def main() -> None:
             "",
         ]
     lines += [
-        f"## Ready-to-paste comment for [discussion #2812]({DISCUSSION})",
+        f"## The comment below was posted to [discussion #2812]({DISCUSSION}) on 2026-07-08",
         "",
         "> A corpus-scale data point, since the numbers in this thread are each from a single "
         f"server (11 / 29 / 79 tools): we measured the original issue's proposals 1 and 3 over "
@@ -321,8 +325,9 @@ def main() -> None:
         "Tool Search), so it should stay opt-in for small servers.",
         f"> - **Namespacing/dedupe (proposal 3): {statistics.mean(dd):.0f}% mean saving, but "
         f"range {min(dd)}–{max(dd)}%** — it pays where the repeated declaration is *fat* "
-        "(Kubernetes 94%) and goes slightly negative where repeated params are tiny, since a "
-        "`$ref` costs more than `{\"type\":\"string\"}` (CircleCI −10%; mcp-server-git repeats "
+        f"({dd_rows[0]['title']} {dd_rows[0]['dedupe_save']}%) and goes slightly negative "
+        "where repeated params are tiny, since a `$ref` costs more than "
+        f"`{{\"type\":\"string\"}}` ({dd_worst}; mcp-server-git repeats "
         "`repo_path` everywhere yet saves ~0%). Worth a size threshold if adopted.",
         "> - On the token-cost-vs-selection-reliability tension raised above: we measured it "
         "live (10 tasks × 5 menu forms × 5 repeats, small model) — the only form with an "

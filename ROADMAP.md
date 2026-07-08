@@ -680,8 +680,9 @@ owner) → P3 → P4 → P6.**
   retargeted at #2812 + SEP-2106 section + comment rewritten (answers the CI-budget ask and
   the tokens-vs-reliability tension with matrix-v2 data); CACHE-ECONOMICS.md gains "the 2026
   draft caches the *transport*, not the context". +2 tests (tests/ 56, full suite 60).
-  **Owner action refreshed: post the new comment to discussion #2812 — ideally before the
-  Jul 28 final.**  `[no key]`
+  **The refreshed comment was POSTED to discussion #2812 on 2026-07-08** (owner authorized
+  the agent to post via their `gh` auth; dedupe examples made dynamic first — the hardcoded
+  "Kubernetes 94% / CircleCI −10%" had drifted after M3 to "92% / DVP Data API −10%").  `[no key]`
 - [ ] ▶ **P2 — MCP-server leaderboard** `[no key]`. The OpenAPI leaderboard's twin from shipped
   machinery (`lint --mcp`, `mcp_client`, `grade`): score ~20–30 popular locally-runnable
   (no-cred) MCP servers — naive vs compact bucket A, grade, M-findings →
@@ -761,9 +762,9 @@ items folded in as P4/P5/P6. **P1 done** — #2808 → discussion #2812 (closed 
 converted); draft spec adopted none of its proposals; `lint.flat_schema()` fix shipped (composed
 inputSchemas visible to M-rules/compact; 29% of real generated tools already carry 2020-12
 constructs); SPEC-2808.md retargeted + comment rewritten for #2812; CACHE-ECONOMICS "transport
-not context" section; 60 tests green. ▶ **P2 — MCP-server leaderboard.** Owner actions pending:
-**post the refreshed comment to discussion #2812 (before Jul 28)** + POST.md publishing +
-mcp-compressor upstream issue.** Say "continue LAP" to keep going.
+not context" section; 60 tests green. ▶ **P2 — MCP-server leaderboard.** **The #2812
+comment is POSTED (2026-07-08, owner-authorized).** Owner actions still pending: POST.md
+publishing + mcp-compressor upstream issue.** Say "continue LAP" to keep going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/
