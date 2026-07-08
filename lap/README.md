@@ -14,7 +14,7 @@ pip install "lap-score[mcp]"
 ```bash
 lap stack                                  # YOUR installed MCP servers: "N tokens before you type a word"
 lap score  openapi.json                    # A/B/C token decomposition + the LAP grade
-lap lint   openapi.json                    # which rule violations drive the cost (CI-gateable)
+lap lint   openapi.json                    # which rule violations drive the cost (CI-gateable; --discovery probes /llms.txt)
 lap lint   --mcp "python -m mcp_server_git"   # ...same for a live MCP server (stdio or --mcp-url)
 lap fix    openapi.json --apply patched.json  # the fixable findings as an OpenAPI Overlay patch
 ```

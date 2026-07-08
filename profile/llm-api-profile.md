@@ -58,6 +58,15 @@ A provider adopts the highest level worth its task distribution.
 ## Rules
 
 ### Discovery — bucket A
+- **D0** *(level L0 — the floor)* Publish a machine-readable pointer at
+  **`<origin>/llms.txt`** that links your OpenAPI spec / MCP endpoint, so an agent *finds*
+  the interface instead of searching for it. *Evidence: this is practical, not aspirational —
+  our scan of the leaderboard's 36 top API-provider domains found **47% already serve
+  `/llms.txt`** (Stripe, GitHub, Slack, Notion, …), while the MCP-side conventions are still
+  ~absent (`/.well-known/mcp.json` 6%, a real `/mcp` endpoint 0%) —
+  [`docs/DISCOVERY.md`](../docs/DISCOVERY.md). Checked by `lap lint <url> --discovery`.
+  Discovery infrastructure itself (registries, NLWeb) is out of LAP's scope — D0 is only the
+  1-KB pointer that makes you findable by all of them.*
 - **D1** Describe operations as compact, familiar signatures (TS-like) or trimmed OpenAPI, not full JSON-Schema dumps. *Evidence: 401 vs 1637 tokens (compact_sig vs openapi_full); a real FastMCP server is 1689, or 3762 with output schemas.*
 - **D2** When endpoints are many, expose them lazily / searchably (a search-then-fetch step) instead of dumping all definitions up front. *Evidence: industry Tool Search ≈ −85% (vendor-reported); we independently verified this live on a real 290-operation API — Anthropic's real Tool Search cut billed tokens ~90% versus the identical schemas without it, server-enforced regardless of model behavior (`docs/TOOL-SEARCH.md`). Caveat: not worth it below ~10 tools, where the search round-trip itself costs more than it saves.*
 - **D3** Do **not** encode operations as opaque codes/numbers. *Evidence: `numbered` total ≥ `compact_sig` total — a net loss, because the codebook still costs bucket A while saving only ~2 tokens of bucket B. The v2 validation matrix adds an accuracy penalty on small models (46/50 vs compact's 48/50, with a 2/5 collapse on an aggregate task).*

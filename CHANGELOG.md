@@ -4,6 +4,14 @@ All notable changes to **lap** (PyPI package `lap-score`) are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); loose semantic
 versioning while pre-1.0.
 
+## [Unreleased]
+
+### Added
+- **`lap lint <url> --discovery`** — rule **D0** (profile level L0): probes the spec URL's
+  origin for `/llms.txt` and flags its absence (info). One well-known pointer costs ~1 KB and
+  saves every agent a search; the accompanying scan of the leaderboard's 50 real API provider
+  domains (`docs/DISCOVERY.md`) measures how rare it still is.
+
 ## [0.5.1] — 2026-07-07
 
 ### Changed

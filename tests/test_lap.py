@@ -553,6 +553,28 @@ def test_gather_reports_estimated_b(spec):
     assert " " in b["heaviest"]["where"]  # "METHOD /path"
 
 
+# --- discoverability rule D0 (v0.7 S2) ------------------------------------------
+def test_discovery_flags_missing_llms_txt():
+    found = lint.discovery_findings("https://api.example.com/v3/openapi.json",
+                                    probe=lambda url: 404)
+    assert [f.rule for f in found] == ["D0"]
+    assert found[0].severity == "info" and found[0].where == "https://api.example.com"
+
+
+def test_discovery_ok_when_llms_txt_present_and_skips_files():
+    calls = []
+
+    def probe(url):
+        calls.append(url)
+        return 200
+
+    assert lint.discovery_findings("https://api.example.com/openapi.json", probe=probe) == []
+    assert calls == ["https://api.example.com/llms.txt"]
+    # non-URL sources (local files) are skipped entirely
+    assert lint.discovery_findings("lap/examples/bookstore.openapi.json", probe=probe) == []
+    assert len(calls) == 1
+
+
 # --- query params in the menu forms (v0.7 M3) ----------------------------------
 def test_menu_forms_include_query_params():
     spec = {

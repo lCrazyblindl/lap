@@ -85,6 +85,34 @@ HEAVY_TOOL_TOKENS = 600  # per-tool definition cost that dominates a session (sp
 #                          measured real production tools at 103-1024 tokens; ~1000 = heavy)
 
 
+def discovery_findings(spec_url: str, probe=None) -> list[Finding]:
+    """Rule D0 (profile L0, opt-in via `lap lint <url> --discovery`): an agent that has to
+    *search* for your machine-readable interface burns more tokens than one that finds a
+    pointer at a well-known path. Probes `<origin>/llms.txt`. `probe` is an injection point
+    for tests: callable(url) -> HTTP status int (or raises)."""
+    from urllib.parse import urlsplit
+
+    parts = urlsplit(spec_url)
+    if parts.scheme not in ("http", "https"):
+        return []
+    origin = f"{parts.scheme}://{parts.netloc}"
+    if probe is None:
+        import httpx
+
+        def probe(url: str) -> int:  # noqa: F811 - default prober
+            return httpx.get(url, timeout=10, follow_redirects=True).status_code
+
+    try:
+        ok = probe(f"{origin}/llms.txt") == 200
+    except Exception:  # noqa: BLE001 - unreachable origin = not discoverable
+        ok = False
+    if ok:
+        return []
+    return [Finding("D0", "info", origin,
+                    "no /llms.txt at the API origin - agents must search for your interface "
+                    "instead of finding a pointer at the well-known path (profile rule D0)")]
+
+
 def lint_tools(tools: list[dict]) -> list[Finding]:
     """Lint a live MCP server's advertised tools (name / description / inputSchema).
 
@@ -183,6 +211,8 @@ def main() -> None:
                     help="MCP connect timeout in seconds (default 30)")
     ap.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     ap.add_argument("--ignore", default="", help="comma-separated rule codes to suppress (also reads ./.lapignore)")
+    ap.add_argument("--discovery", action="store_true",
+                    help="also probe the spec URL's origin for /llms.txt (rule D0; URL sources only)")
     ap.add_argument("--fail-on", choices=["none", "info", "warn"], default="none",
                     help="CI gate: exit 1 if any finding at/above this severity remains")
     args = ap.parse_args()
@@ -228,7 +258,10 @@ def main() -> None:
         if not args.source:
             ap.error("provide an OpenAPI source or --mcp-url/--mcp")
         spec = ir.load_spec(args.source)
-        findings = filter_ignored(lint(spec), ignore)
+        found = lint(spec)
+        if args.discovery:
+            found += discovery_findings(args.source)
+        findings = filter_ignored(found, ignore)
         title = spec.get("info", {}).get("title", "(untitled API)")
         warns = sum(1 for f in findings if f.severity == "warn")
         infos = len(findings) - warns

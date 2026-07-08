@@ -541,9 +541,22 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   `lap fix --apply` runs from the published wheel, patched Bookstore scores A 91). **GitHub:**
   tag + release https://github.com/lCrazyblindl/lap/releases/tag/v0.5.0. Action examples at
   `@v0.5.0`.  `[release creds]`
+- [x] **S2 — Discoverability rule D0 + llms.txt adoption scan** _(ex-v0.5 S8, trimmed to what's
+  measurable)_. Done. Profile gains **L0 / rule D0** (publish `<origin>/llms.txt` pointing at
+  your machine-readable interface); `lap lint <url> --discovery` probes the origin and flags
+  its absence (info; local files skipped; probe injectable for tests). Evidence:
+  [`docs/DISCOVERY.md`](docs/DISCOVERY.md) ([`experiments/discovery_scan.py`]
+  (experiments/discovery_scan.py)) scanned the leaderboard's 36 provider apex domains —
+  **llms.txt is at 47% adoption** (Stripe, GitHub, Slack, Notion…), which *surprised us*
+  (expected near-zero; the pre-drafted "almost none" narrative was rewritten to match the
+  data), while MCP discovery conventions are ~absent (`/.well-known/mcp.json` 6%, real `/mcp`
+  0% — all apparent hits were SPA HTML fallbacks, caught after extending the soft-404 check to
+  every path). Story: **discovery is getting solved; efficiency isn't** — the same providers'
+  menus are still the leaderboard's naive kilotokens. NLWeb endpoint scoring: nothing live to
+  score (0/36 `/mcp`); `--mcp-url` already covers any that appear. +2 tests (tests/ 54, full
+  suite 58).  `[no key]`
 - [ ] **▶ Next — pick from the v0.7 tracks** (remaining highlights: Track V "2nd real API for
-  Tool Search/code-exec" `[key]` · Track S llms.txt/NLWeb rule (ex-S8) · Track C
-  outreach/listings · Track E perf/PBT).
+  Tool Search/code-exec" `[key]` · Track C outreach/listings · Track E perf/PBT).
 
 Two owner actions stay pending meanwhile: post the SPEC-2808 comment and publish `docs/POST.md`.
 - [x] **N9 — Leaderboard as a living page.** Done. `experiments/leaderboard.py` now also emits a
@@ -671,9 +684,10 @@ cost 5345/correct, near-naive; its query wins at 1902). **v0.6 COMPLETE. v0.7: C
 root-caused), M2 done (cache economics), S1 done (`lap fix` — lint findings as an applicable
 OpenAPI Overlay; Bookstore B72 → A91 from its own patch), M3 done (query params in menu forms —
 naive total +7.2% → 11.2M, compact save now 82%/search 86%, Spotify B→C; all generated docs
-refreshed), M4 done (tokenizer sensitivity: τ ≥ 0.992), **0.5.0 FULLY RELEASED 2026-07-07**
-(PyPI + GitHub, fresh-venv verified — the package now reproduces the published leaderboard).
-▶ pick next from the v0.7 tracks.**
+refreshed), M4 done (tokenizer sensitivity: τ ≥ 0.992), **0.5.0+0.5.1 RELEASED 2026-07-07**
+(PyPI + GitHub; 0.5.1 = docs-only, PyPI page + root README rewritten useful-first), S2 done
+(rule D0 + llms.txt scan: 47% adoption — discovery is getting solved, efficiency isn't).
+▶ pick next from the v0.7 tracks (V 2nd-API `[key]` / C outreach / E perf-PBT).**
 Owner actions pending: SPEC-2808 comment + POST.md publishing.** Say "continue LAP" to keep
 going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
