@@ -51,9 +51,11 @@ def _ptype(prop) -> str:
 
 
 def _compact(tools: list[dict]) -> str:
+    from .lint import flat_schema  # composed/$ref'd schemas (SEP-2106) still yield params
+
     lines = ["# tools (compact, from MCP inputSchemas)"]
     for t in tools:
-        props = (t["input_schema"] or {}).get("properties", {})
+        props, _ = flat_schema(t["input_schema"] or {})
         params = ", ".join(f"{k}:{_ptype(v)}" for k, v in props.items())
         lines.append(f"{t['name']}({params})")
     return "\n".join(lines)

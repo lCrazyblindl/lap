@@ -1,6 +1,6 @@
 # Cache economics - does prompt caching make the menu free?
 
-_Generated 2026-07-07 by [`experiments/cache_economics.py`](../experiments/cache_economics.py) from the [leaderboard](LEADERBOARD.md) data; tokenizer as there (**tiktoken-approx**)._
+_Generated 2026-07-08 by [`experiments/cache_economics.py`](../experiments/cache_economics.py) from the [leaderboard](LEADERBOARD.md) data; tokenizer as there (**tiktoken-approx**)._
 
 **The objection.** "Tool definitions are prompt-cached, so bucket A costs nothing - why optimize the menu?" This doc prices that claim with the standard caching model: a cache **write** bills at **1.25x** base input, a cache **read** at **0.10x**, and the prefix is re-sent **every assistant turn**, so a T-turn session pays `A x T` uncached vs `A x (1.25 + 0.10(T-1))` cached - best case (prefix byte-identical throughout, no idle gap past the cache TTL).
 
@@ -8,7 +8,7 @@ _Generated 2026-07-07 by [`experiments/cache_economics.py`](../experiments/cache
 
 - **At best a 10x discount, asymptotically.** As T grows the cached cost tends to `0.10 x A` per turn - never zero. A compact rendering is a ~5x cut that **composes** with caching: compact+cached ~= 50x cheaper than naive uncached.
 - **Break-even vs a compact menu:** with compaction ratio `r = compact/naive`, an *uncached* compact menu beats a *cached* naive one while `T < 1.15 / (r - 0.10)` turns (and at **any** T once `r <= 0.10`). At the leaderboard-average r ~= 0.18 that's ~14 turns; on GitHub (r = 0.28) ~6 turns; on Xero (r = 0.002) - always. So even a caching refusenik wins with the leaner menu on typical sessions; and if you do cache, cache the leaner menu (the strategies compose, they don't compete).
-- **Caching pays in dollars, not context.** The cached definitions still occupy the context window and still tax the model's working memory - the reasoning-capacity concern in MCP spec issue #2808 is untouched by caching. Kubernetes' 2.8M-token naive menu doesn't fit a 200K window at any discount. Tool Search / deferred loading is different in kind: the definitions are genuinely absent (saves dollars AND context).
+- **Caching pays in dollars, not context.** The cached definitions still occupy the context window and still tax the model's working memory - the reasoning-capacity concern in MCP spec discussion #2812 (ex-issue #2808) is untouched by caching. Kubernetes' 2.8M-token naive menu doesn't fit a 200K window at any discount. Tool Search / deferred loading is different in kind: the definitions are genuinely absent (saves dollars AND context).
 - **The best case is fragile.** Any change to any tool definition invalidates the prefix (that's what #2808's `schema_version` proposal protects); an idle gap longer than the cache TTL (minutes) triggers a full re-write; and the write premium means a cache used only once costs **125%** of not caching at all.
 
 ## Worked examples (real menus, billing-weighted input tokens)
@@ -50,6 +50,14 @@ At a typical 8-turn session: naive uncached ~$2.71, compact cached ~$0.187 per s
 | 100 | 163,700 | 18,253 | 16,800 | 1,873 | compact cached |
 
 At a typical 8-turn session: naive uncached ~$0.04, compact cached ~$0.001 per session - **40x** apart on this API.
+
+## The 2026 draft spec caches the *transport*, not the context
+
+The MCP draft revision (final publication 2026-07-28) adds protocol-level caching: `tools/list` results now carry `ttlMs` + `cacheScope` ([SEP-2549](https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2549)), and servers SHOULD return tools in deterministic order "to enable client-side caching and improve LLM prompt cache hit rates". Both are good changes - and worth pricing precisely:
+
+- **`ttlMs`/`cacheScope` saves the *re-listing* round-trip, not the per-turn prompt cost.** The client refrains from calling `tools/list` while the TTL holds, but the definitions it cached still enter the model's context every turn at the prices above. Transport caching and prompt caching stack; **neither returns context-window capacity**.
+- **Deterministic ordering makes the best case above reachable** - a byte-identical prefix is exactly what the 1.25x/0.10x model assumes. It doesn't move the asymptote: `0.10 x A` per turn, on a menu still occupying `A` tokens of window.
+- None of #2808's three proposals (tiered schemas, schema versioning, namespacing) became protocol mechanisms in this revision - our measured input to that (now) discussion is in [SPEC-2808.md](SPEC-2808.md).
 
 ## Takeaway
 

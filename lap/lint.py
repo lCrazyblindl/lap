@@ -113,6 +113,50 @@ def discovery_findings(spec_url: str, probe=None) -> list[Finding]:
                     "instead of finding a pointer at the well-known path (profile rule D0)")]
 
 
+def _deref(node, root, hops: int = 0):
+    """Follow local `$ref`s (`#/$defs/...`, `#/definitions/...`). Bounded hops so a
+    cyclic schema terminates; unresolvable or external refs are returned as-is."""
+    while (isinstance(node, dict) and isinstance(node.get("$ref"), str)
+           and node["$ref"].startswith("#/") and hops < 16):
+        target = root
+        for seg in node["$ref"][2:].split("/"):
+            seg = seg.replace("~1", "/").replace("~0", "~")
+            if isinstance(target, dict) and seg in target:
+                target = target[seg]
+            else:
+                return node
+        node, hops = target, hops + 1
+    return node
+
+
+def flat_schema(schema, _root=None, _depth: int = 0) -> tuple[dict, list]:
+    """Flatten a tool inputSchema to `(properties, required)` as a reader would see it.
+
+    The 2026 draft MCP spec (SEP-2106) loosens `inputSchema` to any JSON Schema 2020-12 -
+    composition keywords and `$ref` into `$defs`/`definitions` become first-class, and
+    OpenAPI->MCP generators already emit them today. Reading only top-level `properties`
+    silently sees such a tool as parameterless, so this walks local composition instead:
+    `allOf`/`oneOf`/`anyOf` branch properties are unioned (first declaration wins) and
+    their `required` lists merged - a declared-requiredness view for linting/rendering,
+    not a validator. Depth- and hop-bounded, mirroring SEP-2106's own resource bounds."""
+    if not isinstance(schema, dict) or _depth > 8:
+        return {}, []
+    root = _root if _root is not None else schema
+    schema = _deref(schema, root)
+    if not isinstance(schema, dict):
+        return {}, []
+    props = {k: (_deref(v, root) if isinstance(v, dict) else v)
+             for k, v in (schema.get("properties") or {}).items()}
+    required = [r for r in (schema.get("required") or []) if isinstance(r, str)]
+    for key in ("allOf", "oneOf", "anyOf"):
+        for branch in schema.get(key) or []:
+            b_props, b_req = flat_schema(branch, root, _depth + 1)
+            for k, v in b_props.items():
+                props.setdefault(k, v)
+            required += [r for r in b_req if r not in required]
+    return props, required
+
+
 def lint_tools(tools: list[dict]) -> list[Finding]:
     """Lint a live MCP server's advertised tools (name / description / inputSchema).
 
@@ -127,7 +171,7 @@ def lint_tools(tools: list[dict]) -> list[Finding]:
         name, where = t.get("name", ""), t.get("name", "(unnamed)")
         desc = (t.get("description") or "").strip()
         schema = t.get("input_schema") or {}
-        props = schema.get("properties") or {}
+        props, required = flat_schema(schema)
 
         # D3 - opaque tool name (same rule as OpenAPI operations)
         if re.fullmatch(r"\d+", name) or not re.search(r"[A-Za-z]", name) or len(name) < 3:
@@ -157,8 +201,8 @@ def lint_tools(tools: list[dict]) -> list[Finding]:
                                "every session pays this whether the tool is used or not; trim the "
                                "description/schema or defer via tool search"))
 
-        # M4 - arguments declared but none marked required
-        if props and not schema.get("required"):
+        # M4 - arguments declared but none marked required (composition branches count)
+        if props and not required:
             out.append(Finding("M4", "info", where,
                                "inputSchema declares parameters but no 'required' list - the model "
                                "can't tell mandatory from optional arguments"))

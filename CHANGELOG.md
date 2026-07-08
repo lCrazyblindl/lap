@@ -6,6 +6,14 @@ versioning while pre-1.0.
 
 ## [Unreleased]
 
+### Fixed
+- **MCP lint + compact rendering now see composed inputSchemas.** The 2026 draft MCP spec
+  (SEP-2106) loosens `inputSchema` to any JSON Schema 2020-12; 29% of FastMCP-generated tools
+  from real specs already carry `$ref`/`$defs`/composition. Parameters declared inside
+  `allOf`/`oneOf`/`anyOf` branches or behind local `$ref`s were invisible to `lap lint --mcp`
+  (M2/M4 skipped them) and rendered as `tool()` in the compact form; `lint.flat_schema()` now
+  flattens them (depth- and hop-bounded, cycle-safe), mirroring SEP-2106's own resource bounds.
+
 ### Added
 - **`lap lint <url> --discovery`** — rule **D0** (profile level L0): probes the spec URL's
   origin for `/llms.txt` and flags its absence (info). One well-known pointer costs ~1 KB and

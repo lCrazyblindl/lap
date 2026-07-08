@@ -64,7 +64,8 @@ def main() -> None:
         "you do cache, cache the leaner menu (the strategies compose, they don't compete).",
         "- **Caching pays in dollars, not context.** The cached definitions still occupy "
         "the context window and still tax the model's working memory - the reasoning-"
-        "capacity concern in MCP spec issue #2808 is untouched by caching. Kubernetes' "
+        "capacity concern in MCP spec discussion #2812 (ex-issue #2808) is untouched by "
+        "caching. Kubernetes' "
         "2.8M-token naive menu doesn't fit a 200K window at any discount. Tool Search / "
         "deferred loading is different in kind: the definitions are genuinely absent "
         "(saves dollars AND context).",
@@ -110,6 +111,27 @@ def main() -> None:
         ]
 
     lines += [
+        "## The 2026 draft spec caches the *transport*, not the context",
+        "",
+        "The MCP draft revision (final publication 2026-07-28) adds protocol-level caching: "
+        "`tools/list` results now carry `ttlMs` + `cacheScope` "
+        "([SEP-2549](https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2549)), "
+        "and servers SHOULD return tools in deterministic order \"to enable client-side "
+        "caching and improve LLM prompt cache hit rates\". Both are good changes - and worth "
+        "pricing precisely:",
+        "",
+        "- **`ttlMs`/`cacheScope` saves the *re-listing* round-trip, not the per-turn prompt "
+        "cost.** The client refrains from calling `tools/list` while the TTL holds, but the "
+        "definitions it cached still enter the model's context every turn at the prices "
+        "above. Transport caching and prompt caching stack; **neither returns context-window "
+        "capacity**.",
+        "- **Deterministic ordering makes the best case above reachable** - a byte-identical "
+        "prefix is exactly what the 1.25x/0.10x model assumes. It doesn't move the "
+        "asymptote: `0.10 x A` per turn, on a menu still occupying `A` tokens of window.",
+        "- None of #2808's three proposals (tiered schemas, schema versioning, namespacing) "
+        "became protocol mechanisms in this revision - our measured input to that (now) "
+        "discussion is in [SPEC-2808.md](SPEC-2808.md).",
+        "",
         "## Takeaway",
         "",
         "Caching is a *price multiplier* (>=0.10x, fragile); menu form is a *token "

@@ -692,6 +692,42 @@ def test_lint_tools_flags_mcp_rules():
     assert "M3" in rules_by_tool["megatool"]                # heavy definition
 
 
+def test_lint_and_compact_see_composed_schemas():
+    # SEP-2106 (2026 draft spec): inputSchema may use any JSON Schema 2020-12 keywords -
+    # params hidden behind allOf/oneOf/$defs must still be visible to lint + compact.
+    tools = [{
+        "name": "update_item",
+        "description": "Update an item in the catalog with new field values.",
+        "input_schema": {
+            "type": "object",
+            "allOf": [
+                {"properties": {"id": {"type": "string", "description": "Item id"}},
+                 "required": ["id"]},
+                {"$ref": "#/$defs/patch"},
+            ],
+            "oneOf": [{"properties": {"mode": {"type": "string"}}}],
+            "$defs": {"patch": {"properties": {"fields": {"type": "object"}}}},
+        },
+    }]
+    props, required = lint.flat_schema(tools[0]["input_schema"])
+    assert set(props) == {"id", "fields", "mode"}
+    assert required == ["id"]
+    rules = {f.rule for f in lint.lint_tools(tools)}
+    assert "M4" not in rules  # required IS declared, inside an allOf branch
+    assert "M2" in rules      # fields/mode are still undescribed - now seen
+    from lap import mcp_client
+    sig = mcp_client._compact(tools)
+    assert "id:string" in sig and "fields:object" in sig and "mode:string" in sig
+
+
+def test_flat_schema_survives_ref_cycle():
+    s = {"$defs": {"a": {"$ref": "#/$defs/b"}, "b": {"$ref": "#/$defs/a"}},
+         "allOf": [{"$ref": "#/$defs/a"}],
+         "properties": {"ok": {"$ref": "#/$defs/missing"}}}
+    props, required = lint.flat_schema(s)  # must terminate, not recurse forever
+    assert "ok" in props and required == []
+
+
 def test_lint_tools_on_in_memory_mcp_server(spec):
     pytest.importorskip("fastmcp")
     import httpx

@@ -664,15 +664,25 @@ stage below has a deadline, produces publishable content, or makes that publishi
 Same stop/resume model. Recommended order: **P1 (deadline) → P2 (content) → P5 (unblock the
 owner) → P3 → P4 → P6.**
 
-- [ ] ▶ **P1 — Spec-RC measurement + refreshed spec input** `[no key]` **(time-boxed: before
-  Jul 28).** Verify #2808's real state + where the token-overhead discussion lives now
-  (SEP/discussion). Measure what the RC changes on our corpus: (a) `ttlMs`/`cacheScope` is
-  *transport* caching — the context-window tax is untouched → new section in
-  `docs/CACHE-ECONOMICS.md`; (b) JSON Schema 2020-12 composition in MCP `inputSchema` — new
-  lint/menu fixture; M-rules and token counts must handle `oneOf`/`anyOf`/`allOf` without
-  crashing or undercounting. Refresh `docs/SPEC-2808.md` + rewrite the owner's ready-to-paste
-  comment for the current venue.
-- [ ] **P2 — MCP-server leaderboard** `[no key]`. The OpenAPI leaderboard's twin from shipped
+- [x] **P1 — Spec-RC measurement + refreshed spec input.** Done. **Facts nailed down:**
+  issue #2808 was closed 2026-05-29 (state_reason "completed", 0 comments) and **converted to
+  [discussion #2812](https://github.com/modelcontextprotocol/modelcontextprotocol/discussions/2812)**
+  — alive, single-server data points (11/29/79 tools), and an explicit ask for a CI-checkable
+  per-tool token budget ("like bundle size") that `lap lint --mcp` M3 + gates already answers.
+  The draft changelog (final 2026-07-28) adopted **none** of #2808's three proposals; its
+  token-relevant items: SEP-2549 (`ttlMs`/`cacheScope`), deterministic tool ordering, SEP-2106
+  (full JSON Schema 2020-12 in `inputSchema`). **Shipped fix:** `lint.flat_schema()` — params
+  behind `allOf`/`oneOf`/`anyOf`/local `$ref` were invisible to M2/M4 and rendered `tool()` in
+  compact (cycle-safe, depth-bounded); measured prevalence with FastMCP over real specs:
+  **29% of 320 generated tools already carry 2020-12 constructs** (DynamoDB 51/53), 0/320
+  lose a param *name* today (nested, not top-level) — a forward-looking fix, and the same
+  properties-only blind spot V1 root-caused in mcp-compressor. **Docs:** SPEC-2808.md
+  retargeted at #2812 + SEP-2106 section + comment rewritten (answers the CI-budget ask and
+  the tokens-vs-reliability tension with matrix-v2 data); CACHE-ECONOMICS.md gains "the 2026
+  draft caches the *transport*, not the context". +2 tests (tests/ 56, full suite 60).
+  **Owner action refreshed: post the new comment to discussion #2812 — ideally before the
+  Jul 28 final.**  `[no key]`
+- [ ] ▶ **P2 — MCP-server leaderboard** `[no key]`. The OpenAPI leaderboard's twin from shipped
   machinery (`lint --mcp`, `mcp_client`, `grade`): score ~20–30 popular locally-runnable
   (no-cred) MCP servers — naive vs compact bucket A, grade, M-findings →
   `docs/MCP-LEADERBOARD.md` + a section on the live page + the monthly cron. Cross-check
@@ -747,9 +757,13 @@ refreshed), M4 done (tokenizer sensitivity: τ ≥ 0.992), **0.5.0+0.5.1 RELEASE
 **v0.8 plan drawn 2026-07-08** from a fresh landscape re-check (MCP spec final lands
 **2026-07-28** → a real deadline, #2808 appears closed; Claude Code enabled Tool Search by
 default; agent-friend/AgentDX appeared, both tiny; LAP still at 5 stars) — open v0.7 track
-items folded in as P4/P5/P6. ▶ **P1 — spec-RC measurement + refreshed spec input** (time-boxed:
-before Jul 28).** Owner actions pending: SPEC-2808 comment (**hold until P1 refreshes it**) +
-POST.md publishing + mcp-compressor upstream issue.** Say "continue LAP" to keep going.
+items folded in as P4/P5/P6. **P1 done** — #2808 → discussion #2812 (closed 2026-05-29,
+converted); draft spec adopted none of its proposals; `lint.flat_schema()` fix shipped (composed
+inputSchemas visible to M-rules/compact; 29% of real generated tools already carry 2020-12
+constructs); SPEC-2808.md retargeted + comment rewritten for #2812; CACHE-ECONOMICS "transport
+not context" section; 60 tests green. ▶ **P2 — MCP-server leaderboard.** Owner actions pending:
+**post the refreshed comment to discussion #2812 (before Jul 28)** + POST.md publishing +
+mcp-compressor upstream issue.** Say "continue LAP" to keep going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/
