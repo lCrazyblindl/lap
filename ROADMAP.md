@@ -555,10 +555,12 @@ Same stop/resume model, one bounded session per stage. `[key]` / `[no key]` as b
   menus are still the leaderboard's naive kilotokens. NLWeb endpoint scoring: nothing live to
   score (0/36 `/mcp`); `--mcp-url` already covers any that appear. +2 tests (tests/ 54, full
   suite 58).  `[no key]`
-- [ ] **▶ Next — pick from the v0.7 tracks** (remaining highlights: Track V "2nd real API for
-  Tool Search/code-exec" `[key]` · Track C outreach/listings · Track E perf/PBT).
+- [x] **Plan re-drawn 2026-07-08** from a fresh landscape re-check → see **"Stages — v0.8"**
+  below; the open v0.7 track items are folded into it (V 2nd-API → P4, C outreach → P5,
+  E perf/PBT → P6).
 
-Two owner actions stay pending meanwhile: post the SPEC-2808 comment and publish `docs/POST.md`.
+Two owner actions stay pending meanwhile: post the SPEC-2808 comment (**hold until P1 refreshes
+it** — issue #2808 appears closed) and publish `docs/POST.md` (P5 refreshes its numbers).
 - [x] **N9 — Leaderboard as a living page.** Done. `experiments/leaderboard.py` now also emits a
   static **sortable** page (`docs/index.html`, vanilla JS, no build step), machine-readable
   `docs/leaderboard-data.json`, and a dated monthly snapshot under `docs/leaderboard-history/`
@@ -640,6 +642,61 @@ roughly one bounded session unless noted.
 - `lap score --diff --git HEAD~1` (diff directly against git refs, no temp files).
 - Pre-commit hook recipe.
 
+## Stages — v0.8 (drawn 2026-07-08 from a fresh landscape re-check)
+
+**Why a new plan.** A July-8 re-check found four shifts. (1) **A deadline appeared**: the MCP
+spec's final publication lands **2026-07-28** (RC locked May 21 — stateless core, `tools/list`
+caching via `ttlMs`/`cacheScope`, full JSON Schema 2020-12 in tool schemas, extensions
+framework), and issue **#2808 appears closed** — our prepared comment is stale and must be
+refreshed/retargeted before the window closes; nobody has measured the RC's token impact yet.
+(2) **Claude Code 2.1.x enabled Tool Search by default** (~85% bucket-A cut — the mechanism we
+verified live in R5): the naive-menu headline is now *client-conditional*; B/C and every other
+client still pay full price, so "who mitigates what" became an empirical question. (3)
+**Competitors multiplied, all tiny, none overlapping the core**:
+[agent-friend](https://github.com/0-co/agent-friend) (MCP-only *static* linter, 156 checks,
+A+–F grades, auto-fix, graded 201 servers, ~4 stars — but its "I graded 201 MCP servers" posts
+prove the public-grading content format), AgentDX (did a Show HN), and MindStudio's unverified
+**"MCP = 35× more tokens than CLI"** benchmark claim. Nobody does A/B/C buckets, result-size
+estimates, OpenAPI+MCP both, or live accuracy validation. (4) **LAP is still invisible** (5
+stars, 1 fork) — the highest-leverage action remains the owner's pending publications; every
+stage below has a deadline, produces publishable content, or makes that publishing easier.
+
+Same stop/resume model. Recommended order: **P1 (deadline) → P2 (content) → P5 (unblock the
+owner) → P3 → P4 → P6.**
+
+- [ ] ▶ **P1 — Spec-RC measurement + refreshed spec input** `[no key]` **(time-boxed: before
+  Jul 28).** Verify #2808's real state + where the token-overhead discussion lives now
+  (SEP/discussion). Measure what the RC changes on our corpus: (a) `ttlMs`/`cacheScope` is
+  *transport* caching — the context-window tax is untouched → new section in
+  `docs/CACHE-ECONOMICS.md`; (b) JSON Schema 2020-12 composition in MCP `inputSchema` — new
+  lint/menu fixture; M-rules and token counts must handle `oneOf`/`anyOf`/`allOf` without
+  crashing or undercounting. Refresh `docs/SPEC-2808.md` + rewrite the owner's ready-to-paste
+  comment for the current venue.
+- [ ] **P2 — MCP-server leaderboard** `[no key]`. The OpenAPI leaderboard's twin from shipped
+  machinery (`lint --mcp`, `mcp_client`, `grade`): score ~20–30 popular locally-runnable
+  (no-cred) MCP servers — naive vs compact bucket A, grade, M-findings →
+  `docs/MCP-LEADERBOARD.md` + a section on the live page + the monthly cron. Cross-check
+  agent-friend's published grades on the overlap (agree or dispute — either is a FIELD.md
+  registry row; the referee role). _Box constraint: no Node/uvx/Docker daemon here — pick
+  pip-installable servers or fix the environment first._
+- [ ] **P3 — Referee round 2 + field refresh.** FIELD.md gains agent-friend/AgentDX rows (real
+  now, not hypothetical); reproduce a bounded slice of MindStudio's 35×-vs-CLI claim with
+  existing bench machinery (one task family, k=3, Haiku). `[field refresh no key; live slice
+  key]`
+- [ ] **P4 — 2nd real API for Tool Search + code-exec** _(Track V carry-over)_ `[key]`. Do
+  R5/R6 generalize beyond DigitalOcean/pet-zoo? Pick a 100+-op leaderboard API usable without
+  a paid account; extend `docs/TOOL-SEARCH.md`/`docs/CODE-EXEC.md`.
+- [ ] **P5 — Reach without the owner** `[no key]`. POST.md refresh (11.2M naive total, D0 47%,
+  the model-dependent headline, P1's spec-RC finding); ready-to-submit PR texts for awesome-mcp
+  lists (owner submits under their account); PyPI keywords/classifiers pass; README link to
+  FIELD.md as the "compare us" page.
+- [ ] **P6 — Engineering health** _(Track E carry-over)_ `[no key]`. Property-based tests
+  (hypothesis) on IR/estimator; perf pass on 4M-token specs (Xero/K8s `inline_refs`); cross-OS
+  CI matrix.
+
+Backlog unchanged (see Tracks above): Arazzo, x-lap extensions, MCPMark bridge,
+progressive-disclosure live A/B, GitHub official MCP via Docker, 1.0 criteria, badge adoption.
+
 ## Status
 
 **v0.3 complete (stages 0–19); v0.4 COMPLETE (R1–R8); v0.3.0 FULLY RELEASED 2026-07-01; v0.5 IN
@@ -687,9 +744,12 @@ naive total +7.2% → 11.2M, compact save now 82%/search 86%, Spotify B→C; all
 refreshed), M4 done (tokenizer sensitivity: τ ≥ 0.992), **0.5.0+0.5.1 RELEASED 2026-07-07**
 (PyPI + GitHub; 0.5.1 = docs-only, PyPI page + root README rewritten useful-first), S2 done
 (rule D0 + llms.txt scan: 47% adoption — discovery is getting solved, efficiency isn't).
-▶ pick next from the v0.7 tracks (V 2nd-API `[key]` / C outreach / E perf-PBT).**
-Owner actions pending: SPEC-2808 comment + POST.md publishing.** Say "continue LAP" to keep
-going.
+**v0.8 plan drawn 2026-07-08** from a fresh landscape re-check (MCP spec final lands
+**2026-07-28** → a real deadline, #2808 appears closed; Claude Code enabled Tool Search by
+default; agent-friend/AgentDX appeared, both tiny; LAP still at 5 stars) — open v0.7 track
+items folded in as P4/P5/P6. ▶ **P1 — spec-RC measurement + refreshed spec input** (time-boxed:
+before Jul 28).** Owner actions pending: SPEC-2808 comment (**hold until P1 refreshes it**) +
+POST.md publishing + mcp-compressor upstream issue.** Say "continue LAP" to keep going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/
