@@ -35,7 +35,8 @@ def _input_schema(spec: dict, op: ir.Op) -> dict:
     if body:
         for fname, prop in ir._collect_properties(spec, body).items():
             props[fname] = ir.inline_refs(spec, prop)
-        required.extend(ir._deref(spec, body).get("required", []))
+        body_req = ir._deref(spec, body).get("required")
+        required.extend(body_req if isinstance(body_req, list) else [])
     return {"type": "object", "properties": props, "required": required}
 
 

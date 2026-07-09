@@ -82,6 +82,8 @@ _SCALARS = {"integer": "int", "number": "float", "boolean": "bool", "string": "s
 
 
 def _scalar(t) -> str:
+    if not isinstance(t, (str, type(None))):
+        return "any"  # malformed `type` (dict/list/bool) - unhashable or meaningless
     return _SCALARS.get(t, str(t))
 
 
@@ -213,9 +215,10 @@ def _returns_str(spec: dict, operation: dict) -> str:
     if schema.get("type") == "array":
         items = schema.get("items", {})
         ref = items.get("$ref", "") if isinstance(items, dict) else ""
+        ref = ref if isinstance(ref, str) else ""
         return f"{ref.rsplit('/', 1)[-1] or _type_str(spec, items)}[]"
     ref = schema.get("$ref", "")
-    return ref.rsplit("/", 1)[-1] if ref else _type_str(spec, schema)
+    return ref.rsplit("/", 1)[-1] if isinstance(ref, str) and ref else _type_str(spec, schema)
 
 
 def _synth_name(method: str, path: str) -> str:

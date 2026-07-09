@@ -6,11 +6,20 @@ Invariants only — "never crashes, always returns the declared shape" — no nu
 from __future__ import annotations
 
 import json
+import os
 
 import pytest
 
 pytest.importorskip("hypothesis")
 from hypothesis import given, settings, strategies as st  # noqa: E402
+
+# CI runs deterministically (a matrix that goes red must mean the code changed, not the
+# seed); local runs explore fresh seeds every time; HYPOTHESIS_PROFILE=shake digs deeper.
+settings.register_profile("dev", max_examples=100, deadline=None)
+settings.register_profile("ci", max_examples=100, deadline=None, derandomize=True)
+settings.register_profile("shake", max_examples=1500, deadline=None)
+settings.load_profile(os.environ.get(
+    "HYPOTHESIS_PROFILE", "ci" if os.environ.get("CI") else "dev"))
 
 from lap import estimate, lint, menu, tokens  # noqa: E402
 from lap import openapi_ir as ir  # noqa: E402
@@ -38,14 +47,12 @@ schema_values = st.recursive(
     max_leaves=25)
 
 
-@settings(max_examples=150, deadline=None)
 @given(st.one_of(json_values, schema_values))
 def test_flat_schema_is_total(schema):
     props, required = lint.flat_schema(schema)
     assert isinstance(props, dict) and isinstance(required, list)
 
 
-@settings(max_examples=150, deadline=None)
 @given(st.one_of(json_values, schema_values))
 def test_inline_refs_is_total_and_serializable(node):
     spec = {"$defs": {"a": {"$ref": "#/$defs/b"}, "b": {"$ref": "#/$defs/a"}},
@@ -54,7 +61,6 @@ def test_inline_refs_is_total_and_serializable(node):
     json.dumps(out)  # must terminate and stay JSON-serializable
 
 
-@settings(max_examples=150, deadline=None)
 @given(st.one_of(json_values, schema_values))
 def test_example_instance_is_total_and_serializable(schema):
     spec = {"components": {"schemas": {"Thing": {"type": "object"}}}}
@@ -102,7 +108,6 @@ mini_specs = st.fixed_dictionaries({
 })
 
 
-@settings(max_examples=60, deadline=None)
 @given(mini_specs)
 def test_pipeline_is_total_on_generated_specs(spec):
     ops = ir.operations(spec)
