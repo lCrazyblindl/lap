@@ -99,7 +99,7 @@ and the standard objections are priced out in [CACHE-ECONOMICS](docs/CACHE-ECONO
 
 ## Status & contributing
 
-**0.5.x**, pre-1.0, actively maintained, MIT — no telemetry, no paid tier, no company. Issues
+**0.6.x**, pre-1.0, actively maintained, MIT — no telemetry, no paid tier, no company. Issues
 and PRs welcome: [CONTRIBUTING.md](CONTRIBUTING.md) covers dev setup and the house policies
 (vendor neutrality, claims need receipts), and there's a **"Score my API"** issue template —
 disputes of our numbers are explicitly invited.

@@ -62,7 +62,7 @@ lap lint  openapi.json --fail-on warn                                  # rule vi
 …or the bundled composite Action:
 
 ```yaml
-- uses: lCrazyblindl/lap@v0.5.0
+- uses: lCrazyblindl/lap@v0.6.0
   with:
     spec: api/openapi.json
     max-menu-tokens: "800"

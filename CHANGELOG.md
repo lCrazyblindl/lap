@@ -4,7 +4,11 @@ All notable changes to **lap** (PyPI package `lap-score`) are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); loose semantic
 versioning while pre-1.0.
 
-## [Unreleased]
+## [0.6.0] — 2026-07-09
+
+Ready for the 2026-07-28 MCP spec: composed (JSON Schema 2020-12) tool schemas are read
+correctly, discoverability gets a rule (D0), and property-based tests hardened the whole
+pipeline against malformed input (10 crash sites found and fixed).
 
 ### Fixed
 - **MCP lint + compact rendering now see composed inputSchemas.** The 2026 draft MCP spec
@@ -14,10 +18,11 @@ versioning while pre-1.0.
   (M2/M4 skipped them) and rendered as `tool()` in the compact form; `lint.flat_schema()` now
   flattens them (depth- and hop-bounded, cycle-safe), mirroring SEP-2106's own resource bounds.
 
-- **Hardened against malformed specs** (found by new property-based tests): `parameters: null`,
-  non-dict `properties`, non-list `enum`/`oneOf`/`anyOf`/`required`, `$ref: null`, and boolean
-  `items` no longer crash the IR, menus, lint, or estimators — they degrade to the same "best
-  effort" reading the fuzz corpus established for real-world quirks.
+- **Hardened against malformed specs** (10 crash sites found by the new property-based
+  tests): `parameters: null`, non-dict `properties`, non-list `enum`/`oneOf`/`anyOf`/
+  `required`, `$ref: null`/`[null]`, boolean `items`, non-string `type`, and non-string
+  response codes no longer crash the IR, menus, lint, or estimators — they degrade to the
+  same "best effort" reading the fuzz corpus established for real-world quirks.
 
 ### Added
 - **Property-based tests** (hypothesis, `[dev]` extra): generative invariants over the IR,

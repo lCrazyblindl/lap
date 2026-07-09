@@ -3,6 +3,12 @@
 The toolkit and artifacts are prepared in-repo; publishing needs credentials only the owner
 holds (never pasted into chat — set as environment variables, or via `gh auth login`). Steps:
 
+**v0.6.0 status (2026-07-09): FULLY RELEASED.** `lap-score` 0.6.0 is live:
+https://pypi.org/project/lap-score/0.6.0/ (`twine check` PASSED ×2, uploaded, fresh-venv
+verified — `flat_schema` + `lap score` work from the published wheel). Ships the
+composed-inputSchema fix (SEP-2106), rule D0/`--discovery`, the PBT hardening (10 crash
+sites), and the 14-keyword PyPI metadata. Tag `v0.6.0` + GitHub release with both dists.
+
 **v0.5.0 status (2026-07-07): FULLY RELEASED.** `lap-score` 0.5.0 is live:
 https://pypi.org/project/lap-score/0.5.0/ (`twine check` PASSED ×2, uploaded, fresh-venv
 verified — `lap fix --apply` + `lap score` work from the published package). Tag `v0.5.0` +
