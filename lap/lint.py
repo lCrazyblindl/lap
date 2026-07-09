@@ -35,7 +35,9 @@ def _query_names(op: ir.Op) -> set[str]:
 
 
 def _error_codes(op: ir.Op) -> list[str]:
-    return [c for c in op.raw.get("responses", {}) if c[:1] in ("4", "5")]
+    responses = op.raw.get("responses")
+    return [c for c in (responses if isinstance(responses, dict) else {})
+            if isinstance(c, str) and c[:1] in ("4", "5")]
 
 
 def lint(spec: dict) -> list[Finding]:
@@ -145,11 +147,14 @@ def flat_schema(schema, _root=None, _depth: int = 0) -> tuple[dict, list]:
     schema = _deref(schema, root)
     if not isinstance(schema, dict):
         return {}, []
+    raw_props = schema.get("properties")
     props = {k: (_deref(v, root) if isinstance(v, dict) else v)
-             for k, v in (schema.get("properties") or {}).items()}
-    required = [r for r in (schema.get("required") or []) if isinstance(r, str)]
+             for k, v in (raw_props.items() if isinstance(raw_props, dict) else ())}
+    raw_req = schema.get("required")
+    required = [r for r in (raw_req if isinstance(raw_req, list) else []) if isinstance(r, str)]
     for key in ("allOf", "oneOf", "anyOf"):
-        for branch in schema.get(key) or []:
+        branches = schema.get(key)
+        for branch in (branches if isinstance(branches, list) else []):
             b_props, b_req = flat_schema(branch, root, _depth + 1)
             for k, v in b_props.items():
                 props.setdefault(k, v)

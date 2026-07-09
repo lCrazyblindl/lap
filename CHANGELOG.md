@@ -14,7 +14,16 @@ versioning while pre-1.0.
   (M2/M4 skipped them) and rendered as `tool()` in the compact form; `lint.flat_schema()` now
   flattens them (depth- and hop-bounded, cycle-safe), mirroring SEP-2106's own resource bounds.
 
+- **Hardened against malformed specs** (found by new property-based tests): `parameters: null`,
+  non-dict `properties`, non-list `enum`/`oneOf`/`anyOf`/`required`, `$ref: null`, and boolean
+  `items` no longer crash the IR, menus, lint, or estimators — they degrade to the same "best
+  effort" reading the fuzz corpus established for real-world quirks.
+
 ### Added
+- **Property-based tests** (hypothesis, `[dev]` extra): generative invariants over the IR,
+  menu forms, lint, and estimators — "never crashes, always returns the declared shape" on
+  arbitrary schema-shaped input, incl. cyclic/dangling `$ref`s. CI now runs a cross-OS matrix
+  (ubuntu/windows/macos × Python 3.10/3.13).
 - **`lap lint <url> --discovery`** — rule **D0** (profile level L0): probes the spec URL's
   origin for `/llms.txt` and flags its absence (info). One well-known pointer costs ~1 KB and
   saves every agent a search; the accompanying scan of the leaderboard's 50 real API provider

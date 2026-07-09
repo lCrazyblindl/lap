@@ -31,10 +31,10 @@ _NON_STRING_PLACEHOLDER = {"integer": 0, "number": 0, "boolean": True, "null": N
 _ENVELOPE_KEYS = ("data", "items", "results", "value", "values", "content", "entries", "records")
 
 
-def _placeholder(t: str, string_len: int):
+def _placeholder(t, string_len: int):
     if t == "string":
         return "x" * string_len
-    return _NON_STRING_PLACEHOLDER.get(t, "x")
+    return _NON_STRING_PLACEHOLDER.get(t, "x") if isinstance(t, (str, type(None))) else "x"
 
 
 def example_instance(spec: dict, schema, stack: frozenset = frozenset(), depth: int = 0,
@@ -56,17 +56,18 @@ def example_instance(spec: dict, schema, stack: frozenset = frozenset(), depth: 
             for fname, prop in ir._collect_properties(spec, schema).items()
         }
     for comb in ("oneOf", "anyOf"):
-        if schema.get(comb):
+        if isinstance(schema.get(comb), list) and schema[comb]:
             return example_instance(spec, schema[comb][0], stack, depth + 1, string_len)
-    if "enum" in schema:
+    if isinstance(schema.get("enum"), list) and schema["enum"]:
         return schema["enum"][0]
     t = schema.get("type")
     if isinstance(t, list):
         t = next((x for x in t if x != "null"), "string")
     if t == "object" or "properties" in schema:
+        raw = schema.get("properties")
         return {
             k: example_instance(spec, v, stack, depth + 1, string_len)
-            for k, v in schema.get("properties", {}).items()
+            for k, v in (raw.items() if isinstance(raw, dict) else ())
         }
     if t == "array":
         return [example_instance(spec, schema.get("items", {}), stack, depth + 1, string_len)]

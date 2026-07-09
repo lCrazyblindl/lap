@@ -727,9 +727,18 @@ owner) → P3 → P4 → P6.**
   openapi, llm, token-efficiency, agents, linter — Glama etc. index by topics). **pyproject
   keywords 7→14** (context-window, token-cost, model-context-protocol, …) — lands on PyPI at
   the next release.  `[no key]`
-- [ ] **P6 — Engineering health** _(Track E carry-over)_ `[no key]`. Property-based tests
-  (hypothesis) on IR/estimator; perf pass on 4M-token specs (Xero/K8s `inline_refs`); cross-OS
-  CI matrix.
+- [x] **P6 — Engineering health.** Done. **PBT** (`tests/test_properties.py`, hypothesis in
+  `[dev]`): 4 generative invariants — flat_schema / inline_refs / example_instance total on
+  arbitrary schema-shaped garbage (incl. cyclic+dangling `$ref`s), and the whole pipeline
+  (IR → all menu forms → counts → B/C estimates) total on generated mini-specs. **Found and
+  fixed 7 real crash sites** the 175-spec fuzz corpus never hit: `parameters: null`,
+  non-dict `properties`, non-list `enum`/`oneOf`/`anyOf`, `$ref: null`, boolean `items`,
+  dict `type` (unhashable in `_placeholder`), int response codes. 64 tests green.
+  **Perf pass = a finding, not a fix**: profiling Xero (4M tok) shows `inline_refs` at 0.19s
+  — the backlog's suspect was innocent; the wall is tiktoken's ~1.6M tok/s encode (2.6s),
+  and `encode_ordinary` measured **zero** speedup (0.30s = 0.30s on 2MB) — the ruler is at
+  its floor, documented here instead of a fake optimization. **CI matrix**: ubuntu/windows/
+  macos × Python 3.10/3.13, fail-fast off (spectral job unchanged).  `[no key]`
 
 Backlog unchanged (see Tracks above): Arazzo, x-lap extensions, MCPMark bridge,
 progressive-disclosure live A/B, GitHub official MCP via Docker, 1.0 criteria, badge adoption.
@@ -797,8 +806,10 @@ measurement); live-page link + monthly cron + FIELD.md updated. **P5 done** — 
 refreshed (MCP-leaderboard is the new r/mcp hook), docs/LISTINGS.md ready-to-submit texts,
 7 GitHub topics set, pyproject keywords 14. **P3 done** — 35×-vs-CLI claim refereed
 (docs/MCP-VS-CLI.md: naive-client magnitude real, 27× by 8 turns on menu alone; collapses
-under Tool Search/compact; GitHub MCP scored directly at last: 44 tools/11,461/B). ▶ **P4 —
-2nd real API for Tool Search + code-exec** `[key]` (or P6 engineering health `[no key]`). **The mcp-compressor issue is POSTED
+under Tool Search/compact; GitHub MCP scored directly at last: 44 tools/11,461/B). **P6 done** — PBT found+fixed 7
+crash sites the fuzz corpus missed; perf verdict: tokenizer is the wall (inline_refs innocent);
+CI now 3 OS × 2 Python. ▶ **P4 — 2nd real API for Tool Search + code-exec** `[key]` (the last
+open v0.8 stage). **The mcp-compressor issue is POSTED
 (2026-07-09, owner-authorized): [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236).**
 Owner actions still pending: POST.md publishing + LISTINGS.md submissions.**
 Say "continue LAP" to keep going.

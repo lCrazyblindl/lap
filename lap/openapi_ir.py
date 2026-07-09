@@ -92,18 +92,18 @@ def _num(x) -> str:
 def _type_str(spec: dict, schema) -> str:
     if not isinstance(schema, dict):
         return "any"
-    if "$ref" in schema:
+    if isinstance(schema.get("$ref"), str):
         if _local(schema["$ref"]):
             target = _resolve_ref(spec, schema["$ref"])
-            if "enum" in target:
+            if isinstance(target, dict) and isinstance(target.get("enum"), list):
                 return "|".join(f'"{v}"' for v in target["enum"])
         return schema["$ref"].rsplit("/", 1)[-1] or "ref"  # local object or external -> use name
     for comb in ("oneOf", "anyOf"):
-        if comb in schema:
+        if isinstance(schema.get(comb), list):
             return "|".join(_type_str(spec, m) for m in schema[comb]) or "any"
     if "allOf" in schema:
         return "object"
-    if "enum" in schema:
+    if isinstance(schema.get("enum"), list):
         return "|".join(f'"{v}"' for v in schema["enum"])
     t = schema.get("type", "any")
     if isinstance(t, list):  # OpenAPI 3.1 nullable: ["string", "null"]
@@ -133,12 +133,15 @@ def _collect_properties(spec: dict, schema, depth: int = 0) -> dict:
         return {}
     if "$ref" in schema:
         return _collect_properties(spec, _resolve_ref(spec, schema["$ref"]), depth + 1)
-    props = dict(schema.get("properties", {}))
-    for member in schema.get("allOf", []):
+    raw = schema.get("properties")
+    props = dict(raw) if isinstance(raw, dict) else {}
+    all_of = schema.get("allOf")
+    for member in (all_of if isinstance(all_of, list) else []):
         props.update(_collect_properties(spec, member, depth + 1))
     if not props:
         for comb in ("oneOf", "anyOf"):
-            for member in schema.get(comb, []):
+            members = schema.get(comb)
+            for member in (members if isinstance(members, list) else []):
                 p = _collect_properties(spec, member, depth + 1)
                 if p:
                     return p
@@ -180,7 +183,8 @@ def _json_body_schema(spec: dict, operation: dict) -> dict | None:
         if isinstance(sch, dict):
             return sch
     # Swagger/OpenAPI 2.0: the body is a parameter with `in: body` (+ a schema).
-    for p in operation.get("parameters", []):
+    params = operation.get("parameters")
+    for p in (params if isinstance(params, list) else []):
         if isinstance(p, dict) and "$ref" in p:
             p = _deref(spec, p)
         if isinstance(p, dict) and p.get("in") == "body" and isinstance(p.get("schema"), dict):
@@ -240,7 +244,8 @@ def _param_schema(p: dict) -> dict:
 def _resolved_parameters(spec: dict, path_item: dict, operation: dict) -> list[dict]:
     """Path-item-level + operation-level parameters, with $refs resolved."""
     out: list[dict] = []
-    for p in list(path_item.get("parameters", [])) + list(operation.get("parameters", [])):
+    pi, op = path_item.get("parameters"), operation.get("parameters")
+    for p in (pi if isinstance(pi, list) else []) + (op if isinstance(op, list) else []):
         if isinstance(p, dict) and "$ref" in p:
             p = _deref(spec, p)
         if isinstance(p, dict) and "name" in p:
@@ -309,7 +314,8 @@ def referenced_component_names(spec: dict) -> list[str]:
     def visit(schema):
         if not isinstance(schema, dict):
             return
-        ref = schema.get("$ref") or (schema.get("items", {}) or {}).get("$ref")
+        items = schema.get("items")
+        ref = schema.get("$ref") or (items.get("$ref") if isinstance(items, dict) else None)
         if ref and _local(ref):
             name = ref.rsplit("/", 1)[-1]
             if name not in names:

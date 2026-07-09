@@ -26,7 +26,7 @@ dependencies = ["httpx", "tiktoken", "pyyaml"]
 mcp = ["fastmcp"]          # real-MCP baseline row (lap score)
 faithful = ["anthropic"]   # faithful Anthropic count_tokens
 all = ["fastmcp", "anthropic"]
-dev = ["pytest"]           # test suite
+dev = ["pytest", "hypothesis"]  # test suite (incl. property-based tests)
 
 [project.scripts]
 lap = "lap.cli:main"
