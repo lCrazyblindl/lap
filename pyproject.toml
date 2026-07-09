@@ -9,7 +9,9 @@ description = "lap - measure & improve the token-efficiency of agent-facing APIs
 readme = "lap/README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-keywords = ["llm", "agents", "openapi", "mcp", "tokens", "api", "token-efficiency"]
+keywords = ["llm", "agents", "openapi", "mcp", "model-context-protocol", "tokens", "api",
+            "token-efficiency", "context-window", "token-cost", "lint", "benchmark",
+            "tool-definitions", "leaderboard"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

@@ -705,10 +705,17 @@ owner) → P3 → P4 → P6.**
 - [ ] **P4 — 2nd real API for Tool Search + code-exec** _(Track V carry-over)_ `[key]`. Do
   R5/R6 generalize beyond DigitalOcean/pet-zoo? Pick a 100+-op leaderboard API usable without
   a paid account; extend `docs/TOOL-SEARCH.md`/`docs/CODE-EXEC.md`.
-- [ ] **P5 — Reach without the owner** `[no key]`. POST.md refresh (11.2M naive total, D0 47%,
-  the model-dependent headline, P1's spec-RC finding); ready-to-submit PR texts for awesome-mcp
-  lists (owner submits under their account); PyPI keywords/classifiers pass; README link to
-  FIELD.md as the "compare us" page.
+- [x] **P5 — Reach without the owner.** Done. **POST.md refreshed** for current main: all
+  three drafts gain the MCP-server leaderboard (Notion 21,411 F is now the r/mcp *title*),
+  the model-dependent matrix-v2 finding, D0/llms.txt 47%, #2812 retarget ("the summary is
+  posted in the discussion"), tiered 85→87%, post-M3 grade calibration (Spotify B→C), and
+  posting notes for the "which versions?" question. **[`docs/LISTINGS.md`](docs/LISTINGS.md)**
+  (new): exact ready-to-submit texts — awesome-mcp-devtools PR line+body, openapi.tools YAML
+  entry, MCP directory forms, the Action-Marketplace UI step. **Done directly (repo metadata,
+  not publication): 7 GitHub topics set** via `gh repo edit` (mcp, model-context-protocol,
+  openapi, llm, token-efficiency, agents, linter — Glama etc. index by topics). **pyproject
+  keywords 7→14** (context-window, token-cost, model-context-protocol, …) — lands on PyPI at
+  the next release.  `[no key]`
 - [ ] **P6 — Engineering health** _(Track E carry-over)_ `[no key]`. Property-based tests
   (hypothesis) on IR/estimator; perf pass on 4M-token specs (Xero/K8s `inline_refs`); cross-OS
   CI matrix.
@@ -775,9 +782,12 @@ comment is POSTED (2026-07-08, owner-authorized; a twice-daily scheduled watch r
 replies).** **P2 done** — MCP-server leaderboard: 20 popular servers scored credential-free
 (Notion 21,411 tok F; ~64k total across 20; agent-friend cross-check: grades converge on
 Notion, diverge on postgres/context7 — letters are formula artifacts, tokens are the
-measurement); live-page link + monthly cron + FIELD.md updated. ▶ **P5 — reach without the
-owner** (POST.md refresh with the new receipts, awesome-mcp PR texts, PyPI keywords).
-Owner actions still pending: POST.md publishing + mcp-compressor upstream issue.**
+measurement); live-page link + monthly cron + FIELD.md updated. **P5 done** — POST.md
+refreshed (MCP-leaderboard is the new r/mcp hook), docs/LISTINGS.md ready-to-submit texts,
+7 GitHub topics set, pyproject keywords 14. ▶ **P3 — referee round 2** (FIELD.md rows for
+the MindStudio "35× vs CLI" claim + a bounded live reproduction slice `[key]`; the
+agent-friend rows already landed with P2). Owner actions still pending: POST.md publishing +
+LISTINGS.md submissions + mcp-compressor upstream issue.**
 Say "continue LAP" to keep going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —

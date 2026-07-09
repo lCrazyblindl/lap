@@ -1,8 +1,9 @@
 # Launch write-up (ready to publish)
 
-_v0.6 N10. Three ready-to-paste drafts: a blog-style post, a Show HN, and an r/mcp post.
-The owner publishes under their own account; adjust the personal voice ("I") as you like.
-All numbers are reproducible from this repo at v0.4.0._
+_v0.6 N10, refreshed v0.8 P5. Three ready-to-paste drafts: a blog-style post, a Show HN, and
+an r/mcp post. The owner publishes under their own account; adjust the personal voice ("I")
+as you like. All numbers are reproducible from this repo at current main (0.5.1 + the
+MCP-server leaderboard)._
 
 ---
 
@@ -34,6 +35,17 @@ pointed it at 50 well-known public APIs. Highlights:
 - **Lazy loading flips negative on small APIs.** On 1–3-operation APIs, tool_search costs
   *more* than just showing the tools (NASA APOD: −311%). Anthropic's own "10+ tools"
   guidance, confirmed independently, in both directions.
+- **The same ruler on 20 popular published MCP servers** (installed and run locally,
+  zero credentials): menus run 42 → **21,411** tokens per session — the heaviest is
+  Notion's official server; one reference server charges **921 tokens for a single tool**;
+  connecting all 20 costs ~64k tokens before the first user message
+  ([MCP-LEADERBOARD](https://github.com/lCrazyblindl/lap/blob/main/docs/MCP-LEADERBOARD.md)).
+- **Compression doesn't cost accuracy — but the cheapest *correct* answer is
+  model-dependent.** A 500-run live matrix (2 models × 10 tasks × 5 menu forms × 5 repeats):
+  every compact form matched or beat the naive menu's accuracy; on the small model,
+  code-execution was the cheapest correct answer (2.9× cheaper than naive), on the stronger
+  model a declarative query menu won and its own exploratory code cost near-naive
+  ([validation.md](https://github.com/lCrazyblindl/lap/blob/main/experiments/token-bench/validation.md)).
 
 The full ranking is a living page — regenerated monthly, history kept:
 **https://lcrazyblindl.github.io/lap/**
@@ -58,12 +70,22 @@ a registry of the field's headline claims marked *verified / plausible / dispute
   different internal metric — but that's exactly why the ruler shouldn't be sold with
   the thing it measures.
 
-We also fed the data upstream: the MCP spec has an open issue
-([#2808](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/2808)) on
-schema overhead proposing tiered definitions. Simulated over our corpus: a discovery
-tier saves a **mean 85%** (the issue's 60–70% estimate is conservative), and the
-namespacing proposal only pays above a schema-size threshold — repetition alone saves
-~nothing ([full tables](https://github.com/lCrazyblindl/lap/blob/main/docs/SPEC-2808.md)).
+We also fed the data upstream: the MCP spec's tool-schema-overhead thread (issue #2808, now
+[discussion #2812](https://github.com/modelcontextprotocol/modelcontextprotocol/discussions/2812))
+proposed tiered definitions. Simulated over our corpus: a discovery tier saves a **mean 87%**
+(the thread's 60–70% estimate is conservative), and the namespacing proposal only pays above
+a schema-size threshold — repetition alone saves ~nothing
+([full tables](https://github.com/lCrazyblindl/lap/blob/main/docs/SPEC-2808.md); the summary
+is posted in the discussion). Meanwhile the 2026 spec draft added *transport* caching
+(`ttlMs`/`cacheScope`) — which saves the re-listing round-trip, not the context window
+([cache math](https://github.com/lCrazyblindl/lap/blob/main/docs/CACHE-ECONOMICS.md)).
+
+One more adoption datapoint that surprised us: probing our 36 leaderboard providers' apex
+domains found **`/llms.txt` at 47% adoption** (Stripe, GitHub, Slack, Notion…) while real MCP
+discovery endpoints sit at ~0%
+([DISCOVERY](https://github.com/lCrazyblindl/lap/blob/main/docs/DISCOVERY.md)). Discovery is
+getting solved; efficiency isn't — the same providers' machine-readable menus are still the
+leaderboard's naive kilotokens.
 
 ## Try it on your own stack
 
@@ -76,7 +98,7 @@ lap lint   --mcp "python -m mcp_server_git"   # lint a live MCP server's tool de
 lap badge  your-openapi.json   # a shields.io README badge with your grade
 ```
 
-The grade is calibrated on the leaderboard corpus: Spotify and LaunchDarkly rate **B**,
+The grade is calibrated on the leaderboard corpus: LaunchDarkly rates **B**, Spotify **C**,
 GitHub and DynamoDB **D**, Google Drive **F** — and no sampled API earned an **A**, which
 requires real pagination, field projection, and declared errors on top of a lean menu.
 There's a CI gate (`lap score --diff old.json new.json --max-growth 500`) so a PR that
@@ -117,6 +139,12 @@ MIT, no product, no telemetry. If you maintain an API or MCP server and want it 
 > percentage disagreed with a direct token count of its own output. Details and a
 > claims registry (verified / plausible / disputed) are in the repo.
 >
+> There's also an MCP-server twin of the leaderboard now: 20 popular published servers,
+> installed and scored credential-free — Notion's official server charges 21,411 tokens
+> per session (one reference server: 921 tokens for a single tool). Where another grader
+> scored the same servers, our letters sometimes agree and sometimes flip — which is the
+> argument for publishing raw token numbers plus the script, not just grades.
+>
 > `pip install lap-score` — `lap stack` tells you how many tokens your own MCP config
 > burns before you type a word. Feedback and "score my API" requests welcome.
 
@@ -124,23 +152,30 @@ MIT, no product, no telemetry. If you maintain an API or MCP server and want it 
 
 ## 3. r/mcp draft
 
-**Title:** `I measured the token cost of 50 real API menus (and your MCP stack) — 80% is recoverable`
+**Title:** `I scored 20 popular MCP servers' token cost — Notion's charges 21k tokens before you type a word`
 
 > Made an open-source CLI (`pip install lap-score`) that measures the context-window tax
-> of agent-facing interfaces — OpenAPI specs, live MCP servers over HTTP/stdio, or your
-> whole installed stack:
+> of agent-facing interfaces — live MCP servers over stdio/HTTP, OpenAPI specs, or your
+> whole installed stack. Pointed it at 20 popular published servers, installed fresh,
+> zero credentials
+> ([full table + script](https://github.com/lCrazyblindl/lap/blob/main/docs/MCP-LEADERBOARD.md)):
 >
-> - `lap stack` reads your Claude Desktop/Code config and totals what all your servers'
->   tool definitions cost at session start.
-> - `lap lint --mcp "<command>"` flags the stuff that actually burns tokens/accuracy:
->   missing tool descriptions, undescribed params, 600+-token single definitions, no
->   `required` list. (mcp-server-git grades B — `repo_path` is undescribed in 11 of 12
->   tools; mcp-server-time grades A.)
-> - A leaderboard of 50 real public APIs, refreshed monthly:
->   https://lcrazyblindl.github.io/lap/ — 11.2M tokens of naive menus, ~82% recoverable.
+> - **Notion (official): 21,411 tokens** of tool definitions per session. Firecrawl: 18,511.
+>   Connecting all 20 servers: ~64k tokens before the first user message.
+> - **sequential-thinking is ONE tool that costs 921 tokens** (the description is an essay).
+> - The same tools as compact signatures: 3,100 tokens total (−95%) — the compression is
+>   sitting on the table server-side.
+> - `lap stack` reads your own Claude Desktop/Code config and totals what *your* setup
+>   burns at session start; `lap lint --mcp "<command>"` flags what burns tokens/accuracy:
+>   missing tool descriptions, undescribed params, 600+-token definitions, no `required`
+>   list. (mcp-server-git grades B — `repo_path` is undescribed in 11 of 12 tools;
+>   mcp-server-time grades A.)
+> - Plus a leaderboard of 50 real public APIs rendered as naive OpenAPI→MCP menus,
+>   refreshed monthly: https://lcrazyblindl.github.io/lap/ — 11.2M tokens, ~82% recoverable.
 >
-> Also simulated the tiered-schema proposal from spec issue #2808 over the corpus:
-> discovery tier saves a mean 85%, so if you want that in the protocol, there's data now.
+> Also measured the tiered-schema proposal from the spec's token-overhead thread
+> (discussion #2812) over the corpus — discovery tier saves a mean 87% — and posted the
+> numbers there, so if you want that in the protocol, there's data now.
 >
 > It's MIT, no product attached. If you run an MCP server, `lap lint` takes ~10 seconds
 > and usually finds something real.
@@ -152,6 +187,11 @@ MIT, no product, no telemetry. If you maintain an API or MCP server and want it 
 - Best order: publish the blog post first (dev.to or a GitHub Discussion on the repo),
   then Show HN linking the **leaderboard page** (HN prefers content over repos), then
   r/mcp. Space them a day apart.
+- The strongest r/mcp hook is now the **MCP-server table** (Notion 21k, one 921-token tool);
+  expect "which server versions?" — honest answer: whatever `npx -y`/`uvx` served on the
+  scan date (in `mcp-leaderboard-data.json`), rerunnable in minutes; the doc's caveats say so.
+- Ready-to-submit listing PRs (awesome lists, openapi.tools) live in
+  [LISTINGS.md](LISTINGS.md) — best submitted *after* the posts, when the repo shows traction.
 - HN: submit morning US time, Tue–Thu. Don't repost the same URL within days; the
   first-comment context matters more than the submission text.
 - Expect the two "disputed" claims to draw the most questions — the receipts are
