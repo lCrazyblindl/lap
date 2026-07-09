@@ -698,10 +698,21 @@ owner) → P3 → P4 → P6.**
   letters are formula artifacts, reproducible token numbers are the measurement. Wired: live
   page nav link, monthly cron step (runner has Node; `pip install -e ".[mcp]" uv`), FIELD.md
   agent-friend row + honesty paragraph, README bullet + map link.  `[no key]`
-- [ ] **P3 — Referee round 2 + field refresh.** FIELD.md gains agent-friend/AgentDX rows (real
-  now, not hypothetical); reproduce a bounded slice of MindStudio's 35×-vs-CLI claim with
-  existing bench machinery (one task family, k=3, Haiku). `[field refresh no key; live slice
-  key]`
+- [x] **P3 — Referee round 2 + field refresh.** Done → [`docs/MCP-VS-CLI.md`](docs/MCP-VS-CLI.md)
+  ([`experiments/mcp_vs_cli.py`](experiments/mcp_vs_cli.py)). **Claim traced**: MindStudio's
+  "35×/72%" cites *no* methodology; the one reproducible artifact in the family is scalekit's
+  benchmark (gh CLI vs GitHub MCP, published code+data, 15–80× per task, single-run headlines).
+  **Bonus: the official GitHub MCP server finally scored directly** (hosted endpoint + `gh auth
+  token` — closes the R3-era backlog item): **44 tools / 11,461 tokens / grade B (76)** — the
+  circulating "~94 tools/17.6k" is stale. **Structural reproduction**: the menu re-sent per
+  turn alone reaches 27× the entire gh-help surface (3,449 tok) by 8 turns — the magnitude is
+  real *for a naive client*; it collapses under Tool Search (default in Claude Code; our live
+  −90%) or compact (927 tok), and the CLI side rides a training-data subsidy (models know `gh`;
+  your API's CLI gets no such discount). 72% reliability: unverifiable as published. FIELD.md:
+  two registry rows updated/added (GitHub-MCP size now ⚠ stale-corrected; 35×-vs-CLI ≈
+  config-dependent). _Live k=3 slice skipped deliberately: scalekit already publishes raw
+  data; the structural decomposition + R5's live Tool Search number explain the magnitude — a
+  third anecdote adds nothing, the ruler does._ agent-friend rows landed with P2.  `[no key]`
 - [ ] **P4 — 2nd real API for Tool Search + code-exec** _(Track V carry-over)_ `[key]`. Do
   R5/R6 generalize beyond DigitalOcean/pet-zoo? Pick a 100+-op leaderboard API usable without
   a paid account; extend `docs/TOOL-SEARCH.md`/`docs/CODE-EXEC.md`.
@@ -784,9 +795,10 @@ replies).** **P2 done** — MCP-server leaderboard: 20 popular servers scored cr
 Notion, diverge on postgres/context7 — letters are formula artifacts, tokens are the
 measurement); live-page link + monthly cron + FIELD.md updated. **P5 done** — POST.md
 refreshed (MCP-leaderboard is the new r/mcp hook), docs/LISTINGS.md ready-to-submit texts,
-7 GitHub topics set, pyproject keywords 14. ▶ **P3 — referee round 2** (FIELD.md rows for
-the MindStudio "35× vs CLI" claim + a bounded live reproduction slice `[key]`; the
-agent-friend rows already landed with P2). **The mcp-compressor issue is POSTED
+7 GitHub topics set, pyproject keywords 14. **P3 done** — 35×-vs-CLI claim refereed
+(docs/MCP-VS-CLI.md: naive-client magnitude real, 27× by 8 turns on menu alone; collapses
+under Tool Search/compact; GitHub MCP scored directly at last: 44 tools/11,461/B). ▶ **P4 —
+2nd real API for Tool Search + code-exec** `[key]` (or P6 engineering health `[no key]`). **The mcp-compressor issue is POSTED
 (2026-07-09, owner-authorized): [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236).**
 Owner actions still pending: POST.md publishing + LISTINGS.md submissions.**
 Say "continue LAP" to keep going.
