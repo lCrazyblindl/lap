@@ -740,8 +740,17 @@ owner) → P3 → P4 → P6.**
   its floor, documented here instead of a fake optimization. **CI matrix**: ubuntu/windows/
   macos × Python 3.10/3.13, fail-fast off (spectral job unchanged).  `[no key]`
 
+- [x] **R — Release 0.6.0. FULLY RELEASED, 2026-07-09** (P4 deferred by owner's call —
+  "зарелизимся, остальное отложим"). Ships the composed-inputSchema fix (SEP-2106,
+  `flat_schema`), rule D0 + `--discovery`, the PBT hardening (10 crash sites), 14 PyPI
+  keywords. **PyPI:** https://pypi.org/project/lap-score/0.6.0/ (twine PASSED ×2; fresh-venv
+  verified — `flat_schema` + `lap score` from the published wheel). **GitHub:** tag + release
+  https://github.com/lCrazyblindl/lap/releases/tag/v0.6.0 (both dists). Action example at
+  `@v0.6.0`.  `[release creds]`
+
 Backlog unchanged (see Tracks above): Arazzo, x-lap extensions, MCPMark bridge,
-progressive-disclosure live A/B, GitHub official MCP via Docker, 1.0 criteria, badge adoption.
+progressive-disclosure live A/B, GitHub official MCP via Docker (hosted endpoint now scored,
+P3), 1.0 criteria, badge adoption. **P4 (2nd real API, `[key]`) is the one open v0.8 stage.**
 
 ## Status
 
@@ -806,10 +815,11 @@ measurement); live-page link + monthly cron + FIELD.md updated. **P5 done** — 
 refreshed (MCP-leaderboard is the new r/mcp hook), docs/LISTINGS.md ready-to-submit texts,
 7 GitHub topics set, pyproject keywords 14. **P3 done** — 35×-vs-CLI claim refereed
 (docs/MCP-VS-CLI.md: naive-client magnitude real, 27× by 8 turns on menu alone; collapses
-under Tool Search/compact; GitHub MCP scored directly at last: 44 tools/11,461/B). **P6 done** — PBT found+fixed 7
+under Tool Search/compact; GitHub MCP scored directly at last: 44 tools/11,461/B). **P6 done** — PBT found+fixed 10
 crash sites the fuzz corpus missed; perf verdict: tokenizer is the wall (inline_refs innocent);
-CI now 3 OS × 2 Python. ▶ **P4 — 2nd real API for Tool Search + code-exec** `[key]` (the last
-open v0.8 stage). **The mcp-compressor issue is POSTED
+CI now 3 OS × 2 Python, all green. **0.6.0 FULLY RELEASED 2026-07-09** (PyPI + GitHub,
+fresh-venv verified; P4 deferred by owner's call). ▶ **P4 — 2nd real API for Tool Search +
+code-exec** `[key]` (the last open v0.8 stage; then a plan re-draw is due). **The mcp-compressor issue is POSTED
 (2026-07-09, owner-authorized): [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236).**
 Owner actions still pending: POST.md publishing + LISTINGS.md submissions.**
 Say "continue LAP" to keep going.
