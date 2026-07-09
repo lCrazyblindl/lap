@@ -786,8 +786,9 @@ measurement); live-page link + monthly cron + FIELD.md updated. **P5 done** — 
 refreshed (MCP-leaderboard is the new r/mcp hook), docs/LISTINGS.md ready-to-submit texts,
 7 GitHub topics set, pyproject keywords 14. ▶ **P3 — referee round 2** (FIELD.md rows for
 the MindStudio "35× vs CLI" claim + a bounded live reproduction slice `[key]`; the
-agent-friend rows already landed with P2). Owner actions still pending: POST.md publishing +
-LISTINGS.md submissions + mcp-compressor upstream issue.**
+agent-friend rows already landed with P2). **The mcp-compressor issue is POSTED
+(2026-07-09, owner-authorized): [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236).**
+Owner actions still pending: POST.md publishing + LISTINGS.md submissions.**
 Say "continue LAP" to keep going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —

@@ -67,7 +67,7 @@ confirm the below-10-tools cutoff here" resolves: by symmetric measures the comp
 still win on the tiny server — its own banner was the only dissenter, and the banner is
 mismeasuring.)
 
-### Ready-to-paste upstream issue (owner posts it)
+### Upstream issue — POSTED as [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236) (2026-07-09)
 
 > **Startup banner's compression percentages are character-based and asymmetric — can report
 > ">100%" where the served frontend is actually smaller**
