@@ -683,13 +683,21 @@ owner) → P3 → P4 → P6.**
   **The refreshed comment was POSTED to discussion #2812 on 2026-07-08** (owner authorized
   the agent to post via their `gh` auth; dedupe examples made dynamic first — the hardcoded
   "Kubernetes 94% / CircleCI −10%" had drifted after M3 to "92% / DVP Data API −10%").  `[no key]`
-- [ ] ▶ **P2 — MCP-server leaderboard** `[no key]`. The OpenAPI leaderboard's twin from shipped
-  machinery (`lint --mcp`, `mcp_client`, `grade`): score ~20–30 popular locally-runnable
-  (no-cred) MCP servers — naive vs compact bucket A, grade, M-findings →
-  `docs/MCP-LEADERBOARD.md` + a section on the live page + the monthly cron. Cross-check
-  agent-friend's published grades on the overlap (agree or dispute — either is a FIELD.md
-  registry row; the referee role). _Box constraint: no Node/uvx/Docker daemon here — pick
-  pip-installable servers or fix the environment first._
+- [x] **P2 — MCP-server leaderboard.** Done → [`docs/MCP-LEADERBOARD.md`](docs/MCP-LEADERBOARD.md)
+  + `mcp-leaderboard-data.json` ([`experiments/mcp_leaderboard.py`](experiments/mcp_leaderboard.py)).
+  Environment fixed contained-ly first: `uv` pip-installed into `.venv` (uvx = isolated PyPI
+  runs), **portable Node unzipped into gitignored `.tools/node`** (npx for npm servers; its dir
+  must be prepended to the spawned env's PATH — npx re-spawns `node` via PATH). **20 of 22
+  curated popular servers scored with zero credentials** (dummy env vars only), 199 tools,
+  menus 42 → **21,411** tokens/session (Notion official, F 19; firecrawl 18,511 F 27;
+  sequential-thinking: ONE tool costing 921 tok, F 18; postgres 42 tok but undescribed schema,
+  C 64), ~64k total. 2 honest dead rows (mcp-atlassian lists 0 tools without creds; yfmcp).
+  **agent-friend cross-check landed all three ways**: Notion — both F within a point (their
+  19.8 vs our 19) yet 4.8× apart on tokens (4,483 vs 21,411); server-postgres — their
+  "perfect 100" vs our C; context7 — F vs our D. The referee lesson written into the doc:
+  letters are formula artifacts, reproducible token numbers are the measurement. Wired: live
+  page nav link, monthly cron step (runner has Node; `pip install -e ".[mcp]" uv`), FIELD.md
+  agent-friend row + honesty paragraph, README bullet + map link.  `[no key]`
 - [ ] **P3 — Referee round 2 + field refresh.** FIELD.md gains agent-friend/AgentDX rows (real
   now, not hypothetical); reproduce a bounded slice of MindStudio's 35×-vs-CLI claim with
   existing bench machinery (one task family, k=3, Haiku). `[field refresh no key; live slice
@@ -762,9 +770,15 @@ items folded in as P4/P5/P6. **P1 done** — #2808 → discussion #2812 (closed 
 converted); draft spec adopted none of its proposals; `lint.flat_schema()` fix shipped (composed
 inputSchemas visible to M-rules/compact; 29% of real generated tools already carry 2020-12
 constructs); SPEC-2808.md retargeted + comment rewritten for #2812; CACHE-ECONOMICS "transport
-not context" section; 60 tests green. ▶ **P2 — MCP-server leaderboard.** **The #2812
-comment is POSTED (2026-07-08, owner-authorized).** Owner actions still pending: POST.md
-publishing + mcp-compressor upstream issue.** Say "continue LAP" to keep going.
+not context" section; 60 tests green. **The #2812
+comment is POSTED (2026-07-08, owner-authorized; a twice-daily scheduled watch reports new
+replies).** **P2 done** — MCP-server leaderboard: 20 popular servers scored credential-free
+(Notion 21,411 tok F; ~64k total across 20; agent-friend cross-check: grades converge on
+Notion, diverge on postgres/context7 — letters are formula artifacts, tokens are the
+measurement); live-page link + monthly cron + FIELD.md updated. ▶ **P5 — reach without the
+owner** (POST.md refresh with the new receipts, awesome-mcp PR texts, PyPI keywords).
+Owner actions still pending: POST.md publishing + mcp-compressor upstream issue.**
+Say "continue LAP" to keep going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
 real generators, a real live API, real servers, real Anthropic features — and found the compact/

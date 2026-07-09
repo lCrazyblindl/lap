@@ -55,6 +55,10 @@ live, with billed calls where it matters:
 
 - **3 real OpenAPI→MCP generators** all emit menus *heavier* than the naive baseline, 5–28×
   heavier than compact ([GENERATORS](docs/GENERATORS.md), [MCP-SERVERS](docs/MCP-SERVERS.md)).
+- **20 popular published MCP servers, scored as installed** — menus from 42 to **21,411**
+  tokens per session (Notion's official server, grade F); ~64k tokens if you connect them all,
+  before the first user message ([MCP-LEADERBOARD](docs/MCP-LEADERBOARD.md), refreshed monthly,
+  incl. a grade cross-check against another grader).
 - **Anthropic's Tool Search: verified live** — ~90% billed-token cut on a real 290-op API,
   server-enforced ([TOOL-SEARCH](docs/TOOL-SEARCH.md)). **Their code-execution: disputed on
   our workload** — heavier than naive in 5/5 repeats; its saving is *behavioral*, not
@@ -89,7 +93,7 @@ and the standard objections are priced out in [CACHE-ECONOMICS](docs/CACHE-ECONO
 - [`lap/`](lap/README.md) — the pip-installable toolkit (start here).
 - [`profile/`](profile/llm-api-profile.md) — the LAP profile: measured conventions, L1–L4 levels, the grade formula.
 - [`experiments/`](experiments/token-bench/README.md) — the benchmark ([pet-zoo](pet-zoo/README.md) testbed) + every measurement script behind the docs (leaderboard, spec-#2808 simulation, cache economics, tokenizer matrix, …).
-- [`docs/`](docs/LEADERBOARD.md) — the receipts: leaderboard, real-tool tests, [FIELD](docs/FIELD.md) claims registry, [SPEC-2808](docs/SPEC-2808.md) input for the MCP spec discussion.
+- [`docs/`](docs/LEADERBOARD.md) — the receipts: leaderboard (+ its [MCP-server twin](docs/MCP-LEADERBOARD.md)), real-tool tests, [FIELD](docs/FIELD.md) claims registry, [SPEC-2808](docs/SPEC-2808.md) input for the MCP spec discussion.
 - [`spectral/`](spectral/README.md) — the lint rules for existing Spectral setups.
 - [`ROADMAP.md`](ROADMAP.md) — the full staged history and what's next.
 

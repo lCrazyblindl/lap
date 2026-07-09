@@ -23,7 +23,8 @@ measurement tooling. That gap is what LAP fills.
 | --- | --- | --- | --- | --- |
 | **lap** (this repo) | A/B/C token decomposition, 4 menu forms + real-MCP baseline, lint (7 OpenAPI rules + 4 MCP M-rules), composite grade + badge, `--diff` CI gate, [50-API leaderboard](LEADERBOARD.md), `lap stack` for your installed config | OpenAPI (file/URL), live MCP (HTTP + stdio), agent configs | tiktoken approx or faithful Anthropic `count_tokens` | released ([PyPI 0.4.0](https://pypi.org/project/lap-score/0.4.0/)), 49 tests, fuzz-checked on 175+ real specs |
 | [mcpx](https://github.com/sameenchand/mcpx) | A–F schema-quality grade, flags missing descriptions + token bloat | live MCP over HTTP only | token estimate (tokenizer undisclosed) | early (~2 stars, 14 commits) |
-| [AgentDX](https://news.ycombinator.com/item?id=47062753) | 18 static lint rules + an LLM-judged bench (tool selection, parameter correctness) → DX score 0–100 | MCP servers | n/a (LLM-judged, needs API keys for bench) | early alpha |
+| [AgentDX](https://news.ycombinator.com/item?id=47062753) | 18 static lint rules + an LLM-judged bench (tool selection, parameter correctness) → DX score 0–100 | MCP servers | n/a (LLM-judged, needs API keys for bench) | early alpha (Show HN 2026) |
+| [agent-friend](https://github.com/0-co/agent-friend) | 156 static checks → A+–F grade (40% correctness / 30% efficiency / 30% quality), auto-fix (6 rules), pre-commit hook, REST grading API; published grades for [201 servers](https://dev.to/0coceo/i-graded-201-mcp-servers-the-most-popular-ones-are-the-worst-114i) (2026-03) | MCP servers only (static schema analysis; no live calls, no OpenAPI, no result sizes) | multiple tokenizers reported per schema | early (~4 stars); its grades cross-checked against ours in [MCP-LEADERBOARD.md](MCP-LEADERBOARD.md) |
 | [MCP Inspector](https://github.com/modelcontextprotocol/inspector) (official) | visual/protocol testing of MCP servers | live MCP | none | active, no token focus |
 | [mcp-scan](https://stytch.com/blog/mcp-scan/) / [Proximity](https://www.helpnetsecurity.com/2025/10/29/proximity-open-source-mcp-security-scanner/) / [APIsec audit](https://apisec-inc.github.io/mcp-audit/) | **security** scanners (tool poisoning, secrets, risk flags) | installed/live MCP | none | active |
 
@@ -35,7 +36,9 @@ tokens; they're complementary to LAP (their accuracy × our cost would be the fu
 that bridge is on our roadmap, Track V).
 
 **What they have that lap doesn't** (honesty cuts both ways): AgentDX's LLM-judged
-tool-*selection* accuracy is a real dimension our static lint can't see; the security scanners
+tool-*selection* accuracy is a real dimension our static lint can't see; agent-friend's rule
+set is an order of magnitude larger than our M-rules (156 checks vs ~12), and it ships an
+MCP-side auto-fix, a pre-commit hook, and a hosted grading API we don't; the security scanners
 cover threats we deliberately don't; the big benchmarks have task suites and leaderboard
 infrastructure far beyond ours.
 

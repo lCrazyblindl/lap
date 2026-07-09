@@ -20,9 +20,13 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install lap
-        run: pip install -e .
+        run: pip install -e ".[mcp]" uv
       - name: Regenerate leaderboard + site
         run: python experiments/leaderboard.py
+      - name: Regenerate MCP-server leaderboard
+        # uvx runs the PyPI servers, the runner's Node runs the npm ones;
+        # a dead server becomes an annotated row, so this step shouldn't fail the job
+        run: python experiments/mcp_leaderboard.py
       - name: Commit if changed
         run: |
           git config user.name "github-actions[bot]"
