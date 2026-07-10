@@ -787,8 +787,11 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
 - [ ] **W3 — 2nd real API for Tool Search + code-exec** _(P4 carry-over)_ `[key]`. Do R5/R6
   generalize beyond DigitalOcean/pet-zoo? 100+-op leaderboard API, no paid account; extend
   `docs/TOOL-SEARCH.md`/`docs/CODE-EXEC.md`.
-- [x] **W4 — Upstream fix drive (prepared; postings await the owner's per-issue go-ahead
-  — they paused agent postings after #2812/#236).** Done →
+- [x] **W4 — Upstream fix drive. All three issues POSTED 2026-07-10** (owner said «публикуй
+  все три»; duplicate-checked first): [servers#4507](https://github.com/modelcontextprotocol/servers/issues/4507)
+  · [firecrawl#309](https://github.com/firecrawl/firecrawl-mcp-server/issues/309)
+  · [notion#330](https://github.com/makenotion/notion-mcp-server/issues/330) — all three now
+  on the twice-daily reply watch. Prepared as →
   [`docs/UPSTREAM-ISSUES.md`](docs/UPSTREAM-ISSUES.md)
   ([`experiments/upstream_issues.py`](experiments/upstream_issues.py), live-fetched,
   reproducible). Three measured what-ifs, three different pathologies:
@@ -888,9 +891,9 @@ fresh-venv verified; P4 deferred by owner's call). **2026-07-10: plan re-drawn �
 (trigger: our mcp-compressor report got **fixed upstream in a day** — issue #236 closed
 "completed", PR #237 merged; agent-friend dormant; spec final Jul 28). P4 → W3. **W1 done** —
 fix verified against released 0.31.5 (banner now symmetric: git@medium 41.9% vs our 41.0%
-chars; sign flip gone), MCP-COMPRESSOR/FIELD/POST updated. **W4 done (prepared)** — three
-measured upstream issues in docs/UPSTREAM-ISSUES.md (seq-thinking −50%, firecrawl −50%,
-Notion −69% from $defs dedupe alone); **postings await the owner's per-issue go-ahead**.
+chars; sign flip gone), MCP-COMPRESSOR/FIELD/POST updated. **W4 done — all three issues POSTED
+2026-07-10** (servers#4507, firecrawl#309, notion#330; seq-thinking −50%, firecrawl −50%,
+Notion −69% from $defs dedupe alone; watch extended to 5 threads).
 ▶ **W2 — spec-day measurement** (time-anchored ~Jul 28; a one-shot reminder is scheduled);
 meanwhile the no-key fillers are **W6** (Arazzo + x-lap) and **W7** (stable API + 1.0). **The mcp-compressor issue is POSTED
 (2026-07-09, owner-authorized): [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236).**
