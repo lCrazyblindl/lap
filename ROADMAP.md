@@ -831,6 +831,12 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
   one external consumer holding the API). +2 tests (tests/ 62, full suite 66 green).
   CHANGELOG `[Unreleased]` reopened with both features → ready to cut **0.7.0** whenever
   the owner says the word.  `[no key]`
+- [x] **R — Release 0.7.0. FULLY RELEASED, 2026-07-10.** Ships W7 (stable Python API,
+  `--diff --git`, pre-commit recipe) — "the toolkit becomes a library". **PyPI:**
+  https://pypi.org/project/lap-score/0.7.0/ (twine PASSED ×2; fresh-venv verified: facade
+  returns the reference figures, `--diff --git` runs from the wheel). **GitHub:** tag +
+  release https://github.com/lCrazyblindl/lap/releases/tag/v0.7.0. Action at `@v0.7.0`.
+  `[release creds]`
 - [ ] **W8 — Month-over-month trend content** `[no key]` **(after Aug 3 — second history
   snapshot).** "What changed in a month" on the live page + leaderboard diff — recurring
   content at zero marginal effort.
@@ -935,9 +941,10 @@ Notion −69% from $defs dedupe alone; watch extended to 5 threads).
 macro-tools measured on the OAI examples (menu −50…97%; B wins grow with chain length,
 tiny flows pay more; intermediate C never enters context — structural) + the x-lap strawman
 (4 keys). **W7 done** — stable Python API (score_spec/lint_spec/grade_spec/diff_specs),
-`--diff --git`, pre-commit recipe, the written 1.0 bar; 66 tests green; **0.7.0 is ready to
-cut on the owner's word**. ▶ **W2** fires ~Jul 28 (reminder scheduled); W3/W5 stay `[key]`;
-otherwise v0.9 is done pending replies to the 5 watched threads. **The mcp-compressor issue is POSTED
+`--diff --git`, pre-commit recipe, the written 1.0 bar; 66 tests green.
+**0.7.0 FULLY RELEASED 2026-07-10** (PyPI + GitHub, fresh-venv verified). ▶ **W2** fires
+~Jul 28 (reminder scheduled); W3/W5 stay `[key]`; W8 after Aug 3; otherwise v0.9 is done
+pending replies to the 5 watched threads. **The mcp-compressor issue is POSTED
 (2026-07-09, owner-authorized): [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236).**
 Owner actions still pending: POST.md publishing + LISTINGS.md submissions.**
 Say "continue LAP" to keep going.
