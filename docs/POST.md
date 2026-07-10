@@ -66,9 +66,12 @@ a registry of the field's headline claims marked *verified / plausible / dispute
   (the model must cooperate); Tool Search's are *structural* (the server enforces them).
   That distinction is now a rule in our profile.
 - **A compression proxy's self-reported percentage disagreed with our tokenizer** on the
-  same output (it claimed a >100% cost where we measured a +12% saving). Probably a
-  different internal metric — but that's exactly why the ruler shouldn't be sold with
-  the thing it measures.
+  same output (it claimed a >100% cost where we measured a +12% saving). We root-caused it
+  in the vendor's own source — character counts with an asymmetric formula — **filed the
+  issue upstream, and the maintainers merged a fix within 3 hours and shipped it the same
+  evening**; our re-run of the released version confirms the banner now agrees with
+  symmetric measurement. That's the loop this project exists to close: independent
+  measurement → root cause → upstream fix → re-verification, in about a day.
 
 We also fed the data upstream: the MCP spec's tool-schema-overhead thread (issue #2808, now
 [discussion #2812](https://github.com/modelcontextprotocol/modelcontextprotocol/discussions/2812))
@@ -136,8 +139,10 @@ MIT, no product, no telemetry. If you maintain an API or MCP server and want it 
 > (~90% real, billed, server-enforced). Their code-execution headline didn't on my
 > workload — it cost *more* than naive in 5/5 repeats (wrong sandboxed-path guesses,
 > each retry re-sends the turn history). And one compression proxy's self-reported
-> percentage disagreed with a direct token count of its own output. Details and a
-> claims registry (verified / plausible / disputed) are in the repo.
+> percentage disagreed with a direct token count of its own output — I root-caused it in
+> their source, filed it, and they merged a fix within hours (shipped the same evening;
+> re-verified). Details and a claims registry (verified / plausible / disputed) are in
+> the repo.
 >
 > There's also an MCP-server twin of the leaderboard now: 20 popular published servers,
 > installed and scored credential-free — Notion's official server charges 21,411 tokens
@@ -178,7 +183,8 @@ MIT, no product, no telemetry. If you maintain an API or MCP server and want it 
 > numbers there, so if you want that in the protocol, there's data now.
 >
 > It's MIT, no product attached. If you run an MCP server, `lap lint` takes ~10 seconds
-> and usually finds something real.
+> and usually finds something real — when we filed one of these findings upstream
+> (mcp-compressor's banner stats), the maintainers merged a fix within hours.
 
 ---
 

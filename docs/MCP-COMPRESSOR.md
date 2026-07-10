@@ -67,7 +67,37 @@ confirm the below-10-tools cutoff here" resolves: by symmetric measures the comp
 still win on the tiny server — its own banner was the only dissenter, and the banner is
 mismeasuring.)
 
-### Upstream issue — POSTED as [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236) (2026-07-09)
+### Upstream outcome — reported, FIXED, and verified (2026-07-09/10)
+
+The issue below was posted as
+[atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236)
+on 2026-07-09. **A maintainer closed it "completed" within 3 hours**, with
+[PR #237](https://github.com/atlassian-labs/mcp-compressor/pull/237) — *"Fix asymmetric
+compression statistics in startup banner"*, refactored to "reuse actual wrapper tool
+constructors" (i.e. both sides of the ratio now come from the same serialization of the
+actually-advertised tool lists, exactly the suggested fix) — **released as 0.31.5 the same
+evening** (13 minutes after the merge).
+
+**Verified against the released 0.31.5** (same rig as the root-cause run:
+`experiments/mcp_compressor_rootcause.py`, both reference servers):
+
+| server @ `medium` | banner before | banner now (0.31.5) | our symmetric measures |
+| --- | ---: | ---: | --- |
+| mcp-server-time (2 tools) | **103.8%** ("costs more") | **90.8%** | 88.3% tokens · 99.4% chars |
+| mcp-server-git (12 tools) | 54.5% | **41.9%** | **41.0% chars** · 33.4% tokens |
+
+The sign flip on the small server is gone, and at 12-tool scale the new banner matches our
+symmetric character measurement almost exactly (41.9% vs 41.0%) — while our replication of
+the *old* asymmetric formula still predicts 111.6%/56.5%, confirming the shipped banner no
+longer uses it. Remaining honest note: the banner still measures **characters, not tokens**
+(our secondary suggestion) — fine for a startup banner, but don't compare it against token
+budgets.
+
+_This is the project's referee loop closing end-to-end for the first time: independent
+measurement → root cause in the vendor's own source → upstream report → merged fix →
+re-verification of the shipped release. Total elapsed: about a day._
+
+### The issue as posted (2026-07-09)
 
 > **Startup banner's compression percentages are character-based and asymmetric — can report
 > ">100%" where the served frontend is actually smaller**

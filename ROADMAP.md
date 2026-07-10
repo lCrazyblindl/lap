@@ -771,11 +771,15 @@ ecosystem impact**.
 Recommended order: **W1 (small, feeds POST) → W4 (the proven motion) → W2 (fires ~Jul 28) →
 W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
 
-- [ ] ▶ **W1 — Cash the #236 win** `[no key, small]`. Rerun the banner capture
-  (`experiments/mcp_compressor_rootcause.py`) against mcp-compressor@latest — does the fixed
-  banner now agree with symmetric measurement on the 2-tool server? Update
-  `docs/MCP-COMPRESSOR.md` (posted → **fixed upstream, verified**), the FIELD.md registry row
-  (✗ mismeasured → ✅ fixed after our report), and add the win to all three POST.md drafts.
+- [x] **W1 — Cash the #236 win.** Done. The fix shipped as **0.31.5 thirteen minutes after
+  the merge**; re-ran the banner capture against the released version: **the banner is now
+  symmetric** — mcp-server-time@medium 103.8%→**90.8%** (sign flip gone; our symmetric
+  measures 88.3% tokens / 99.4% chars), mcp-server-git@medium 54.5%→**41.9%** vs our 41.0%
+  chars (near-exact), while the old asymmetric formula would still predict 111.6%/56.5% —
+  proof the shipped banner no longer uses it. Honest residual: still characters, not tokens
+  (our secondary suggestion; fine for a banner). `docs/MCP-COMPRESSOR.md` gained the
+  "Upstream outcome" section (the referee loop closed end-to-end in ~a day), FIELD.md row
+  flipped ✗→✅ fixed-after-our-report, POST.md all three drafts carry the win.  `[no key]`
 - [ ] **W2 — Spec-day measurement** `[no key]` **(time-anchored: ~Jul 28, when the final
   spec publishes).** Diff final vs RC (did SEP-2106/2549 survive?); refresh `docs/SPEC-2808.md`
   + CACHE-ECONOMICS if mechanics moved; check #2812 for post-final replies; draft "the 2026
@@ -873,8 +877,10 @@ crash sites the fuzz corpus missed; perf verdict: tokenizer is the wall (inline_
 CI now 3 OS × 2 Python, all green. **0.6.0 FULLY RELEASED 2026-07-09** (PyPI + GitHub,
 fresh-venv verified; P4 deferred by owner's call). **2026-07-10: plan re-drawn → v0.9 W1–W8**
 (trigger: our mcp-compressor report got **fixed upstream in a day** — issue #236 closed
-"completed", PR #237 merged; agent-friend dormant; spec final Jul 28). P4 → W3. ▶ **W1 —
-cash the #236 win** (verify the merged fix, update MCP-COMPRESSOR/FIELD/POST). **The mcp-compressor issue is POSTED
+"completed", PR #237 merged; agent-friend dormant; spec final Jul 28). P4 → W3. **W1 done** —
+fix verified against released 0.31.5 (banner now symmetric: git@medium 41.9% vs our 41.0%
+chars; sign flip gone), MCP-COMPRESSOR/FIELD/POST updated. ▶ **W4 — upstream fix drive**
+(repeat the motion at Notion F19 / firecrawl F27 / sequential-thinking 921-tok). **The mcp-compressor issue is POSTED
 (2026-07-09, owner-authorized): [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236).**
 Owner actions still pending: POST.md publishing + LISTINGS.md submissions.**
 Say "continue LAP" to keep going.
