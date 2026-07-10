@@ -787,11 +787,20 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
 - [ ] **W3 — 2nd real API for Tool Search + code-exec** _(P4 carry-over)_ `[key]`. Do R5/R6
   generalize beyond DigitalOcean/pet-zoo? 100+-op leaderboard API, no paid account; extend
   `docs/TOOL-SEARCH.md`/`docs/CODE-EXEC.md`.
-- [ ] **W4 — Upstream fix drive (repeat the #236 motion)** `[no key; postings
-  owner-authorized per precedent]`. From the MCP-server leaderboard, file evidence-based,
-  fix-suggesting issues at the 2–3 worst offenders (notion-mcp-server F 19 / 24 warns;
-  firecrawl F 27; sequential-thinking's 921-token single tool) with measured before/after
-  estimates. Every accepted fix = ecosystem impact + a receipt.
+- [x] **W4 — Upstream fix drive (prepared; postings await the owner's per-issue go-ahead
+  — they paused agent postings after #2812/#236).** Done →
+  [`docs/UPSTREAM-ISSUES.md`](docs/UPSTREAM-ISSUES.md)
+  ([`experiments/upstream_issues.py`](experiments/upstream_issues.py), live-fetched,
+  reproducible). Three measured what-ifs, three different pathologies:
+  **sequential-thinking** (modelcontextprotocol/servers, 88k★) 921 → **463 tok (−50%)** by
+  dropping the "Parameters explained" section that duplicates the schema's own param
+  descriptions (all 9 params already carry one) + "Key features" fluff;
+  **firecrawl-mcp** (6.9k★) 18,511 → **9,218 (−50%)** at first-paragraph-only descriptions
+  (usage essays are docs, not selection signal — while 24/26 tools have UNdescribed params);
+  **notion-mcp-server** (4.5k★) 21,411 → **~6,600 (−69%) from `$defs` dedupe alone** — one
+  2,317-char subtree repeats in ALL 24 tools (SEP-2106 makes $refs first-class, killing the
+  compatibility objection). Ready-to-paste texts in the doc, #236 tone, disclosure included.
+  `[no key]`
 - [ ] **W5 — MCPMark bridge** `[key]`. A small recognized-benchmark slice under naive vs
   compact forms — attaches *third-party* accuracy to our token findings (FIELD.md's "their
   accuracy × our cost" promise).
@@ -879,8 +888,11 @@ fresh-venv verified; P4 deferred by owner's call). **2026-07-10: plan re-drawn �
 (trigger: our mcp-compressor report got **fixed upstream in a day** — issue #236 closed
 "completed", PR #237 merged; agent-friend dormant; spec final Jul 28). P4 → W3. **W1 done** —
 fix verified against released 0.31.5 (banner now symmetric: git@medium 41.9% vs our 41.0%
-chars; sign flip gone), MCP-COMPRESSOR/FIELD/POST updated. ▶ **W4 — upstream fix drive**
-(repeat the motion at Notion F19 / firecrawl F27 / sequential-thinking 921-tok). **The mcp-compressor issue is POSTED
+chars; sign flip gone), MCP-COMPRESSOR/FIELD/POST updated. **W4 done (prepared)** — three
+measured upstream issues in docs/UPSTREAM-ISSUES.md (seq-thinking −50%, firecrawl −50%,
+Notion −69% from $defs dedupe alone); **postings await the owner's per-issue go-ahead**.
+▶ **W2 — spec-day measurement** (time-anchored ~Jul 28; a one-shot reminder is scheduled);
+meanwhile the no-key fillers are **W6** (Arazzo + x-lap) and **W7** (stable API + 1.0). **The mcp-compressor issue is POSTED
 (2026-07-09, owner-authorized): [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236).**
 Owner actions still pending: POST.md publishing + LISTINGS.md submissions.**
 Say "continue LAP" to keep going.
