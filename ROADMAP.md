@@ -807,9 +807,18 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
 - [ ] **W5 — MCPMark bridge** `[key]`. A small recognized-benchmark slice under naive vs
   compact forms — attaches *third-party* accuracy to our token findings (FIELD.md's "their
   accuracy × our cost" promise).
-- [ ] **W6 — Arazzo scoring + x-lap strawman** `[no key]`. Multi-step bucket-B of a declared
-  OpenAPI workflow vs ad-hoc chaining; an `x-lap-*` extension proposal (page-size maxima,
-  projection params, heavy ops) that `lap fix`/estimate could honor.
+- [x] **W6 — Arazzo scoring + x-lap strawman.** Done. **Arazzo** →
+  [`docs/ARAZZO.md`](docs/ARAZZO.md) ([`experiments/arazzo_score.py`](experiments/arazzo_score.py)):
+  7 workflows from the OAI spec's own example documents (real artifacts), each scored as a
+  *macro tool* (id + summary + `inputs` schema) vs the ad-hoc chain — **menu 50–97% below
+  the naive API menu; bucket B splits by chain size** (7-step BNPL flow 174→69 tok/call,
+  but 2 of 7 tiny oauth flows pay *more* — the workflow `inputs` schema outweighs the one
+  or two small calls it replaces; the familiar below-threshold shape). The biggest effect
+  is invisible to A/B accounting: **intermediate step results never enter context** —
+  structural, like Tool Search, unlike code-exec. **x-lap** → [`docs/X-LAP.md`](docs/X-LAP.md):
+  4 keys (`x-lap-page-max`, `x-lap-projection`, `x-lap-heavy`, `x-lap-workflow`), what
+  score/lint/fix would do with each, explicit non-goals (absence is never a finding; keys
+  retire if the specs standardize equivalents). Feedback invited via issues.  `[no key]`
 - [ ] **W7 — Stable API + 1.0 criteria** `[no key]`. Documented `lap.score_spec()`-style
   Python API, `lap score --diff --git HEAD~1`, pre-commit recipe, a written 1.0 bar. Likely
   triggers 0.7.0 together with W6.
@@ -894,8 +903,11 @@ fix verified against released 0.31.5 (banner now symmetric: git@medium 41.9% vs 
 chars; sign flip gone), MCP-COMPRESSOR/FIELD/POST updated. **W4 done — all three issues POSTED
 2026-07-10** (servers#4507, firecrawl#309, notion#330; seq-thinking −50%, firecrawl −50%,
 Notion −69% from $defs dedupe alone; watch extended to 5 threads).
-▶ **W2 — spec-day measurement** (time-anchored ~Jul 28; a one-shot reminder is scheduled);
-meanwhile the no-key fillers are **W6** (Arazzo + x-lap) and **W7** (stable API + 1.0). **The mcp-compressor issue is POSTED
+**W6 done** — Arazzo
+macro-tools measured on the OAI examples (menu −50…97%; B wins grow with chain length,
+tiny flows pay more; intermediate C never enters context — structural) + the x-lap strawman
+(4 keys). ▶ **W7 — stable API + 1.0 criteria** `[no key]` (likely 0.7.0 with W6's docs);
+**W2** fires ~Jul 28 (reminder scheduled); W3/W5 stay `[key]`. **The mcp-compressor issue is POSTED
 (2026-07-09, owner-authorized): [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236).**
 Owner actions still pending: POST.md publishing + LISTINGS.md submissions.**
 Say "continue LAP" to keep going.
