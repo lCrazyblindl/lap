@@ -750,7 +750,60 @@ owner) → P3 → P4 → P6.**
 
 Backlog unchanged (see Tracks above): Arazzo, x-lap extensions, MCPMark bridge,
 progressive-disclosure live A/B, GitHub official MCP via Docker (hosted endpoint now scored,
-P3), 1.0 criteria, badge adoption. **P4 (2nd real API, `[key]`) is the one open v0.8 stage.**
+P3), 1.0 criteria, badge adoption. **P4 (2nd real API, `[key]`) carries over → v0.9 W3.**
+
+## Stages — v0.9 (drawn 2026-07-10 from a fresh state check)
+
+**Why a new plan.** Three fresh signals reshape priorities. (1) **The referee role produced
+its first upstream fix**: our mcp-compressor issue
+([#236](https://github.com/atlassian-labs/mcp-compressor/issues/236), posted Jul 9) was closed
+*"completed"* by a maintainer within 3 hours and
+[PR #237](https://github.com/atlassian-labs/mcp-compressor/pull/237) ("Fix asymmetric
+compression statistics in startup banner") merged — evidence-based upstream reports
+**convert**, and that's a repeatable motion. (2) **The competitor threat was overestimated**:
+agent-friend dormant since Mar 25 (4 stars), AgentDX quiet — the field is ours to lose to
+*invisibility*, not to a rival (LAP still 5 stars; the owner's POST.md launch remains the top
+lever and just got its strongest credibility line). (3) **The spec final lands Jul 28** —
+a time-anchored measurement moment we're uniquely positioned for. The toolkit is
+feature-complete for its niche; v0.9 tilts from *building* to **converting measurements into
+ecosystem impact**.
+
+Recommended order: **W1 (small, feeds POST) → W4 (the proven motion) → W2 (fires ~Jul 28) →
+W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
+
+- [ ] ▶ **W1 — Cash the #236 win** `[no key, small]`. Rerun the banner capture
+  (`experiments/mcp_compressor_rootcause.py`) against mcp-compressor@latest — does the fixed
+  banner now agree with symmetric measurement on the 2-tool server? Update
+  `docs/MCP-COMPRESSOR.md` (posted → **fixed upstream, verified**), the FIELD.md registry row
+  (✗ mismeasured → ✅ fixed after our report), and add the win to all three POST.md drafts.
+- [ ] **W2 — Spec-day measurement** `[no key]` **(time-anchored: ~Jul 28, when the final
+  spec publishes).** Diff final vs RC (did SEP-2106/2549 survive?); refresh `docs/SPEC-2808.md`
+  + CACHE-ECONOMICS if mechanics moved; check #2812 for post-final replies; draft "the 2026
+  spec shipped — what it changes about your token bill" as a POST.md section.
+- [ ] **W3 — 2nd real API for Tool Search + code-exec** _(P4 carry-over)_ `[key]`. Do R5/R6
+  generalize beyond DigitalOcean/pet-zoo? 100+-op leaderboard API, no paid account; extend
+  `docs/TOOL-SEARCH.md`/`docs/CODE-EXEC.md`.
+- [ ] **W4 — Upstream fix drive (repeat the #236 motion)** `[no key; postings
+  owner-authorized per precedent]`. From the MCP-server leaderboard, file evidence-based,
+  fix-suggesting issues at the 2–3 worst offenders (notion-mcp-server F 19 / 24 warns;
+  firecrawl F 27; sequential-thinking's 921-token single tool) with measured before/after
+  estimates. Every accepted fix = ecosystem impact + a receipt.
+- [ ] **W5 — MCPMark bridge** `[key]`. A small recognized-benchmark slice under naive vs
+  compact forms — attaches *third-party* accuracy to our token findings (FIELD.md's "their
+  accuracy × our cost" promise).
+- [ ] **W6 — Arazzo scoring + x-lap strawman** `[no key]`. Multi-step bucket-B of a declared
+  OpenAPI workflow vs ad-hoc chaining; an `x-lap-*` extension proposal (page-size maxima,
+  projection params, heavy ops) that `lap fix`/estimate could honor.
+- [ ] **W7 — Stable API + 1.0 criteria** `[no key]`. Documented `lap.score_spec()`-style
+  Python API, `lap score --diff --git HEAD~1`, pre-commit recipe, a written 1.0 bar. Likely
+  triggers 0.7.0 together with W6.
+- [ ] **W8 — Month-over-month trend content** `[no key]` **(after Aug 3 — second history
+  snapshot).** "What changed in a month" on the live page + leaderboard diff — recurring
+  content at zero marginal effort.
+
+Owner actions standing (texts ready): POST.md publication (W1 refresh makes it stronger),
+LISTINGS.md submissions, the Action-Marketplace click. The twice-daily watch keeps covering
+#2812 + #236.
 
 ## Status
 
@@ -818,8 +871,10 @@ refreshed (MCP-leaderboard is the new r/mcp hook), docs/LISTINGS.md ready-to-sub
 under Tool Search/compact; GitHub MCP scored directly at last: 44 tools/11,461/B). **P6 done** — PBT found+fixed 10
 crash sites the fuzz corpus missed; perf verdict: tokenizer is the wall (inline_refs innocent);
 CI now 3 OS × 2 Python, all green. **0.6.0 FULLY RELEASED 2026-07-09** (PyPI + GitHub,
-fresh-venv verified; P4 deferred by owner's call). ▶ **P4 — 2nd real API for Tool Search +
-code-exec** `[key]` (the last open v0.8 stage; then a plan re-draw is due). **The mcp-compressor issue is POSTED
+fresh-venv verified; P4 deferred by owner's call). **2026-07-10: plan re-drawn → v0.9 W1–W8**
+(trigger: our mcp-compressor report got **fixed upstream in a day** — issue #236 closed
+"completed", PR #237 merged; agent-friend dormant; spec final Jul 28). P4 → W3. ▶ **W1 —
+cash the #236 win** (verify the merged fix, update MCP-COMPRESSOR/FIELD/POST). **The mcp-compressor issue is POSTED
 (2026-07-09, owner-authorized): [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236).**
 Owner actions still pending: POST.md publishing + LISTINGS.md submissions.**
 Say "continue LAP" to keep going.
