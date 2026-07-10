@@ -851,6 +851,11 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
   spawned server (StdioTransport inherits only the SDK's safe-minimum env, so e.g.
   NOTION_TOKEN-gated servers can't be linted from the CLI; the library path can) — a
   `--env KEY=VAL` flag is a natural 0.8.0 item._  `[no key]`
+- [x] **R2 — Release 0.8.0. FULLY RELEASED, 2026-07-10** (same-day follow-up: W9's grade
+  navigation). **PyPI:** https://pypi.org/project/lap-score/0.8.0/ (twine ×2; fresh-venv
+  verified — the wheel reproduces the easy-notion recipe, `menu_budget` 7,472 for an A).
+  **GitHub:** https://github.com/lCrazyblindl/lap/releases/tag/v0.8.0. Action at `@v0.8.0`.
+  `[release creds]`
 - [ ] **W8 — Month-over-month trend content** `[no key]` **(after Aug 3 — second history
   snapshot).** "What changed in a month" on the live page + leaderboard diff — recurring
   content at zero marginal effort.
