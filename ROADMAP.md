@@ -841,9 +841,12 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
   snapshot).** "What changed in a month" on the live page + leaderboard diff — recurring
   content at zero marginal effort.
 
-Owner actions standing (texts ready): POST.md publication (W1 refresh makes it stronger),
-LISTINGS.md submissions, the Action-Marketplace click. The twice-daily watch keeps covering
-#2812 + #236.
+Owner actions standing: **the r/mcp post is PUBLISHED 2026-07-10**
+(https://www.reddit.com/r/mcp/comments/1usyb34/i_scored_20_popular_mcp_servers_token_cost/ —
+flair showcase; filled via the owner's browser session, owner-confirmed before submit; the
+MCP-server-leaderboard title, per the refreshed draft). Still pending: the blog post + Show HN
+(POST.md drafts 1–2), LISTINGS.md submissions, the Action-Marketplace click. The twice-daily
+watch covers the 5 GitHub threads; Reddit replies arrive via the owner's native Reddit inbox.
 
 ## The 1.0 bar (written v0.9 W7 — what "stable" will mean)
 

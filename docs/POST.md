@@ -155,7 +155,7 @@ MIT, no product, no telemetry. If you maintain an API or MCP server and want it 
 
 ---
 
-## 3. r/mcp draft
+## 3. r/mcp draft — **POSTED 2026-07-10**: https://www.reddit.com/r/mcp/comments/1usyb34/i_scored_20_popular_mcp_servers_token_cost/ (flair: showcase; posted via the owner's browser session, owner-confirmed before submit)
 
 **Title:** `I scored 20 popular MCP servers' token cost — Notion's charges 21k tokens before you type a word`
 
