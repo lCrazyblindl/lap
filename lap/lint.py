@@ -162,6 +162,26 @@ def flat_schema(schema, _root=None, _depth: int = 0) -> tuple[dict, list]:
     return props, required
 
 
+def heaviest_tools(tools: list[dict], top: int = 5) -> list[dict]:
+    """The `top` most expensive tool definitions with a description/schema token split -
+    the M3 rule only flags >600-token outliers, but on a disciplined server the remaining
+    fat still concentrates somewhere; this shows where."""
+    import json as _json
+
+    from . import tokens
+
+    rows = []
+    for t in tools:
+        rows.append({
+            "tool": t.get("name", "(unnamed)"),
+            "tokens": tokens.count_tools([t]),
+            "description_tokens": tokens.count(t.get("description") or ""),
+            "schema_tokens": tokens.count(_json.dumps(t.get("input_schema") or {})),
+        })
+    rows.sort(key=lambda r: -r["tokens"])
+    return rows[:top]
+
+
 def lint_tools(tools: list[dict]) -> list[Finding]:
     """Lint a live MCP server's advertised tools (name / description / inputSchema).
 
@@ -290,11 +310,16 @@ def main() -> None:
         findings = filter_ignored(lint_tools(tools), ignore)
         warns = sum(1 for f in findings if f.severity == "warn")
         infos = len(findings) - warns
-        g = grade_mod.compute_parts(len(tools), tokens.count_tools(tools), 0, warns, infos)
+        menu_tokens = tokens.count_tools(tools)
+        g = grade_mod.compute_parts(len(tools), menu_tokens, 0, warns, infos)
+        heaviest = heaviest_tools(tools)
+        gap = grade_mod.next_grade_menu_budget(len(tools), menu_tokens, 0, warns, infos)
         title = f"MCP server ({len(tools)} advertised tool(s))"
         if args.json:
             print(json.dumps({
                 "api": title, "source": source, "grade": g,
+                "menu_tokens": menu_tokens,
+                "heaviest_tools": heaviest, "next_grade": gap,
                 "findings": [{"rule": f.rule, "severity": f.severity, "where": f.where,
                               "message": f.message} for f in findings],
                 "warnings": warns, "suggestions": infos,
@@ -302,7 +327,22 @@ def main() -> None:
         else:
             _print_human(title, source, findings, warns, infos)
             subs = "  ".join(f"{k} {v}" for k, v in g["subscores"].items())
-            print(f"  LAP grade: {g['letter']} ({g['score']}/100)   [{subs}]\n")
+            print(f"  LAP grade: {g['letter']} ({g['score']}/100)   [{subs}]")
+            print(f"  menu: {menu_tokens:,} tokens for {len(tools)} tool(s); heaviest "
+                  "(total = description/schema):")
+            for h in heaviest:
+                print(f"    {h['tokens']:>6}  {h['tool'][:40]:40} = "
+                      f"{h['description_tokens']}/{h['schema_tokens']}")
+            if gap:
+                if gap["menu_budget"] is not None:
+                    shave = menu_tokens - gap["menu_budget"]
+                    print(f"  to reach {gap['letter']} (>={gap['threshold']}): menu <= "
+                          f"~{gap['menu_budget']:,} tokens - shave ~{shave:,} "
+                          "(the heaviest definitions above are where it lives)")
+                else:
+                    print(f"  to reach {gap['letter']} (>={gap['threshold']}): a lighter menu "
+                          "alone can't get there - fix the findings above first")
+            print()
     else:
         if not args.source:
             ap.error("provide an OpenAPI source or --mcp-url/--mcp")

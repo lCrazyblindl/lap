@@ -4,6 +4,17 @@ All notable changes to **lap** (PyPI package `lap-score`) are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); loose semantic
 versioning while pre-1.0.
 
+## [Unreleased]
+
+### Added
+- **Grade navigation in `lap lint --mcp`**: after the grade, the CLI now prints the
+  heaviest tool definitions with a description/schema token split (`lint.heaviest_tools()`)
+  and a "to reach <next letter>: menu <= ~N tokens — shave ~M" line
+  (`grade.next_grade_menu_budget()`), or an honest "a lighter menu alone can't get there —
+  fix the findings first" when the score is hygiene-limited. Both in `--json` too
+  (`heaviest_tools`, `next_grade`, `menu_tokens`). Motivated by a real exchange: the numbers
+  turned a community server's B (83) into a concrete ~730-token to-do list for an A.
+
 ## [0.7.0] — 2026-07-10
 
 The toolkit becomes a library: a documented, loose-semver-stable Python API, plus

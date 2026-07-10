@@ -837,6 +837,20 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
   returns the reference figures, `--diff --git` runs from the wheel). **GitHub:** tag +
   release https://github.com/lCrazyblindl/lap/releases/tag/v0.7.0. Action at `@v0.7.0`.
   `[release creds]`
+- [x] **W9 (unplanned, community-driven) — grade navigation in `lint --mcp`.** Done. Born
+  from the first r/mcp reply: the author of easy-notion-mcp (scored B 83 on request — first
+  community-requested leaderboard row) needed to know *what to fix*, and the recipe I
+  hand-computed (top-7 descriptions, ~730 tokens to A) wasn't reproducible from the CLI.
+  Now it is: `lint --mcp` prints the heaviest definitions (desc/schema split,
+  `lint.heaviest_tools()`) + a "to reach <letter>: shave ~N" budget
+  (`grade.next_grade_menu_budget()`, binary search over the grade formula), or the honest
+  hygiene-limited variant ("a lighter menu alone can't get there") — verified live on
+  mcp-server-git, which correctly showed the *opposite* diagnosis to easy-notion (schema-fat
+  + hygiene-capped vs description-fat). +2 tests (tests/ 64, full 68). CHANGELOG
+  `[Unreleased]` reopened. _Backlog note: `lint --mcp` can't pass custom env vars to the
+  spawned server (StdioTransport inherits only the SDK's safe-minimum env, so e.g.
+  NOTION_TOKEN-gated servers can't be linted from the CLI; the library path can) — a
+  `--env KEY=VAL` flag is a natural 0.8.0 item._  `[no key]`
 - [ ] **W8 — Month-over-month trend content** `[no key]` **(after Aug 3 — second history
   snapshot).** "What changed in a month" on the live page + leaderboard diff — recurring
   content at zero marginal effort.

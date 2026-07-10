@@ -734,6 +734,34 @@ def test_score_diff_against_git_ref(spec, tmp_path):
     assert naive["delta"] > 0
 
 
+def test_next_grade_menu_budget_navigation():
+    from lap import grade
+
+    # the easy-notion shape: 42 tools, 8199 tokens, 1 info finding -> B(83), next is A
+    gap = grade.next_grade_menu_budget(42, 8199, 0, 0, 1)
+    assert gap["letter"] == "A" and gap["threshold"] == 85
+    at = grade.compute_parts(42, gap["menu_budget"], 0, 0, 1)
+    over = grade.compute_parts(42, gap["menu_budget"] + 100, 0, 0, 1)
+    assert at["score"] >= 85 > over["score"]  # budget is tight, not loose
+    # hygiene-limited: a B whose findings cap the composite below A at ANY menu size
+    hopeless = grade.next_grade_menu_budget(10, 850, 0, 6, 0)
+    assert hopeless["letter"] == "A" and hopeless["menu_budget"] is None
+    # already at the top: nothing to chase
+    assert grade.next_grade_menu_budget(10, 800, 0, 0, 0) is None
+
+
+def test_heaviest_tools_split():
+    tools = [
+        {"name": "fat", "description": "word " * 300, "input_schema":
+            {"type": "object", "properties": {"x": {"type": "string"}}}},
+        {"name": "lean", "description": "Short one.", "input_schema": {}},
+    ]
+    rows = lint.heaviest_tools(tools, top=5)
+    assert [r["tool"] for r in rows] == ["fat", "lean"]
+    assert rows[0]["description_tokens"] > rows[0]["schema_tokens"]
+    assert rows[0]["tokens"] > rows[1]["tokens"]
+
+
 def test_lint_and_compact_see_composed_schemas():
     # SEP-2106 (2026 draft spec): inputSchema may use any JSON Schema 2020-12 keywords -
     # params hidden behind allOf/oneOf/$defs must still be visible to lint + compact.

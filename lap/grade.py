@@ -65,6 +65,35 @@ def compute_parts(operations: int, full_menu_tokens: int, c_max: int | None,
     return {"score": score, "letter": letter, "subscores": subs}
 
 
+def next_grade_menu_budget(operations: int, full_menu_tokens: int, c_max: int | None,
+                           warn_count: int, info_count: int) -> dict | None:
+    """The menu-token budget that lifts the composite to the NEXT letter, findings held
+    constant - turns the grade from a label into navigation ("shave ~N tokens for a B").
+
+    Returns {"letter", "threshold", "menu_budget"} - `menu_budget` is the largest full-menu
+    token count that reaches the next letter, or None when no menu size can (the score is
+    hygiene/result-limited: fix the findings first). Returns None outright when already at
+    the top letter (or there are no operations)."""
+    if not operations:
+        return None
+    current = compute_parts(operations, full_menu_tokens, c_max, warn_count, info_count)
+    nxt = next(((cut, let) for cut, let in reversed(LETTERS) if cut > current["score"]), None)
+    if nxt is None:
+        return None
+    threshold, letter = nxt
+    lo = operations * MENU_BEST  # menu sub-score saturates at 100 here
+    if compute_parts(operations, lo, c_max, warn_count, info_count)["score"] < threshold:
+        return {"letter": letter, "threshold": threshold, "menu_budget": None}
+    hi = full_menu_tokens
+    while hi - lo > 1:
+        mid = (lo + hi) // 2
+        if compute_parts(operations, mid, c_max, warn_count, info_count)["score"] >= threshold:
+            lo = mid
+        else:
+            hi = mid
+    return {"letter": letter, "threshold": threshold, "menu_budget": lo}
+
+
 def compute(spec: dict, page_size: int = 20, string_len: int = 6) -> dict:
     """Grade a loaded OpenAPI spec (assembles the parts, then compute_parts)."""
     from . import estimate, lint
