@@ -4,7 +4,10 @@ All notable changes to **lap** (PyPI package `lap-score`) are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); loose semantic
 versioning while pre-1.0.
 
-## [Unreleased]
+## [0.8.0] — 2026-07-10
+
+The grade becomes navigation: `lap lint --mcp` now tells a server author exactly where the
+fat is and how many tokens stand between them and the next letter.
 
 ### Added
 - **Grade navigation in `lap lint --mcp`**: after the grade, the CLI now prints the

@@ -3,6 +3,12 @@
 The toolkit and artifacts are prepared in-repo; publishing needs credentials only the owner
 holds (never pasted into chat — set as environment variables, or via `gh auth login`). Steps:
 
+**v0.8.0 status (2026-07-10): FULLY RELEASED.** `lap-score` 0.8.0 is live:
+https://pypi.org/project/lap-score/0.8.0/ (twine PASSED ×2; fresh-venv verified — the
+grade-navigation returns the reference easy-notion recipe from the wheel, and the CLI
+prints the heaviest-tools table on a real server, correctly omitting the "to reach" line
+for an already-A server). Ships grade navigation in `lap lint --mcp`.
+
 **v0.7.0 status (2026-07-10): FULLY RELEASED.** `lap-score` 0.7.0 is live:
 https://pypi.org/project/lap-score/0.7.0/ (twine PASSED ×2; fresh-venv verified — the new
 Python API facade returns the reference figures and `lap score --diff --git` runs from the
