@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 
 from . import estimate
@@ -73,6 +74,20 @@ def diff(before: dict, after: dict) -> dict:
         "findings_added": [{"rule": r, "where": w} for r, w in added],
         "findings_removed": [{"rule": r, "where": w} for r, w in removed],
     }
+
+
+def spec_at_git_ref(ref: str, path: str) -> dict:
+    """The spec file's content as of a git ref, via `git show` - no temp files.
+    Runs git from the file's own directory so the path resolves in any repo layout."""
+    import subprocess
+
+    directory = os.path.dirname(os.path.abspath(path)) or "."
+    name = os.path.basename(path)
+    proc = subprocess.run(["git", "-C", directory, "show", f"{ref}:./{name}"],
+                          capture_output=True, text=True, encoding="utf-8")
+    if proc.returncode != 0:
+        raise SystemExit(f"git show {ref}:./{name} failed: {proc.stderr.strip()[:200]}")
+    return ir._parse(proc.stdout)
 
 
 def gather(spec: dict, args) -> dict:
@@ -231,6 +246,9 @@ def main() -> None:
     ap.add_argument("--diff", action="store_true",
                     help="compare two spec versions instead of scoring one: "
                     "lap score --diff <before> <after>")
+    ap.add_argument("--git", metavar="REF",
+                    help="with --diff and ONE source path: 'before' is the file's version at "
+                    "this git ref (no temp files): lap score --diff --git HEAD~1 openapi.json")
     ap.add_argument("--mcp-url", help="score a live MCP server's advertised tools instead of an OpenAPI spec")
     ap.add_argument("--model", help="model id for faithful count_tokens (needs ANTHROPIC_API_KEY)")
     ap.add_argument("--no-mcp", action="store_true", help="skip the real-MCP (FastMCP) baseline row")
@@ -254,14 +272,22 @@ def main() -> None:
         tokens.MODEL = args.model
 
     if args.diff:
-        if not args.source or not args.after:
-            ap.error("--diff needs two sources: lap score --diff <before> <after>")
-        before, after = ir.load_spec(args.source), ir.load_spec(args.after)
+        if args.git:
+            if not args.source or args.after:
+                ap.error("--git takes ONE source path: lap score --diff --git <ref> <spec>")
+            before = spec_at_git_ref(args.git, args.source)
+            after = ir.load_spec(args.source)
+            before_label, after_label = f"{args.git}:{args.source}", args.source
+        else:
+            if not args.source or not args.after:
+                ap.error("--diff needs two sources: lap score --diff <before> <after>")
+            before, after = ir.load_spec(args.source), ir.load_spec(args.after)
+            before_label, after_label = args.source, args.after
         res = diff(before, after)
         if args.json:
             print(json.dumps(res, indent=2))
         else:
-            _print_diff(res, args.source, args.after)
+            _print_diff(res, before_label, after_label)
         if args.max_growth is not None:
             grown = next(f["delta"] for f in res["forms"] if f["variant"] == args.gate_form)
             if grown > args.max_growth:

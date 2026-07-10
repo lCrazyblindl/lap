@@ -4,6 +4,17 @@ All notable changes to **lap** (PyPI package `lap-score`) are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); loose semantic
 versioning while pre-1.0.
 
+## [Unreleased]
+
+### Added
+- **Stable Python API**: `lap.score_spec()`, `lap.lint_spec()`, `lap.grade_spec()`,
+  `lap.diff_specs()` (path/URL/dict in, plain data out — the same shapes the CLI's `--json`
+  emits), documented in the README and covered by loose semver from 0.7. `lap.__version__`
+  now reads from package metadata (was frozen at "0.1.0").
+- **`lap score --diff --git <ref> <spec>`** — diff a spec straight against its version at a
+  git ref (via `git show`, no temp files); pairs with `--max-growth` and the new
+  pre-commit recipe in the README.
+
 ## [0.6.0] — 2026-07-09
 
 Ready for the 2026-07-28 MCP spec: composed (JSON Schema 2020-12) tool schemas are read

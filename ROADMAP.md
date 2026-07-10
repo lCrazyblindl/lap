@@ -819,9 +819,18 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
   4 keys (`x-lap-page-max`, `x-lap-projection`, `x-lap-heavy`, `x-lap-workflow`), what
   score/lint/fix would do with each, explicit non-goals (absence is never a finding; keys
   retire if the specs standardize equivalents). Feedback invited via issues.  `[no key]`
-- [ ] **W7 — Stable API + 1.0 criteria** `[no key]`. Documented `lap.score_spec()`-style
-  Python API, `lap score --diff --git HEAD~1`, pre-commit recipe, a written 1.0 bar. Likely
-  triggers 0.7.0 together with W6.
+- [x] **W7 — Stable API + 1.0 criteria.** Done. **Python API facade** in `lap/__init__.py`:
+  `score_spec` / `lint_spec` / `grade_spec` / `diff_specs` (path/URL/dict in, the CLI's
+  `--json` shapes out; `lap.Finding` lazily exported; `__version__` now from package
+  metadata — was frozen at "0.1.0"), documented in lap/README's new "Python API" section
+  and declared loose-semver-stable from 0.7. **`lap score --diff --git <ref> <spec>`**
+  (`score.spec_at_git_ref` via `git show`, no temp files; runs from the file's own dir so
+  any repo layout works) + **pre-commit recipe** in lap/README. **The 1.0 bar written**
+  (ROADMAP section: 5 criteria — surface stability ×2 releases, frozen rule IDs with
+  reproducing citations, regenerable numbers ±1%, green 3-OS PBT ×2 releases, and at least
+  one external consumer holding the API). +2 tests (tests/ 62, full suite 66 green).
+  CHANGELOG `[Unreleased]` reopened with both features → ready to cut **0.7.0** whenever
+  the owner says the word.  `[no key]`
 - [ ] **W8 — Month-over-month trend content** `[no key]` **(after Aug 3 — second history
   snapshot).** "What changed in a month" on the live page + leaderboard diff — recurring
   content at zero marginal effort.
@@ -829,6 +838,25 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
 Owner actions standing (texts ready): POST.md publication (W1 refresh makes it stronger),
 LISTINGS.md submissions, the Action-Marketplace click. The twice-daily watch keeps covering
 #2812 + #236.
+
+## The 1.0 bar (written v0.9 W7 — what "stable" will mean)
+
+`lap` tags 1.0 when ALL of these hold; until then, loose semver (minor = capability,
+patch = fix), with the **Python API facade and CLI flags stable from 0.7** (breaking either
+before 1.0 requires a deprecation release in between):
+
+1. **Surface**: the documented Python API (`score_spec`/`lint_spec`/`grade_spec`/
+   `diff_specs` + the MCP helpers) and every documented CLI flag survive two consecutive
+   minor releases without breaking changes.
+2. **Rules**: every profile rule cites a measurement that still reproduces from the repo,
+   and rule IDs are frozen (new rules add IDs, never reuse).
+3. **Numbers**: the published leaderboards regenerate from a clean checkout within
+   tokenizer tolerance (±1%); grade constants change only with a major version.
+4. **Robustness**: the PBT suite + fuzz corpus run green across the 3-OS matrix for two
+   consecutive releases; malformed input never crashes (degrades to best-effort).
+5. **Ecosystem check**: at least one external consumer (CI user, badge adopter, or a spec
+   discussion citing the numbers) confirms the interfaces are load-bearing — 1.0 is a
+   promise to *others*, so someone else must be holding the API when we freeze it.
 
 ## Status
 
@@ -906,8 +934,10 @@ Notion −69% from $defs dedupe alone; watch extended to 5 threads).
 **W6 done** — Arazzo
 macro-tools measured on the OAI examples (menu −50…97%; B wins grow with chain length,
 tiny flows pay more; intermediate C never enters context — structural) + the x-lap strawman
-(4 keys). ▶ **W7 — stable API + 1.0 criteria** `[no key]` (likely 0.7.0 with W6's docs);
-**W2** fires ~Jul 28 (reminder scheduled); W3/W5 stay `[key]`. **The mcp-compressor issue is POSTED
+(4 keys). **W7 done** — stable Python API (score_spec/lint_spec/grade_spec/diff_specs),
+`--diff --git`, pre-commit recipe, the written 1.0 bar; 66 tests green; **0.7.0 is ready to
+cut on the owner's word**. ▶ **W2** fires ~Jul 28 (reminder scheduled); W3/W5 stay `[key]`;
+otherwise v0.9 is done pending replies to the 5 watched threads. **The mcp-compressor issue is POSTED
 (2026-07-09, owner-authorized): [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236).**
 Owner actions still pending: POST.md publishing + LISTINGS.md submissions.**
 Say "continue LAP" to keep going.

@@ -56,7 +56,23 @@ Every command is `--json`-able and can fail a build:
 ```bash
 lap score openapi.json --gate-form compact_sig --max-menu-tokens 800   # menu too heavy
 lap score --diff old.json new.json --max-growth 500                    # this PR bloated the menu
+lap score --diff --git HEAD~1 openapi.json --max-growth 500            # same, straight against a git ref
 lap lint  openapi.json --fail-on warn                                  # rule violations (--ignore R2,A1 / .lapignore)
+```
+
+As a [pre-commit](https://pre-commit.com) hook (gates every commit that touches the spec):
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      - id: lap-menu-gate
+        name: lap - agent-menu size gate
+        entry: lap score --diff --git HEAD api/openapi.json --max-growth 500
+        language: system
+        files: ^api/openapi\.json$
+        pass_filenames: false
 ```
 
 …or the bundled composite Action:
@@ -72,6 +88,25 @@ lap lint  openapi.json --fail-on warn                                  # rule vi
 
 (Prefer Spectral? The same rules ship as a
 [Spectral ruleset](https://github.com/lCrazyblindl/lap/tree/main/spectral).)
+
+## Python API (stable from 0.7)
+
+The CLI's data is available as plain Python — four functions, loose-semver-stable
+(signatures only break at a major version). Each accepts a file path, an http(s) URL,
+or an already-parsed spec `dict`:
+
+```python
+import lap
+
+report   = lap.score_spec("openapi.json")          # dict  = `lap score --json`
+findings = lap.lint_spec("openapi.json")           # list[lap.Finding(rule, severity, where, message)]
+grade    = lap.grade_spec("openapi.json")          # {"score": 72, "letter": "B", ...}
+delta    = lap.diff_specs("old.json", "new.json")  # dict  = `lap score --diff --json`
+```
+
+MCP-side helpers (need `pip install "lap-score[mcp]"`): `lap.mcp_client.fetch_tools()`,
+`lap.mcp_client.score_tools()`, `lap.lint.lint_tools()`. Everything else under `lap.*`
+is internal and may change between minor versions.
 
 ## Reading the numbers
 

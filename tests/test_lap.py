@@ -1,5 +1,6 @@
 """Tests for the `lap` toolkit, using the bundled non-pet-zoo Bookstore spec."""
 
+import json
 from pathlib import Path
 
 import pytest
@@ -690,6 +691,47 @@ def test_lint_tools_flags_mcp_rules():
     assert {"D3", "M1", "M2", "M4"} <= rules_by_tool["do"]  # opaque, undescribed, no required
     assert "get_weather_forecast" not in rules_by_tool      # the well-formed tool is clean
     assert "M3" in rules_by_tool["megatool"]                # heavy definition
+
+
+def test_public_api_facade(spec):
+    # the documented stable surface (W7): path/URL/dict in, plain data out
+    import lap as lap_pkg
+
+    report = lap_pkg.score_spec(spec, mcp_baseline=False)
+    assert "grade" in report and "estimated_b" in report
+    assert not any(k.startswith("_") for k in report)
+    findings = lap_pkg.lint_spec(spec)
+    assert findings and all(isinstance(f, lap_pkg.Finding) for f in findings)
+    g = lap_pkg.grade_spec(spec)
+    assert g["letter"] in "ABCDF" and 0 <= g["score"] <= 100
+    d = lap_pkg.diff_specs(spec, spec)
+    assert all(f["delta"] == 0 for f in d["forms"]) and not d["findings_added"]
+    assert lap_pkg.__version__ != "0.1.0"  # comes from package metadata now
+
+
+def test_score_diff_against_git_ref(spec, tmp_path):
+    import subprocess
+
+    from lap import score as score_mod
+
+    repo = tmp_path / "r"
+    repo.mkdir()
+    f = repo / "api.json"
+    f.write_text(json.dumps(spec), encoding="utf-8")
+    git = ["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@t"]
+    for cmd in (["init", "-q"], ["add", "api.json"], ["commit", "-q", "-m", "v1"]):
+        subprocess.run(git + cmd, check=True, capture_output=True)
+    grown = json.loads(json.dumps(spec))
+    grown["paths"]["/grew"] = {"get": {"summary": "New op", "responses": {"200": {
+        "description": "ok"}}}}
+    f.write_text(json.dumps(grown), encoding="utf-8")
+
+    before = score_mod.spec_at_git_ref("HEAD", str(f))
+    assert "/grew" not in before["paths"]
+    res = score_mod.diff(before, ir._parse(f.read_text(encoding="utf-8")))
+    assert res["after_operations"] == res["before_operations"] + 1
+    naive = next(x for x in res["forms"] if x["variant"] == "openapi_full")
+    assert naive["delta"] > 0
 
 
 def test_lint_and_compact_see_composed_schemas():
