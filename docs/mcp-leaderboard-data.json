@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-09",
+ "generated": "2026-07-11",
  "tokenizer": "tiktoken-approx",
  "servers": [
   {
@@ -35,6 +35,38 @@
    "heaviest_tok": 2217
   },
   {
+   "name": "easy-notion-mcp",
+   "pkg": "easy-notion-mcp",
+   "kind": "npm",
+   "by": "community (Grey-Iris)",
+   "tools": 42,
+   "menu": 8199,
+   "compact": 554,
+   "per_tool": 195,
+   "warn": 0,
+   "info": 1,
+   "grade": "B",
+   "score": 83,
+   "heaviest": "read_page",
+   "heaviest_tok": 475
+  },
+  {
+   "name": "playwright-mcp",
+   "pkg": "@playwright/mcp",
+   "kind": "npm",
+   "by": "Microsoft",
+   "tools": 24,
+   "menu": 4018,
+   "compact": 288,
+   "per_tool": 167,
+   "warn": 3,
+   "info": 5,
+   "grade": "B",
+   "score": 78,
+   "heaviest": "browser_take_screenshot",
+   "heaviest_tok": 345
+  },
+  {
    "name": "excel-mcp-server",
    "pkg": "excel-mcp-server",
    "kind": "pip",
@@ -49,22 +81,6 @@
    "score": 69,
    "heaviest": "format_range",
    "heaviest_tok": 551
-  },
-  {
-   "name": "playwright-mcp",
-   "pkg": "@playwright/mcp",
-   "kind": "npm",
-   "by": "Microsoft",
-   "tools": 23,
-   "menu": 3806,
-   "compact": 280,
-   "per_tool": 165,
-   "warn": 3,
-   "info": 4,
-   "grade": "B",
-   "score": 79,
-   "heaviest": "browser_take_screenshot",
-   "heaviest_tok": 345
   },
   {
    "name": "arxiv-mcp-server",
@@ -120,13 +136,13 @@
    "kind": "npm",
    "by": "official reference",
    "tools": 14,
-   "menu": 1892,
+   "menu": 1915,
    "compact": 130,
-   "per_tool": 135,
+   "per_tool": 137,
    "warn": 0,
    "info": 12,
    "grade": "B",
-   "score": 75,
+   "score": 74,
    "heaviest": "read_text_file",
    "heaviest_tok": 209
   },

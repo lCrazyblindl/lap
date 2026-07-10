@@ -84,6 +84,10 @@ SERVERS: list[dict] = [
      "env": {"FIRECRAWL_API_KEY": "fc-dummy-lap-scan"}, "by": "Firecrawl"},
     {"name": "notion-mcp-server", "kind": "npm", "pkg": "@notionhq/notion-mcp-server",
      "env": {"NOTION_TOKEN": "ntn_dummy_lap_scan"}, "by": "Notion"},
+    # community alternative that showed up in the r/mcp thread claiming token savings -
+    # scored on request, same rules as everyone
+    {"name": "easy-notion-mcp", "kind": "npm", "pkg": "easy-notion-mcp",
+     "env": {"NOTION_TOKEN": "ntn_dummy_lap_scan"}, "by": "community (Grey-Iris)"},
 ]
 
 # agent-friend's published grades (dev.to, 2026-03; 156 static checks, 40/30/30 formula)

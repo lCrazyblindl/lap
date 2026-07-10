@@ -1,19 +1,20 @@
 # MCP-server leaderboard — what popular published servers charge your context window
 
-_Generated 2026-07-09 by [`experiments/mcp_leaderboard.py`](../experiments/mcp_leaderboard.py); tokenizer: **tiktoken-approx**. Each server was installed and run locally in an isolated env (`uvx` / `npx -y`), its advertised tool list fetched over stdio with **no credentials** (dummy env vars only where a server refuses to boot without them), and scored exactly like `lap lint --mcp`: menu (bucket A) tokens + M-rule hygiene + the composite grade (result sub-score skipped - tool listings don't declare response shapes). Same method as the [OpenAPI leaderboard](LEADERBOARD.md)._
+_Generated 2026-07-11 by [`experiments/mcp_leaderboard.py`](../experiments/mcp_leaderboard.py); tokenizer: **tiktoken-approx**. Each server was installed and run locally in an isolated env (`uvx` / `npx -y`), its advertised tool list fetched over stdio with **no credentials** (dummy env vars only where a server refuses to boot without them), and scored exactly like `lap lint --mcp`: menu (bucket A) tokens + M-rule hygiene + the composite grade (result sub-score skipped - tool listings don't declare response shapes). Same method as the [OpenAPI leaderboard](LEADERBOARD.md)._
 
-**20 servers reachable, 199 tools; their menus total 64,151 tokens per session before the first user message** - a compact rendering of the same tools would cost 3,100 (95% less). Every session with these servers connected pays the menu whether the tools are used or not ([cache math](CACHE-ECONOMICS.md): caching discounts the price, not the context).
+**21 servers reachable, 242 tools; their menus total 72,585 tokens per session before the first user message** - a compact rendering of the same tools would cost 3,662 (95% less). Every session with these servers connected pays the menu whether the tools are used or not ([cache math](CACHE-ECONOMICS.md): caching discounts the price, not the context).
 
 | server | by | tools | menu tok | tok/tool | compact | saved | findings (warn/info) | grade |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
 | notion-mcp-server | Notion | 24 | 21,411 | 892 | 400 | 98% | 24/14 | **F** (19) |
 | firecrawl-mcp | Firecrawl | 26 | 18,511 | 712 | 770 | 96% | 10/27 | **F** (27) |
+| easy-notion-mcp | community (Grey-Iris) | 42 | 8,199 | 195 | 554 | 93% | 0/1 | **B** (83) |
+| playwright-mcp | Microsoft | 24 | 4,018 | 167 | 288 | 93% | 3/5 | **B** (78) |
 | excel-mcp-server | community | 25 | 3,955 | 158 | 494 | 88% | 0/25 | **C** (69) |
-| playwright-mcp | Microsoft | 23 | 3,806 | 165 | 280 | 93% | 3/4 | **B** (79) |
 | arxiv-mcp-server | community | 10 | 2,514 | 251 | 111 | 96% | 1/3 | **C** (69) |
 | aws-documentation-mcp | AWS Labs | 4 | 2,509 | 627 | 64 | 97% | 1/0 | **D** (52) |
 | wikipedia-mcp | community | 22 | 1,933 | 88 | 235 | 88% | 0/18 | **B** (83) |
-| server-filesystem | official reference | 14 | 1,892 | 135 | 130 | 93% | 0/12 | **B** (75) |
+| server-filesystem | official reference | 14 | 1,915 | 137 | 130 | 93% | 0/12 | **B** (74) |
 | mcp-server-git | official reference | 12 | 1,418 | 118 | 153 | 89% | 2/11 | **B** (71) |
 | server-everything | official reference | 13 | 1,302 | 100 | 114 | 91% | 0/5 | **A** (89) |
 | server-memory | official reference | 9 | 1,117 | 124 | 69 | 94% | 0/4 | **B** (84) |
