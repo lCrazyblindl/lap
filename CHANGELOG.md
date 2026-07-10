@@ -4,7 +4,10 @@ All notable changes to **lap** (PyPI package `lap-score`) are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); loose semantic
 versioning while pre-1.0.
 
-## [Unreleased]
+## [0.7.0] — 2026-07-10
+
+The toolkit becomes a library: a documented, loose-semver-stable Python API, plus
+git-native menu gating (`--diff --git` + a pre-commit recipe).
 
 ### Added
 - **Stable Python API**: `lap.score_spec()`, `lap.lint_spec()`, `lap.grade_spec()`,

@@ -3,6 +3,12 @@
 The toolkit and artifacts are prepared in-repo; publishing needs credentials only the owner
 holds (never pasted into chat — set as environment variables, or via `gh auth login`). Steps:
 
+**v0.7.0 status (2026-07-10): FULLY RELEASED.** `lap-score` 0.7.0 is live:
+https://pypi.org/project/lap-score/0.7.0/ (twine PASSED ×2; fresh-venv verified — the new
+Python API facade returns the reference figures and `lap score --diff --git` runs from the
+published wheel). Ships the stable Python API (`score_spec`/`lint_spec`/`grade_spec`/
+`diff_specs`), `--diff --git <ref>`, the pre-commit recipe, and the written 1.0 bar.
+
 **v0.6.0 status (2026-07-09): FULLY RELEASED.** `lap-score` 0.6.0 is live:
 https://pypi.org/project/lap-score/0.6.0/ (`twine check` PASSED ×2, uploaded, fresh-venv
 verified — `flat_schema` + `lap score` work from the published wheel). Ships the
