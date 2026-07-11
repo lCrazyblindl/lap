@@ -88,6 +88,14 @@ SERVERS: list[dict] = [
     # scored on request, same rules as everyone
     {"name": "easy-notion-mcp", "kind": "npm", "pkg": "easy-notion-mcp",
      "env": {"NOTION_TOKEN": "ntn_dummy_lap_scan"}, "by": "community (Grey-Iris)"},
+    # the Datadog pair (r/mcp dared us): the official server is OAuth-gated/hosted and can't
+    # even be listed credential-free; these are the two biggest measurable community ones
+    {"name": "datadog-mcp (@us-all)", "kind": "npm", "pkg": "@us-all/datadog-mcp",
+     "env": {"DD_API_KEY": "dummy", "DD_APP_KEY": "dummy", "DATADOG_API_KEY": "dummy",
+             "DATADOG_APP_KEY": "dummy", "DD_SITE": "datadoghq.com"}, "by": "community"},
+    {"name": "mcp-server-datadog (winor30)", "kind": "npm", "pkg": "@winor30/mcp-server-datadog",
+     "env": {"DATADOG_API_KEY": "dummy", "DATADOG_APP_KEY": "dummy",
+             "DATADOG_SITE": "datadoghq.com"}, "by": "community (winor30)"},
 ]
 
 # agent-friend's published grades (dev.to, 2026-03; 156 static checks, 40/30/30 formula)

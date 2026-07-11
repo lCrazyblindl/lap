@@ -3,6 +3,22 @@
  "tokenizer": "tiktoken-approx",
  "servers": [
   {
+   "name": "datadog-mcp (@us-all)",
+   "pkg": "@us-all/datadog-mcp",
+   "kind": "npm",
+   "by": "community",
+   "tools": 166,
+   "menu": 28835,
+   "compact": 2799,
+   "per_tool": 174,
+   "warn": 0,
+   "info": 25,
+   "grade": "B",
+   "score": 82,
+   "heaviest": "create-slo",
+   "heaviest_tok": 508
+  },
+  {
    "name": "notion-mcp-server",
    "pkg": "@notionhq/notion-mcp-server",
    "kind": "npm",
@@ -113,6 +129,22 @@
    "score": 52,
    "heaviest": "search_documentation",
    "heaviest_tok": 1002
+  },
+  {
+   "name": "mcp-server-datadog (winor30)",
+   "pkg": "@winor30/mcp-server-datadog",
+   "kind": "npm",
+   "by": "community (winor30)",
+   "tools": 21,
+   "menu": 2497,
+   "compact": 316,
+   "per_tool": 119,
+   "warn": 0,
+   "info": 12,
+   "grade": "B",
+   "score": 82,
+   "heaviest": "schedule_downtime",
+   "heaviest_tok": 247
   },
   {
    "name": "wikipedia-mcp",
