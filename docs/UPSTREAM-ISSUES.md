@@ -81,6 +81,16 @@ _Generated 2026-07-11 by [`experiments/upstream_issues.py`](../experiments/upstr
 >
 > Happy to contribute the `$defs` hoisting pass or the measurement harness. (Disclosure: I maintain `lap`, the measurement tool; MIT, no product.)
 
+**Follow-up (2026-07-11): their own pending fix, measured.**
+[PR #13](https://github.com/G-Core/gcore-mcp-server/pull/13) ("code-execution routing mode",
+open since May 15) replaces the ~700 registrations with **3 meta-tools**
+(`search_tools` / `get_tool_schema` / `execute_code` in a Pydantic Monty sandbox with a
+host-injected `call_tool()`). Scored the branch: **3 tools / 363 tokens — a 99.9% cut vs the
+488k `direct` menu**, structural (Tool-Search-family), with the sandbox design that keeps
+intermediate results out of context. The measurement was
+[posted to the PR](https://github.com/G-Core/gcore-mcp-server/pull/13#issuecomment-4946062304)
+as merge support; both threads are on the twice-daily watch.
+
 ---
 
 _Posting checklist (owner): review each text → say the word → they get filed one at a time under your account (per the #236 precedent), each then joins the twice-daily reply watch._
