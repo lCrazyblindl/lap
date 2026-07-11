@@ -601,6 +601,11 @@ roughly one bounded session unless noted.
   attaches *third-party* accuracy to our token findings.  `[key]`
 
 **Track M — measurement science (deepen the moat):**
+- **Param-description ablation** `[key]`: live A/B — identical menu ± parameter descriptions,
+  accuracy at param granularity. Prompted by an r/mcp reply (2026-07-11) reporting
+  "undescribed params hurt accuracy more than raw token count did"; we answered honestly
+  that we haven't isolated that variable yet. Would give M2 its own accuracy citation
+  (M-rules currently inherit the form-level matrix evidence).
 - Response-filtering scoring: detect field-projection affordances (`fields=`, `$select`, sparse
   fieldsets) in specs and quantify the bucket-C reduction they enable (StackOne's approach #3 —
   currently invisible to `lap score`).
