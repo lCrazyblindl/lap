@@ -7,6 +7,13 @@ versioning while pre-1.0.
 ## [Unreleased]
 
 ### Added
+- **Deferred-facade label** (`lap lint --mcp`, `lint.looks_deferred()`): a tiny menu with a
+  tool-search signature (`search_tools`/`get_tool_schema` + `call`/`execute`) gets an
+  informational note — "figures reflect the facade, not the catalog behind it" — in human
+  output, `--json` (`deferred_facade`), and as a `†` footnote on the MCP leaderboard. A
+  label, never a finding: facade menus genuinely are what a session pays (verified on a
+  real 3-meta-tool facade over a 741-tool catalog); the label only prevents misreading
+  tiny-vs-facade. The x-lap strawman gains a matching `_meta` self-declaration convention.
 - **Rule M5 — the whole menu is too heavy** (`lap lint --mcp`): the first *server-level*
   M-rule, catching the many-small-tools pathology the per-tool rules can't see (a real
   166-tool server costs ~29k tokens/session at a disciplined 174 tok/tool — and drew zero

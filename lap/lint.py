@@ -171,6 +171,24 @@ def flat_schema(schema, _root=None, _depth: int = 0) -> tuple[dict, list]:
     return props, required
 
 
+_FACADE_SEARCH = re.compile(r"(search|list|find|get)[_-]?tool|tool[_-]?(search|schema|list)", re.I)
+_FACADE_INVOKE = re.compile(r"(call|execute|invoke|run)[_-]?(tool|code)|(tool|code)[_-]?(call|execute)", re.I)
+
+
+def looks_deferred(tools: list[dict]) -> bool:
+    """Heuristic: does this tiny menu look like a *deferred facade* (tool-search pattern)
+    over a larger hidden catalog — e.g. `search_tools` + `get_tool_schema` + `execute_code`
+    fronting hundreds of SDK methods? A label, NEVER a finding: the bucket-A accounting is
+    already correct for facades (the advertised menu genuinely is what a session pays), but
+    a reader shouldn't mistake one for a genuinely tiny server, and the deferred tier's
+    per-use costs (search/schema round-trips) are only measurable in live sessions."""
+    if not tools or len(tools) > 6:
+        return False
+    blob = [(t.get("name") or "") + " " + (t.get("description") or "")[:120] for t in tools]
+    return (any(_FACADE_SEARCH.search(b) for b in blob)
+            and any(_FACADE_INVOKE.search(b) for b in blob))
+
+
 def heaviest_tools(tools: list[dict], top: int = 5) -> list[dict]:
     """The `top` most expensive tool definitions with a description/schema token split -
     the M3 rule only flags >600-token outliers, but on a disciplined server the remaining
@@ -337,11 +355,12 @@ def main() -> None:
         g = grade_mod.compute_parts(len(tools), menu_tokens, 0, warns, infos)
         heaviest = heaviest_tools(tools)
         gap = grade_mod.next_grade_menu_budget(len(tools), menu_tokens, 0, warns, infos)
+        facade = looks_deferred(tools)
         title = f"MCP server ({len(tools)} advertised tool(s))"
         if args.json:
             print(json.dumps({
                 "api": title, "source": source, "grade": g,
-                "menu_tokens": menu_tokens,
+                "menu_tokens": menu_tokens, "deferred_facade": facade,
                 "heaviest_tools": heaviest, "next_grade": gap,
                 "findings": [{"rule": f.rule, "severity": f.severity, "where": f.where,
                               "message": f.message} for f in findings],
@@ -365,6 +384,10 @@ def main() -> None:
                 else:
                     print(f"  to reach {gap['letter']} (>={gap['threshold']}): a lighter menu "
                           "alone can't get there - fix the findings above first")
+            if facade:
+                print("  note: this looks like a deferred facade (tool-search pattern) - the "
+                      "figures reflect the facade, not the catalog behind it; per-use "
+                      "search/schema costs only show up in live sessions")
             print()
     else:
         if not args.source:

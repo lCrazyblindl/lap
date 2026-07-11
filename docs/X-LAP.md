@@ -49,6 +49,26 @@ paths:
 - **`fix`**: emit the keys as part of the Overlay when the underlying affordance is
   added (e.g. R3's new `limit` param ships with its `x-lap-page-max`).
 
+## MCP-side companion: deferred-facade self-declaration (`_meta`)
+
+OpenAPI's `x-*` mechanism doesn't reach MCP tool listings, but MCP's `_meta` (reverse-DNS
+keys, first-class in the 2026 spec) does. Problem: a *deferred facade* — `search_tools` +
+`get_tool_schema` + `execute_code` fronting hundreds of catalog entries — is
+indistinguishable in `tools/list` from a genuinely tiny server; measurement tools (ours
+included) can only guess by name patterns. Strawman: the server declares itself in the
+`tools/list` result's `_meta`:
+
+```json
+"_meta": {
+  "io.github.lcrazyblindl.lap/facade": { "catalogTools": 741, "discovery": "search_tools" }
+}
+```
+
+`lap` would then label the row from the declaration instead of the heuristic and report
+"facade over N tools" — still never affecting the grade (the advertised menu genuinely is
+what a session pays; the declaration just stops readers from misreading tiny-vs-facade).
+As with the keys above: if the spec standardizes an equivalent, this retires.
+
 ## What is deliberately NOT proposed
 
 No semantic rewriting (descriptions stay the author's), no runtime behavior, no

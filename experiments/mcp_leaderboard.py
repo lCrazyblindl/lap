@@ -151,6 +151,7 @@ def main() -> None:
             rows.append({
                 "name": entry["name"], "pkg": entry["pkg"], "kind": entry["kind"],
                 "by": entry["by"], "tools": len(tools),
+                "facade": lint.looks_deferred(tools),
                 "menu": s["menu"]["mcp_live"], "compact": s["menu"]["compact_sig"],
                 "per_tool": round(s["menu"]["mcp_live"] / len(tools)),
                 "warn": warns, "info": infos,
@@ -193,7 +194,8 @@ def main() -> None:
     ]
     for r in rows:
         saved = round(100 * (r["menu"] - r["compact"]) / r["menu"]) if r["menu"] else 0
-        lines.append(f"| {r['name']} | {r['by']} | {r['tools']} | {r['menu']:,} | "
+        mark = " †" if r.get("facade") else ""
+        lines.append(f"| {r['name']}{mark} | {r['by']} | {r['tools']} | {r['menu']:,} | "
                      f"{r['per_tool']} | {r['compact']:,} | {saved}% | "
                      f"{r['warn']}/{r['info']} | **{r['grade']}** ({r['score']}) |")
     lines += [
@@ -203,6 +205,14 @@ def main() -> None:
         "renormalized; A >= 85 ... F < 40._",
         "",
     ]
+    if any(r.get("facade") for r in rows):
+        lines += [
+            "_† looks like a **deferred facade** (tool-search pattern over a hidden catalog): "
+            "the menu figures reflect the facade — genuinely what a session pays up front — "
+            "but not the catalog behind it, and the deferred tier's per-use search/schema "
+            "costs only show up in live sessions._",
+            "",
+        ]
     if dead:
         lines += [
             "## Not reachable without credentials / extra runtime",

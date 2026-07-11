@@ -876,6 +876,16 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
   small heuristic note so tool_search-style facades (gcore PR#13's 3 meta-tools) aren't
   misread as genuinely tiny servers, plus an x-lap self-declaration convention; awaiting the
   owner's go._  `[no key]`
+- [x] **W11 (M5's tail) — deferred-facade label + `_meta` self-declaration strawman.** Done.
+  `lint.looks_deferred()` (heuristic: ≤6 tools + a search/schema tool + a call/execute tool)
+  → informational note in `lint --mcp` human output, `deferred_facade` in `--json`, and a `†`
+  footnote on the MCP leaderboard. **A label, never a finding** — bucket-A accounting is
+  already correct for facades (the advertised menu genuinely is what a session pays); the
+  label only stops readers from mistaking a 3-meta-tool facade over 741 tools for a tiny
+  server. Verified live on gcore PR#13's branch (labeled True) and negatively on
+  time-shaped/big menus. X-LAP.md gains the MCP-side `_meta` self-declaration convention
+  (`io.github.lcrazyblindl.lap/facade: {catalogTools, discovery}`) so the label can come
+  from a declaration instead of a guess. +1 test (tests/ 66, full 70).  `[no key]`
 - [ ] **W8 — Month-over-month trend content** `[no key]` **(after Aug 3 — second history
   snapshot).** "What changed in a month" on the live page + leaderboard diff — recurring
   content at zero marginal effort.

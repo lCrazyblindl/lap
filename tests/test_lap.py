@@ -812,6 +812,30 @@ def test_lint_tools_on_in_memory_mcp_server(spec):
     assert all(f.severity in {"warn", "info"} for f in found)
 
 
+def test_looks_deferred_facade_heuristic():
+    # gcore PR#13-shaped: 3 meta-tools fronting a hidden catalog -> label
+    facade = [
+        {"name": "search_tools", "description": "Search the tool catalog by query.",
+         "input_schema": {"type": "object", "properties": {"query": {"type": "string"}}}},
+        {"name": "get_tool_schema", "description": "Full schema for one tool.",
+         "input_schema": {"type": "object", "properties": {"name": {"type": "string"}}}},
+        {"name": "execute_code", "description": "Run Python that may call tools.",
+         "input_schema": {"type": "object", "properties": {"code": {"type": "string"}}}},
+    ]
+    assert lint.looks_deferred(facade)
+    # a genuinely tiny server (time-shaped) stays unlabeled
+    tiny = [{"name": "get_current_time", "description": "Current time in a timezone.",
+             "input_schema": {}},
+            {"name": "convert_time", "description": "Convert between timezones.",
+             "input_schema": {}}]
+    assert not lint.looks_deferred(tiny)
+    # a big menu is never a facade, whatever its names
+    assert not lint.looks_deferred(facade * 5)
+    # the label must not be a finding (grades unaffected)
+    assert not [f for f in lint.lint_tools(facade) if f.rule not in
+                {"D3", "M1", "M2", "M3", "M4", "M5"}]
+
+
 def test_m5_flags_heavy_menus_not_small_ones():
     def mk(n, desc_words):
         return [{"name": f"tool_{i:03}",
