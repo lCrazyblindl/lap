@@ -861,6 +861,21 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
   verified — the wheel reproduces the easy-notion recipe, `menu_budget` 7,472 for an A).
   **GitHub:** https://github.com/lCrazyblindl/lap/releases/tag/v0.8.0. Action at `@v0.8.0`.
   `[release creds]`
+- [x] **W10 (unplanned, community-driven #2) — rule M5: the whole menu is too heavy.** Done.
+  Born from the Datadog dare on r/mcp: @us-all/datadog-mcp (166 tools / 28,835 tok) drew
+  **zero findings** — disciplined per-tool, enormous in aggregate; the many-small-tools
+  pathology had no rule. **M5** is the first *server-level* M-rule: info above ~10 tools &
+  ~2k menu tokens, warn above ~10k; message carries the compact what-if; thresholds
+  documented in the profile with receipts both ways (D2 measured ~90% live at scale,
+  *negative* below ~10 tools — small servers exempt, and the prescribed fix is deferral/
+  subsets, never deleting descriptions). Calibration on the leaderboard: warn = exactly the
+  four servers we filed measured issues at (notion, firecrawl, @us-all, gcore); git/time/
+  wikipedia stay silent; grade shifts ≤2 points (playwright 78→77, firecrawl 27→25).
+  +1 test (tests/ 65, full 69). Leaderboard regenerated (23 servers incl. the Datadog pair).
+  CHANGELOG `[Unreleased]` reopened. _Queued next to this: deferred-facade labeling — a
+  small heuristic note so tool_search-style facades (gcore PR#13's 3 meta-tools) aren't
+  misread as genuinely tiny servers, plus an x-lap self-declaration convention; awaiting the
+  owner's go._  `[no key]`
 - [ ] **W8 — Month-over-month trend content** `[no key]` **(after Aug 3 — second history
   snapshot).** "What changed in a month" on the live page + leaderboard diff — recurring
   content at zero marginal effort.

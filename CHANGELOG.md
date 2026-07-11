@@ -4,6 +4,17 @@ All notable changes to **lap** (PyPI package `lap-score`) are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); loose semantic
 versioning while pre-1.0.
 
+## [Unreleased]
+
+### Added
+- **Rule M5 — the whole menu is too heavy** (`lap lint --mcp`): the first *server-level*
+  M-rule, catching the many-small-tools pathology the per-tool rules can't see (a real
+  166-tool server costs ~29k tokens/session at a disciplined 174 tok/tool — and drew zero
+  findings before this). Info above ~10 tools & ~2k menu tokens, warning above ~10k; the
+  message includes the compact-signatures what-if. Thresholds documented in the profile
+  with measurements both ways (deferral saves ~90% live at scale, goes *negative* below
+  ~10 tools — small servers are exempt).
+
 ## [0.8.0] — 2026-07-10
 
 The grade becomes navigation: `lap lint --mcp` now tells a server author exactly where the

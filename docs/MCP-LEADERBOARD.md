@@ -6,15 +6,15 @@ _Generated 2026-07-11 by [`experiments/mcp_leaderboard.py`](../experiments/mcp_l
 
 | server | by | tools | menu tok | tok/tool | compact | saved | findings (warn/info) | grade |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| datadog-mcp (@us-all) | community | 166 | 28,835 | 174 | 2,799 | 90% | 0/25 | **B** (82) |
-| notion-mcp-server | Notion | 24 | 21,411 | 892 | 400 | 98% | 24/14 | **F** (19) |
-| firecrawl-mcp | Firecrawl | 26 | 18,511 | 712 | 770 | 96% | 10/27 | **F** (27) |
-| easy-notion-mcp | community (Grey-Iris) | 42 | 8,199 | 195 | 554 | 93% | 0/1 | **B** (83) |
-| playwright-mcp | Microsoft | 24 | 4,018 | 167 | 288 | 93% | 3/5 | **B** (78) |
-| excel-mcp-server | community | 25 | 3,955 | 158 | 494 | 88% | 0/25 | **C** (69) |
+| datadog-mcp (@us-all) | community | 166 | 28,835 | 174 | 2,799 | 90% | 1/25 | **B** (82) |
+| notion-mcp-server | Notion | 24 | 21,411 | 892 | 400 | 98% | 25/14 | **F** (19) |
+| firecrawl-mcp | Firecrawl | 26 | 18,511 | 712 | 770 | 96% | 11/27 | **F** (25) |
+| easy-notion-mcp | community (Grey-Iris) | 42 | 8,199 | 195 | 554 | 93% | 0/2 | **B** (83) |
+| playwright-mcp | Microsoft | 24 | 4,018 | 167 | 288 | 93% | 3/6 | **B** (77) |
+| excel-mcp-server | community | 25 | 3,955 | 158 | 494 | 88% | 0/26 | **C** (69) |
 | arxiv-mcp-server | community | 10 | 2,514 | 251 | 111 | 96% | 1/3 | **C** (69) |
 | aws-documentation-mcp | AWS Labs | 4 | 2,509 | 627 | 64 | 97% | 1/0 | **D** (52) |
-| mcp-server-datadog (winor30) | community (winor30) | 21 | 2,497 | 119 | 316 | 87% | 0/12 | **B** (82) |
+| mcp-server-datadog (winor30) | community (winor30) | 21 | 2,497 | 119 | 316 | 87% | 0/13 | **B** (81) |
 | wikipedia-mcp | community | 22 | 1,933 | 88 | 235 | 88% | 0/18 | **B** (83) |
 | server-filesystem | official reference | 14 | 1,915 | 137 | 130 | 93% | 0/12 | **B** (74) |
 | mcp-server-git | official reference | 12 | 1,418 | 118 | 153 | 89% | 2/11 | **B** (71) |

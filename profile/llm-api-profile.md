@@ -92,6 +92,13 @@ OpenAPI operation expresses differently:
   trim the description/schema or defer it behind tool search (D2).
 - **M4** If a tool declares parameters, mark which are `required` — the model can't
   tell mandatory from optional otherwise.
+- **M5** *(server-level)* Keep the **whole advertised menu** in bounds — the pathology
+  the per-tool rules can't see: 166 disciplined ~174-token tools still cost ~29k tokens
+  every session (a real, measured server). Info above ~10 tools & ~2k tokens; warning
+  above ~10k tokens. Thresholds carry receipts both ways: deferred loading (D2) saved
+  ~90% live on a 290-op API but measured *negative* below ~10 tools — so small servers
+  are exempt, and the fix for a tripped M5 is tool search / task-scoped subsets, not
+  deleting descriptions.
 
 *(For MCP servers the LAP grade uses the menu + hygiene sub-scores only — result sizes
 aren't declared in MCP tool listings, so that sub-score is skipped and weights

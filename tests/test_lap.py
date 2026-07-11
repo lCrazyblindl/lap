@@ -808,5 +808,26 @@ def test_lint_tools_on_in_memory_mcp_server(spec):
     server = FastMCP.from_openapi(openapi_spec=spec, client=httpx.AsyncClient(base_url="http://lap.invalid"))
     tools = mcp_client.fetch_tools(server)
     found = lint.lint_tools(tools)
-    assert all(f.rule in {"D3", "M1", "M2", "M3", "M4"} for f in found)
+    assert all(f.rule in {"D3", "M1", "M2", "M3", "M4", "M5"} for f in found)
     assert all(f.severity in {"warn", "info"} for f in found)
+
+
+def test_m5_flags_heavy_menus_not_small_ones():
+    def mk(n, desc_words):
+        return [{"name": f"tool_{i:03}",
+                 "description": ("word " * desc_words) + f"tool number {i}.",
+                 "input_schema": {"type": "object",
+                                  "properties": {"x": {"type": "string", "description": "X."}},
+                                  "required": ["x"]}} for i in range(n)]
+
+    # 12 disciplined tools, > 2k total -> info (the many-small-tools pathology)
+    m5 = [f for f in lint.lint_tools(mk(12, 200)) if f.rule == "M5"]
+    assert len(m5) == 1 and m5[0].severity == "info"
+    assert "compact signatures" in m5[0].message
+    # > 10k tokens total -> warn, regardless of discipline
+    m5 = [f for f in lint.lint_tools(mk(60, 200)) if f.rule == "M5"]
+    assert len(m5) == 1 and m5[0].severity == "warn"
+    # small server: 2 tools -> silent (deferral measured net-negative below ~10 tools)
+    assert not [f for f in lint.lint_tools(mk(2, 200)) if f.rule == "M5"]
+    # many tiny tools under the token floor -> silent (mcp-server-git-shaped)
+    assert not [f for f in lint.lint_tools(mk(12, 10)) if f.rule == "M5"]

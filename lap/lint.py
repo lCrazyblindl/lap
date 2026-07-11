@@ -86,6 +86,15 @@ def lint(spec: dict) -> list[Finding]:
 HEAVY_TOOL_TOKENS = 600  # per-tool definition cost that dominates a session (spec issue #2808
 #                          measured real production tools at 103-1024 tokens; ~1000 = heavy)
 
+# M5 (server-level) - the whole advertised menu, the pathology M1-M4 can't see: 166
+# disciplined ~174-token tools still cost ~29k every session. Thresholds with receipts:
+# deferred loading pays above ~10 tools (Anthropic's guidance, confirmed live both ways -
+# ~90% saved on a 290-op API, NEGATIVE below ~10 tools); >10k tokens = the band where every
+# server we filed measured issues at sat (18.5k-488k).
+DEFER_TOOL_COUNT = 10       # below this, deferral measured net-negative
+DEFER_MENU_TOKENS = 2_000   # info: worth considering
+HEAVY_MENU_TOKENS = 10_000  # warn: every session pays five figures before the first message
+
 
 def discovery_findings(spec_url: str, probe=None) -> list[Finding]:
     """Rule D0 (profile L0, opt-in via `lap lint <url> --discovery`): an agent that has to
@@ -231,6 +240,20 @@ def lint_tools(tools: list[dict]) -> list[Finding]:
             out.append(Finding("M4", "info", where,
                                "inputSchema declares parameters but no 'required' list - the model "
                                "can't tell mandatory from optional arguments"))
+
+    # M5 - the whole menu is heavy (server-level; the many-small-tools pathology the
+    # per-tool rules can't see)
+    total = tokens.count_tools(tools)
+    if total > HEAVY_MENU_TOKENS or (len(tools) > DEFER_TOOL_COUNT and total > DEFER_MENU_TOKENS):
+        from . import mcp_client
+
+        compact = tokens.count(mcp_client._compact(tools))
+        sev = "warn" if total > HEAVY_MENU_TOKENS else "info"
+        out.append(Finding("M5", sev, "(entire menu)",
+                           f"the menu costs ~{total} tokens for {len(tools)} tool(s), paid every "
+                           "session - above ~10 tools deferred loading pays (rule D2, measured "
+                           "live at ~90% saved); compact signatures of the same tools would be "
+                           f"~{compact} tokens"))
     return out
 
 
