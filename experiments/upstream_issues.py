@@ -169,7 +169,9 @@ def main() -> None:
         f"| notion-mcp-server | makenotion/notion-mcp-server | {nt_now:,} tok | ~{nt_now - nt_saved:,} tok | "
         f"~{round(100 * nt_saved / nt_now)}% (dedupe alone) |",
         f"| gcore-mcp-server (`GCORE_TOOLS=*`) | G-Core/gcore-mcp-server | {gc_now:,} tok | "
-        f"~{gc_now - gc_saved:,} tok | ~{round(100 * gc_saved / gc_now)}% (dedupe alone) |",
+        f"~{gc_now - gc_saved:,} tok | ~{round(100 * gc_saved / gc_now)}% (in-place dedupe; "
+        "their [PR #13](https://github.com/G-Core/gcore-mcp-server/pull/13) routing mode "
+        "measures **−99.9%** — see the follow-up below) |",
         "",
         "---",
         "",

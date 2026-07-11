@@ -7,7 +7,7 @@ _Generated 2026-07-11 by [`experiments/upstream_issues.py`](../experiments/upstr
 | sequential-thinking | modelcontextprotocol/servers | 921 tok | 463 tok | 50% |
 | firecrawl-mcp | firecrawl/firecrawl-mcp-server | 18,511 tok | 9,218 tok | 50% |
 | notion-mcp-server | makenotion/notion-mcp-server | 21,411 tok | ~6,600 tok | ~69% (dedupe alone) |
-| gcore-mcp-server (`GCORE_TOOLS=*`) | G-Core/gcore-mcp-server | 488,013 tok | ~367,205 tok | ~25% (dedupe alone) |
+| gcore-mcp-server (`GCORE_TOOLS=*`) | G-Core/gcore-mcp-server | 488,013 tok | ~367,205 tok | ~25% (in-place dedupe; their [PR #13](https://github.com/G-Core/gcore-mcp-server/pull/13) routing mode measures **−99.9%** — see the follow-up below) |
 
 ---
 
