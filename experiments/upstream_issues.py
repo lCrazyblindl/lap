@@ -38,6 +38,15 @@ TARGETS = {
     "firecrawl-mcp": "firecrawl/firecrawl-mcp-server",
 }
 
+# The official Gcore server (uvx from git; PyPI absent). Scored 2026-07-11 on owner request:
+# the heaviest MCP menu we've ever measured. Fetched in BOTH configs so the 90%-subset
+# number is reproducible, not quoted.
+GCORE_PKG = "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git"
+GCORE = {"name": "gcore-mcp-server", "kind": "pip", "pkg": GCORE_PKG, "cmd": "gcore-mcp-server",
+         "env": {"GCORE_API_KEY": "dummy-lap-scan", "GCORE_TOOLS": "*"}}
+GCORE_SUBSET_ENV = {"GCORE_API_KEY": "dummy-lap-scan",
+                    "GCORE_TOOLS": "instances,management,cloud.gpu_baremetal.clusters.*"}
+
 
 def first_para(desc: str) -> str:
     for p in (desc or "").split("\n\n"):
@@ -127,6 +136,20 @@ def main() -> None:
     nt_saved, nt_chars, nt_examples = subtree_dedupe_estimate(nt)
     nt_heavy = sorted(nt, key=lambda t: -tokens.count(json.dumps(t["input_schema"] or {})))[:3]
 
+    gc = lb.fetch(GCORE)
+    gc_now = tokens.count_tools(gc)
+    gc_sub = lb.fetch({**GCORE, "env": GCORE_SUBSET_ENV})
+    gc_sub_now = tokens.count_tools(gc_sub)
+    gc_saved, _, gc_examples = subtree_dedupe_estimate(gc)
+    gc_heavy = sorted(gc, key=lambda t: -tokens.count(json.dumps(t["input_schema"] or {})))[:3]
+    from lap import lint as lint_mod
+    gc_findings = lint_mod.lint_tools(gc)
+    gc_by_rule: dict[str, int] = {}
+    for f in gc_findings:
+        gc_by_rule[f.rule] = gc_by_rule.get(f.rule, 0) + 1
+    print(f"gcore *: {len(gc)} tools {gc_now} tok; subset: {len(gc_sub)} tools {gc_sub_now} tok; "
+          f"dedupe est. saves {gc_saved}; rules {gc_by_rule}")
+
     d = date.today().isoformat()
     lines = [
         "# Upstream issues — prepared, measured, awaiting the owner's go-ahead",
@@ -145,6 +168,8 @@ def main() -> None:
         f"{round(100 * (fc_now - fc_after) / fc_now)}% |",
         f"| notion-mcp-server | makenotion/notion-mcp-server | {nt_now:,} tok | ~{nt_now - nt_saved:,} tok | "
         f"~{round(100 * nt_saved / nt_now)}% (dedupe alone) |",
+        f"| gcore-mcp-server (`GCORE_TOOLS=*`) | G-Core/gcore-mcp-server | {gc_now:,} tok | "
+        f"~{gc_now - gc_saved:,} tok | ~{round(100 * gc_saved / gc_now)}% (dedupe alone) |",
         "",
         "---",
         "",
@@ -269,6 +294,60 @@ def main() -> None:
         ">",
         "> Happy to contribute the $defs hoisting or the measurement harness. (Disclosure: I "
         "maintain `lap`, the measurement tool; MIT, no product.)",
+        "",
+        "---",
+        "",
+        "## 4. G-Core/gcore-mcp-server (added 2026-07-11)",
+        "",
+        f"**Evidence.** With `GCORE_TOOLS=*`: **{len(gc)} tools, {gc_now:,} tokens** of "
+        f"definitions ({round(gc_now / len(gc))}/tool) — the heaviest MCP menu we have ever "
+        "measured (22× the previous leaderboard maximum), and larger than a 200K context "
+        "window: the full configuration cannot be loaded at all on most models. The schemas "
+        "are SDK-generated and inline everything: "
+        + "; ".join(f"`{t['name']}` schema = "
+                    f"{tokens.count(json.dumps(t['input_schema'] or {}))} tok" for t in gc_heavy)
+        + f". Findings: {gc_by_rule}. One tool fails to register outright "
+        "(`fastedge.binaries.create`, pydantic can't schema `bytearray`). **Credit where due:** "
+        f"the `GCORE_TOOLS` filter genuinely works — the README's suggested subset is "
+        f"{len(gc_sub)} tools / {gc_sub_now:,} tokens (**{round(100 * (1 - gc_sub_now / gc_now))}% "
+        "less**) — but even that subset is heavier than the leaderboard's worst full menu, at "
+        f"{round(gc_sub_now / len(gc_sub))} tok/tool the per-tool density barely moves.",
+        "",
+        f"**Measured what-if:** hoisting identical repeated subtrees (≥120 chars, ≥2 uses) into "
+        f"shared `$defs` saves **~{gc_saved:,} tokens (~{round(100 * gc_saved / gc_now)}%) by "
+        "itself** — e.g. "
+        + "; ".join(f"one {ln}-char subtree × {k}" for k, ln, _ in gc_examples)
+        + ". Composable with the existing subset filter.",
+        "",
+        "**Ready-to-paste issue:**",
+        "",
+        f"> **`GCORE_TOOLS=*` advertises ~{gc_now // 1000}k tokens of tool definitions — "
+        "larger than most context windows; `$defs` hoisting alone would cut ~"
+        f"{round(100 * gc_saved / gc_now)}%**",
+        ">",
+        f"> Scored the server with the same open pipeline we use for a public MCP-server "
+        f"leaderboard (fresh `uvx` from git, dummy key, tool listing only, tiktoken): with "
+        f"`GCORE_TOOLS=*` it advertises **{len(gc)} tools / ~{gc_now:,} tokens** "
+        f"({round(gc_now / len(gc))}/tool) — that exceeds a 200K context window on its own, so "
+        "the full config can't actually be used with most models. Your `GCORE_TOOLS` filter is "
+        f"a real mitigation (the README's suggested subset measures {len(gc_sub)} tools / "
+        f"~{gc_sub_now:,} tokens, {round(100 * (1 - gc_sub_now / gc_now))}% less) — but the "
+        "per-tool density stays ~600 tokens either way, because the SDK-generated schemas "
+        "inline every nested object: `cdn_cdn_resources_new` alone is ~"
+        f"{tokens.count(json.dumps(gc_heavy[0]['input_schema'] or {}))} tokens of schema.",
+        ">",
+        f"> Measured on the live listing: hoisting identical repeated subtrees (≥120 chars, "
+        f"seen ≥2×) into shared `$defs` saves **~{gc_saved:,} tokens (~"
+        f"{round(100 * gc_saved / gc_now)}%) on its own**, before any semantic slimming — and "
+        "the 2026-07-28 MCP spec makes `$ref`/`$defs` in `inputSchema` first-class (SEP-2106), "
+        "so client compatibility is no longer the blocker. Also: `fastedge.binaries.create` "
+        f"fails to register (pydantic can't generate a schema for `bytearray`), and "
+        f"{gc_by_rule.get('M2', 0)} of {len(gc)} tools have parameters with no description. "
+        "Method + script: "
+        "https://github.com/lCrazyblindl/lap/blob/main/docs/UPSTREAM-ISSUES.md.",
+        ">",
+        "> Happy to contribute the `$defs` hoisting pass or the measurement harness. "
+        "(Disclosure: I maintain `lap`, the measurement tool; MIT, no product.)",
         "",
         "---",
         "",

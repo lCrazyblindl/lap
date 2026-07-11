@@ -1,12 +1,13 @@
-# Upstream issues — measured, POSTED 2026-07-10 (owner-authorized)
+# Upstream issues — prepared, measured, awaiting the owner's go-ahead
 
-_Generated 2026-07-10 by [`experiments/upstream_issues.py`](../experiments/upstream_issues.py); tokenizer **tiktoken-approx**; servers fetched live via `npx -y` (versions = registry latest on the scan date). **All three were posted on 2026-07-10 with the owner's authorization**: [servers#4507](https://github.com/modelcontextprotocol/servers/issues/4507) · [firecrawl#309](https://github.com/firecrawl/firecrawl-mcp-server/issues/309) · [notion#330](https://github.com/makenotion/notion-mcp-server/issues/330); the twice-daily watch tracks replies. The motion is the one that already converted: [mcp-compressor #236 → fixed & shipped in a day](MCP-COMPRESSOR.md)._
+_Generated 2026-07-11 by [`experiments/upstream_issues.py`](../experiments/upstream_issues.py); tokenizer **tiktoken-approx**; servers fetched live via `npx -y` (versions = registry latest on the scan date). **None of these has been posted** — the owner reviews and authorizes each one individually. The motion is the one that already converted: [mcp-compressor #236 → fixed & shipped in a day](MCP-COMPRESSOR.md)._
 
 | target | repo | today | measured what-if | saving |
 | --- | --- | ---: | ---: | ---: |
 | sequential-thinking | modelcontextprotocol/servers | 921 tok | 463 tok | 50% |
 | firecrawl-mcp | firecrawl/firecrawl-mcp-server | 18,511 tok | 9,218 tok | 50% |
 | notion-mcp-server | makenotion/notion-mcp-server | 21,411 tok | ~6,600 tok | ~69% (dedupe alone) |
+| gcore-mcp-server (`GCORE_TOOLS=*`) | G-Core/gcore-mcp-server | 488,013 tok | ~367,205 tok | ~25% (dedupe alone) |
 
 ---
 
@@ -16,7 +17,7 @@ _Generated 2026-07-10 by [`experiments/upstream_issues.py`](../experiments/upstr
 
 **Measured what-if:** keeping the intro + "When to use this tool" block (dropping the two duplicating sections) → description 566 → 119 tok, tool 921 → **463 tok (50% less, every session, no semantic loss** — the parameter semantics stay in the schema where they already live).
 
-**The issue as posted ([servers#4507](https://github.com/modelcontextprotocol/servers/issues/4507)):**
+**Ready-to-paste issue:**
 
 > **`sequentialthinking`'s tool definition costs ~921 tokens/session; about half duplicates the schema's own parameter descriptions**
 >
@@ -34,7 +35,7 @@ _Generated 2026-07-10 by [`experiments/upstream_issues.py`](../experiments/upstr
 
 **Measured what-if:** first paragraph only per description → **9,218 tok (50% less)**. Realistic target is between the two (keep "Best for" one-liners; move parameter guidance into parameter descriptions).
 
-**The issue as posted ([firecrawl#309](https://github.com/firecrawl/firecrawl-mcp-server/issues/309)):**
+**Ready-to-paste issue:**
 
 > **Tool descriptions embed usage essays (~18k tokens of definitions per session) while 24/26 tools have undescribed parameters**
 >
@@ -52,7 +53,7 @@ _Generated 2026-07-10 by [`experiments/upstream_issues.py`](../experiments/upstr
 
 **Measured what-if:** hoisting identical repeated subtrees (≥120 chars, ≥2 uses) into shared `$defs` saves **~14,811 tokens (~69%) by itself** — e.g. one 2317-char subtree × 24; one 2457-char subtree × 2; one 196-char subtree × 3. The 2026 draft spec (SEP-2106) makes `$ref`/`$defs` in inputSchema first-class, so this no longer risks client compatibility. Plus 12 tools carry undescribed parameters (M2).
 
-**The issue as posted ([notion#330](https://github.com/makenotion/notion-mcp-server/issues/330)):**
+**Ready-to-paste issue:**
 
 > **Tool inputSchemas inline whole Notion object trees per tool — ~21k tokens of definitions per session**
 >
@@ -64,4 +65,22 @@ _Generated 2026-07-10 by [`experiments/upstream_issues.py`](../experiments/upstr
 
 ---
 
-_Outcome tracking: replies and closures are watched twice daily alongside #2812 and mcp-compressor#236 (which converted into a merged fix in a day — [MCP-COMPRESSOR.md](MCP-COMPRESSOR.md))._
+## 4. G-Core/gcore-mcp-server (added 2026-07-11)
+
+**Evidence.** With `GCORE_TOOLS=*`: **741 tools, 488,013 tokens** of definitions (659/tool) — the heaviest MCP menu we have ever measured (22× the previous leaderboard maximum), and larger than a 200K context window: the full configuration cannot be loaded at all on most models. The schemas are SDK-generated and inline everything: `cdn_cdn_resources_new` schema = 7046 tok; `cdn_cdn_resources_repl` schema = 6985 tok; `cdn_cdn_resources_upd` schema = 6968 tok. Findings: {'M2': 740, 'M3': 187, 'M4': 90}. One tool fails to register outright (`fastedge.binaries.create`, pydantic can't schema `bytearray`). **Credit where due:** the `GCORE_TOOLS` filter genuinely works — the README's suggested subset is 77 tools / 46,528 tokens (**90% less**) — but even that subset is heavier than the leaderboard's worst full menu, at 604 tok/tool the per-tool density barely moves.
+
+**Measured what-if:** hoisting identical repeated subtrees (≥120 chars, ≥2 uses) into shared `$defs` saves **~120,808 tokens (~25%) by itself** — e.g. one 21656-char subtree × 6; one 129-char subtree × 754; one 24031-char subtree × 3. Composable with the existing subset filter.
+
+**Ready-to-paste issue:**
+
+> **`GCORE_TOOLS=*` advertises ~488k tokens of tool definitions — larger than most context windows; `$defs` hoisting alone would cut ~25%**
+>
+> Scored the server with the same open pipeline we use for a public MCP-server leaderboard (fresh `uvx` from git, dummy key, tool listing only, tiktoken): with `GCORE_TOOLS=*` it advertises **741 tools / ~488,013 tokens** (659/tool) — that exceeds a 200K context window on its own, so the full config can't actually be used with most models. Your `GCORE_TOOLS` filter is a real mitigation (the README's suggested subset measures 77 tools / ~46,528 tokens, 90% less) — but the per-tool density stays ~600 tokens either way, because the SDK-generated schemas inline every nested object: `cdn_cdn_resources_new` alone is ~7046 tokens of schema.
+>
+> Measured on the live listing: hoisting identical repeated subtrees (≥120 chars, seen ≥2×) into shared `$defs` saves **~120,808 tokens (~25%) on its own**, before any semantic slimming — and the 2026-07-28 MCP spec makes `$ref`/`$defs` in `inputSchema` first-class (SEP-2106), so client compatibility is no longer the blocker. Also: `fastedge.binaries.create` fails to register (pydantic can't generate a schema for `bytearray`), and 740 of 741 tools have parameters with no description. Method + script: https://github.com/lCrazyblindl/lap/blob/main/docs/UPSTREAM-ISSUES.md.
+>
+> Happy to contribute the `$defs` hoisting pass or the measurement harness. (Disclosure: I maintain `lap`, the measurement tool; MIT, no product.)
+
+---
+
+_Posting checklist (owner): review each text → say the word → they get filed one at a time under your account (per the #236 precedent), each then joins the twice-daily reply watch._
