@@ -588,6 +588,10 @@ Pick from these once v0.6 is done (or opportunistically). Grouped by track; each
 roughly one bounded session unless noted.
 
 **Track V — independent verification (the "Consumer Reports" role):**
+- **Client resend matrix**: which agent clients re-send the full MCP menu every turn, and
+  which defer/group/cap it — measured per client (Claude Code deferral is the only one we've
+  verified live; VS Code's `activate_*` virtual tools and Cursor's ~40–80 cap are documented,
+  not measured). Born from an r/mcp follow-up question (2026-07-11).
 - GitHub's official MCP server (~94 tools / ~17.6k tokens — the number *everyone* cites): score
   it directly once Docker is available (or via its hosted endpoint + PAT).
 - A 2nd/3rd real API for Tool Search + code-execution — do R5/R6 generalize beyond
