@@ -600,7 +600,13 @@ roughly one bounded session unless noted.
   tools) — verified or not-reproducible, either result is a finding.  `[key]`
 - Root-cause the mcp-compressor self-report discrepancy (bytes vs tokens?) and file an upstream
   issue — turns a finding into an ecosystem contribution.
-- Live A/B of progressive disclosure: same task, tiered menu vs full menu, accuracy + tokens.  `[key]`
+- Live A/B of progressive disclosure: same task, tiered menu vs full menu, accuracy + tokens.
+  **Ready-made target: gcore PR#13's facade vs its `direct` subset** — our A measurement (363
+  vs 488k) covers only the menu; whether the model *completes tasks* through the facade, how
+  many search/schema round-trips it burns, and what the deferred tier's C costs total is
+  live-only (the R6 lesson: code-exec looked great on paper, cost more than naive 5/5 live).
+  Static half doable without a key: the per-tool `get_tool_schema` payload price list from
+  the `*`-scan data.  `[key]`
 - MCPMark-subset bridge: run a small recognized-benchmark slice under naive vs compact forms —
   attaches *third-party* accuracy to our token findings.  `[key]`
 
