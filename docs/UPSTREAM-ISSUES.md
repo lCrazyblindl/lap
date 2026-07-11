@@ -71,7 +71,7 @@ _Generated 2026-07-11 by [`experiments/upstream_issues.py`](../experiments/upstr
 
 **Measured what-if:** hoisting identical repeated subtrees (≥120 chars, ≥2 uses) into shared `$defs` saves **~120,808 tokens (~25%) by itself** — e.g. one 21656-char subtree × 6; one 129-char subtree × 754; one 24031-char subtree × 3. Composable with the existing subset filter.
 
-**Ready-to-paste issue:**
+**The issue as posted ([gcore#14](https://github.com/G-Core/gcore-mcp-server/issues/14), 2026-07-11):**
 
 > **`GCORE_TOOLS=*` advertises ~488k tokens of tool definitions — larger than most context windows; `$defs` hoisting alone would cut ~25%**
 >
