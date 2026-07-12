@@ -588,6 +588,11 @@ Pick from these once v0.6 is done (or opportunistically). Grouped by track; each
 roughly one bounded session unless noted.
 
 **Track V — independent verification (the "Consumer Reports" role):**
+- **Selection-accuracy-vs-scale curve** `[key]`: same discovery tasks at ~20 → ~100 → ~741
+  tools, compact-in-context vs meta-tool facade — does in-context selection degrade with
+  count, and does facade accuracy hold via retrieval (counting search-recall misses and
+  re-query recoveries as the failure mode)? Extends `experiments/facade_ab.py` (the task set
+  is the only thing that needs growing). Promised in the r/mcp thread (2026-07-12).
 - **Client resend matrix**: which agent clients re-send the full MCP menu every turn, and
   which defer/group/cap it — measured per client (Claude Code deferral is the only one we've
   verified live; VS Code's `activate_*` virtual tools and Cursor's ~40–80 cap are documented,
