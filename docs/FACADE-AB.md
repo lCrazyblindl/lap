@@ -1,6 +1,6 @@
 # Live A/B — gcore PR#13's deferred facade vs the direct subset menu
 
-_Generated 2026-07-12 by [`experiments/facade_ab.py`](../experiments/facade_ab.py). Model **claude-haiku-4-5**, billed `usage` figures from the API (no estimates, no prompt caching). Discovery tasks (find the right catalog tool + its required params) — ground truth from the static scan; nothing is executed against Gcore (dummy key; `search_tools`/`get_tool_schema` run locally). Static context: the facade menu measures 363 tokens vs 488,013 for `GCORE_TOOLS=*` and 46,528 for the README subset ([UPSTREAM-ISSUES §4](UPSTREAM-ISSUES.md))._
+_Generated 2026-07-12 by [`experiments/facade_ab.py`](../experiments/facade_ab.py). Model **claude-haiku-4-5**, billed `usage` figures from the API (no estimates, no prompt caching). Discovery tasks (find the right catalog tool + its required params) — ground truth from the static scan; nothing is executed against Gcore (dummy key; `search_tools`/`get_tool_schema` run locally). Static context: the facade menu measures 363 tokens vs 488,013 for `GCORE_TOOLS=*` and 46,528 for the README subset ([UPSTREAM-ISSUES §4](UPSTREAM-ISSUES.md)). Posted to [PR #13](https://github.com/G-Core/gcore-mcp-server/pull/13#issuecomment-4951336997) on 2026-07-12 as the behavioral half of the merge argument._
 
 | mode | runs | correct | avg billed input/run | avg output | avg tool round-trips |
 | --- | ---: | ---: | ---: | ---: | ---: |
