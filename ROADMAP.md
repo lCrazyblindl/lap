@@ -896,6 +896,19 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
   time-shaped/big menus. X-LAP.md gains the MCP-side `_meta` self-declaration convention
   (`io.github.lcrazyblindl.lap/facade: {catalogTools, discovery}`) so the label can come
   from a declaration instead of a guess. +1 test (tests/ 66, full 70).  `[no key]`
+- [x] **W12 — live A/B of the gcore facade (the progressive-disclosure backlog item, on its
+  named target).** Done after the owner's balance top-up →
+  [`docs/FACADE-AB.md`](docs/FACADE-AB.md) ([`experiments/facade_ab.py`](experiments/facade_ab.py)).
+  5 discovery tasks × 2 modes × k=3, Haiku, billed `usage` (30 runs, <$1): **facade 15/15
+  correct at ~6,723 billed input/task vs direct subset 15/15 at ~54,275 — 8.1× cheaper at
+  equal (perfect) accuracy**, stable 2–3 round-trips, no flailing. **The facade held up live
+  where R6's code-exec didn't** — first live confirmation that a *server-side* deferred
+  facade is behaviorally sound, not just structurally cheap. Design notes: discovery tasks
+  need no Gcore account (search/schema run locally, dummy key); ground truth accepts both
+  namings (direct abbreviates `cloud_rgns_ls`, the catalog speaks `cloud.regions.list` — a
+  pilot run caught the unfair grading); `execute_code` off-limits by instruction; no prompt
+  caching (price ≠ context). Caveats in the doc: one model, tool *selection* not end-to-end
+  execution.  `[key]`
 - [ ] **W8 — Month-over-month trend content** `[no key]` **(after Aug 3 — second history
   snapshot).** "What changed in a month" on the live page + leaderboard diff — recurring
   content at zero marginal effort.
