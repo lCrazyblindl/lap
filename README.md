@@ -37,6 +37,32 @@ Everything is `--json`-able and CI-gateable (`--max-menu-tokens`, `--diff --max-
 `--fail-on`; a composite [GitHub Action](action.yml) and a [Spectral ruleset](spectral/README.md)
 ship in-repo). Full CLI docs: [`lap/README.md`](lap/README.md).
 
+## How the measurement works
+
+No LLM in the loop for the core numbers — a deterministic pipeline anyone can rerun:
+
+1. **List, don't execute.** For an MCP server, connect over stdio/HTTP and call the standard
+   `tools/list` — the exact definitions (name, description, inputSchema) it advertises.
+   Credential-free: tool listing only, dummy env vars where a server won't boot without them.
+   (For OpenAPI, parse the spec instead.)
+2. **Count the menu (bucket A).** Serialize those definitions the way they enter a model's
+   context and tokenize. Offline that's tiktoken — a fixed BPE vocabulary, an algorithm not a
+   model, so the same input always gives the same number; set `ANTHROPIC_API_KEY` for
+   Anthropic's own `count_tokens`. This is what a session pays *before the first user message*.
+3. **Compact what-if.** Re-render the *same* tools as compact signatures and count that — how
+   much is recoverable without dropping a single tool.
+4. **Lint the hygiene.** Rules flag what burns tokens or accuracy: missing/short descriptions,
+   undescribed params, >600-token single definitions, a whole-menu-too-heavy check.
+5. **Fold into a grade.** menu-tokens-per-tool + hygiene findings, log-scaled → 0–100 + a letter.
+
+Static menu costs (bucket A) are **exact and reproducible**; whether a deferred/tool-search
+server actually *works* and what its per-call costs are is **behavioral**. For that half we go
+beyond the static pipeline and run **live A/Bs with real LLMs** — actual billed calls, measuring
+accuracy *and* tokens — kept clearly separate: Anthropic's Tool Search [verified](docs/TOOL-SEARCH.md)
+at ~90%, its code-execution the one case that [didn't hold up](docs/CODE-EXEC.md), a real
+server's facade that [held up 8.1×](docs/FACADE-AB.md) at equal accuracy. Run the static check
+yourself: `lap lint --mcp "npx -y your-server"`.
+
 ## What the measurements show
 
 **[The leaderboard](https://lcrazyblindl.github.io/lap/)** — 50 real public APIs, refreshed
