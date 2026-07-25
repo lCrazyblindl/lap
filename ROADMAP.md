@@ -914,6 +914,23 @@ W3 `[key]` → W5 `[key]` → W6 → W7 → W8 (opportunistic)**.
   pilot run caught the unfair grading); `execute_code` off-limits by instruction; no prompt
   caching (price ≠ context). Caveats in the doc: one model, tool *selection* not end-to-end
   execution.  `[key]`
+- [x] **W13 — bucket C, MEASURED** (the toolkit's own biggest gap, found by auditing our own
+  coverage). Done → [`docs/RESPONSE-COSTS.md`](docs/RESPONSE-COSTS.md)
+  ([`experiments/response_costs.py`](experiments/response_costs.py) +
+  [`response_fixtures.json`](experiments/response_fixtures.json)). **29 read-only calls, 13
+  credential-free servers, 0 errors, no LLM.** Findings: one Wikipedia article reply =
+  **18,439 tokens (9.5× that server's whole menu)**; **13 of 29 replies are free text** —
+  nothing a caller can project, filter or paginate; **~44% of projectable response tokens sit
+  past the first 3 fields**, and MCP has *no* caller-side way to ask for fewer (a
+  protocol-shaped gap: OpenAPI has R1/R3, MCP has nothing); 3 replies serialize data as Python
+  `repr()` rather than JSON (interop finding, not a token one — kept as its own payload class
+  so it isn't mislabeled "prose"). **Two self-corrections shipped with it:** the projection
+  baseline was inconsistent (projected from `structured_content` while counting text —
+  manufactured a fake saving on a 1-token reply), and the first-3-fields heuristic *drops the
+  substance* on `get_abstract` (would claim ~94% for an answer that no longer answers) — those
+  rows are flagged ⚠ and excluded from the aggregate. Safety by construction: committed
+  read-only allowlist, never "call every tool"; local sandbox targets (seeded sqlite, temp
+  file, git log on this repo); machine paths masked in the published artifacts.  `[no key]`
 - [ ] **W8 — Month-over-month trend content** `[no key]` **(after Aug 3 — second history
   snapshot).** "What changed in a month" on the live page + leaderboard diff — recurring
   content at zero marginal effort.

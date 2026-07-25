@@ -1,0 +1,463 @@
+{
+ "generated": "2026-07-25",
+ "tokenizer": "tiktoken-approx",
+ "keep": 3,
+ "servers": {
+  "mcp-server-time": [
+   {
+    "tool": "get_current_time",
+    "args": {
+     "timezone": "UTC"
+    },
+    "note": "smallest plausible response - the floor",
+    "tokens": 47,
+    "chars": 114,
+    "payload": "json",
+    "structured_tokens": null,
+    "projected_tokens": 30,
+    "projection_drops_substance": false,
+    "as_json_tokens": null,
+    "sample": "{\n  \"timezone\": \"UTC\",\n  \"datetime\": \"2026-07-25T04:34:37+00:00\",\n  \"day_of_week\": \"Saturday\",\n  \"is_dst\": false\n}"
+   },
+   {
+    "tool": "convert_time",
+    "args": {
+     "source_timezone": "UTC",
+     "time": "12:00",
+     "target_timezone": "Europe/Warsaw"
+    },
+    "note": "two timezones, one computed answer",
+    "tokens": 120,
+    "chars": 317,
+    "payload": "json",
+    "structured_tokens": null,
+    "projected_tokens": 84,
+    "projection_drops_substance": false,
+    "as_json_tokens": null,
+    "sample": "{\n  \"source\": {\n    \"timezone\": \"UTC\",\n    \"datetime\": \"2026-07-25T12:00:00+00:00\",\n    \"day_of_week\": \"Saturday\",\n    \"is_dst\": false\n  },\n  \"target\": {\n    \"timezone\": \"Europe/Wa"
+   }
+  ],
+  "mcp-server-calculator": [
+   {
+    "tool": "calculate",
+    "args": {
+     "expression": "2+2*10"
+    },
+    "note": "pure computation: the theoretical minimum for a useful reply",
+    "tokens": 1,
+    "chars": 2,
+    "payload": "json",
+    "structured_tokens": 6,
+    "projected_tokens": 1,
+    "projection_drops_substance": false,
+    "as_json_tokens": null,
+    "sample": "22"
+   }
+  ],
+  "mcp-server-git": [
+   {
+    "tool": "git_status",
+    "args": {
+     "repo_path": "{REPO}"
+    },
+    "note": "read-only",
+    "tokens": 89,
+    "chars": 362,
+    "payload": "text",
+    "structured_tokens": null,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "Repository status:\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tdocs/RESPONSE-CO"
+   },
+   {
+    "tool": "git_log",
+    "args": {
+     "repo_path": "{REPO}",
+     "max_count": 5
+    },
+    "note": "5 commits - a bounded list, deterministic on a clean checkout",
+    "tokens": 1281,
+    "chars": 4137,
+    "payload": "text",
+    "structured_tokens": null,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "Commit history:\nCommit: '3ed38ddfae8bbd7f39c783e9b5f7f917a1e8ae08'\nAuthor: <git.Actor \"Lev <lcrazyblindl@gmail.com>\">\nDate: 2026-07-13 15:15:23+05:00\nMessage: 'README: add \"How the"
+   },
+   {
+    "tool": "git_diff_unstaged",
+    "args": {
+     "repo_path": "{REPO}"
+    },
+    "note": "read-only",
+    "tokens": 5,
+    "chars": 18,
+    "payload": "text",
+    "structured_tokens": null,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "Unstaged changes:\n"
+   },
+   {
+    "tool": "git_show",
+    "args": {
+     "repo_path": "{REPO}",
+     "revision": "HEAD"
+    },
+    "note": "one commit with its patch - unbounded by design",
+    "tokens": 905,
+    "chars": 3236,
+    "payload": "text",
+    "structured_tokens": null,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "Commit: '3ed38ddfae8bbd7f39c783e9b5f7f917a1e8ae08'\nAuthor: <git.Actor \"Lev <lcrazyblindl@gmail.com>\">\nDate: datetime.datetime(2026, 7, 13, 15, 15, 23, tzinfo=<git.objects.util.tzof"
+   }
+  ],
+  "mcp-server-sqlite": [
+   {
+    "tool": "list_tables",
+    "args": {},
+    "note": "read-only",
+    "tokens": 8,
+    "chars": 19,
+    "payload": "repr",
+    "structured_tokens": null,
+    "projected_tokens": 7,
+    "projection_drops_substance": false,
+    "as_json_tokens": 7,
+    "sample": "[{'name': 'items'}]"
+   },
+   {
+    "tool": "describe_table",
+    "args": {
+     "table_name": "items"
+    },
+    "note": "schema of 6 columns",
+    "tokens": 229,
+    "chars": 527,
+    "payload": "repr",
+    "structured_tokens": null,
+    "projected_tokens": 75,
+    "projection_drops_substance": false,
+    "as_json_tokens": 164,
+    "sample": "[{'cid': 0, 'name': 'id', 'type': 'INTEGER', 'notnull': 0, 'dflt_value': None, 'pk': 1}, {'cid': 1, 'name': 'name', 'type': 'TEXT', 'notnull': 0, 'dflt_value': None, 'pk': 0}, {'ci"
+   },
+   {
+    "tool": "read_query",
+    "args": {
+     "query": "SELECT * FROM items"
+    },
+    "note": "10 rows x 6 fields - the projection candidate: SELECT * is what agents write",
+    "tokens": 482,
+    "chars": 1073,
+    "payload": "repr",
+    "structured_tokens": null,
+    "projected_tokens": 162,
+    "projection_drops_substance": false,
+    "as_json_tokens": 363,
+    "sample": "[{'id': 1, 'name': 'item-1', 'price': 1.5, 'tag': 'tag-1', 'stock': 2, 'note': 'a short note for item 1'}, {'id': 2, 'name': 'item-2', 'price': 3.0, 'tag': 'tag-2', 'stock': 4, 'no"
+   }
+  ],
+  "server-filesystem": [
+   {
+    "tool": "list_directory",
+    "args": {
+     "path": "{TMP}"
+    },
+    "note": "read-only",
+    "tokens": 11,
+    "chars": 34,
+    "payload": "text",
+    "structured_tokens": 15,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "[FILE] notes.md\n[FILE] shop.sqlite"
+   },
+   {
+    "tool": "read_text_file",
+    "args": {
+     "path": "{TMP}/notes.md"
+    },
+    "note": "a small markdown file",
+    "tokens": 29,
+    "chars": 142,
+    "payload": "text",
+    "structured_tokens": 47,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "# Release notes\r\n\r\n- Added the response-cost measurement.\r\n- Fixed the asymmetric ratio.\r\n\r\n## Details\r\n\r\nThree buckets: menu, call, result.\r\n"
+   },
+   {
+    "tool": "get_file_info",
+    "args": {
+     "path": "{TMP}/notes.md"
+    },
+    "note": "metadata only",
+    "tokens": 125,
+    "chars": 291,
+    "payload": "text",
+    "structured_tokens": 132,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "size: 142\ncreated: Sat Jul 25 2026 09:34:35 GMT+0500 (\u0415\u043a\u0430\u0442\u0435\u0440\u0438\u043d\u0431\u0443\u0440\u0433, \u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u043e\u0435 \u0432\u0440\u0435\u043c\u044f)\nmodified: Sat Jul 25 2026 09:34:35 GMT+0500 (\u0415\u043a\u0430\u0442\u0435\u0440\u0438\u043d\u0431\u0443\u0440\u0433, \u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u043e\u0435 \u0432\u0440\u0435\u043c\u044f)\naccessed: Sat J"
+   },
+   {
+    "tool": "directory_tree",
+    "args": {
+     "path": "{TMP}"
+    },
+    "note": "read-only",
+    "tokens": 40,
+    "chars": 109,
+    "payload": "json",
+    "structured_tokens": 55,
+    "projected_tokens": 21,
+    "projection_drops_substance": false,
+    "as_json_tokens": null,
+    "sample": "[\n  {\n    \"name\": \"notes.md\",\n    \"type\": \"file\"\n  },\n  {\n    \"name\": \"shop.sqlite\",\n    \"type\": \"file\"\n  }\n]"
+   }
+  ],
+  "server-memory": [
+   {
+    "tool": "read_graph",
+    "args": {},
+    "note": "empty graph - the shape of a 'nothing to report' reply",
+    "tokens": 12,
+    "chars": 39,
+    "payload": "json",
+    "structured_tokens": 9,
+    "projected_tokens": 7,
+    "projection_drops_substance": false,
+    "as_json_tokens": null,
+    "sample": "{\n  \"entities\": [],\n  \"relations\": []\n}"
+   }
+  ],
+  "server-everything": [
+   {
+    "tool": "echo",
+    "args": {
+     "message": "hello"
+    },
+    "note": "protocol floor",
+    "tokens": 3,
+    "chars": 11,
+    "payload": "text",
+    "structured_tokens": null,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "Echo: hello"
+   },
+   {
+    "tool": "get-sum",
+    "args": {
+     "a": 2,
+     "b": 3
+    },
+    "note": "computed scalar",
+    "tokens": 12,
+    "chars": 24,
+    "payload": "text",
+    "structured_tokens": null,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "The sum of 2 and 3 is 5."
+   },
+   {
+    "tool": "get-structured-content",
+    "args": {
+     "location": "New York"
+    },
+    "note": "the reference server's own structuredContent example",
+    "tokens": 14,
+    "chars": 54,
+    "payload": "json",
+    "structured_tokens": 19,
+    "projected_tokens": 14,
+    "projection_drops_substance": false,
+    "as_json_tokens": null,
+    "sample": "{\"temperature\":33,\"conditions\":\"Cloudy\",\"humidity\":82}"
+   }
+  ],
+  "sequential-thinking": [
+   {
+    "tool": "sequentialthinking",
+    "args": {
+     "thought": "Measure the response, then decide.",
+     "thoughtNumber": 1,
+     "totalThoughts": 1,
+     "nextThoughtNeeded": false
+    },
+    "note": "in-memory only; a 921-token definition answering with what?",
+    "tokens": 41,
+    "chars": 123,
+    "payload": "json",
+    "structured_tokens": 34,
+    "projected_tokens": 18,
+    "projection_drops_substance": false,
+    "as_json_tokens": null,
+    "sample": "{\n  \"thoughtNumber\": 1,\n  \"totalThoughts\": 1,\n  \"nextThoughtNeeded\": false,\n  \"branches\": [],\n  \"thoughtHistoryLength\": 1\n}"
+   }
+  ],
+  "mcp-server-fetch": [
+   {
+    "tool": "fetch",
+    "args": {
+     "url": "https://example.com"
+    },
+    "note": "network; stable minimal page, converted to markdown",
+    "tokens": 34,
+    "chars": 181,
+    "payload": "text",
+    "structured_tokens": null,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "Contents of https://example.com/:\nExample Domain\n\n# Example Domain\n\nThis domain is for use in documentation examples without needing permission. Avoid use in operations.\n\nLearn mor"
+   },
+   {
+    "tool": "fetch",
+    "args": {
+     "url": "https://example.com",
+     "raw": true
+    },
+    "note": "network; the SAME page raw - conversion vs raw HTML, same information",
+    "tokens": 187,
+    "chars": 679,
+    "payload": "text",
+    "structured_tokens": null,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "Content type text/html cannot be simplified to markdown, but here is the raw content:\nContents of https://example.com/:\n<!doctype html><html lang=\"en\"><head><title>Example Domain</"
+   }
+  ],
+  "wikipedia-mcp": [
+   {
+    "tool": "search_wikipedia",
+    "args": {
+     "query": "Model Context Protocol",
+     "limit": 10
+    },
+    "note": "network; 10 hits",
+    "tokens": 1077,
+    "chars": 4013,
+    "payload": "json",
+    "structured_tokens": 1183,
+    "projected_tokens": 861,
+    "projection_drops_substance": false,
+    "as_json_tokens": null,
+    "sample": "{\"query\":\"Model Context Protocol\",\"results\":[{\"title\":\"Model Context Protocol\",\"snippet\":\"The <span class=\\\"searchmatch\\\">Model</span> <span class=\\\"searchmatch\\\">Context</span> <s"
+   },
+   {
+    "tool": "get_summary",
+    "args": {
+     "title": "Python (programming language)"
+    },
+    "note": "network; prose by design",
+    "tokens": 260,
+    "chars": 1219,
+    "payload": "json",
+    "structured_tokens": 263,
+    "projected_tokens": 260,
+    "projection_drops_substance": false,
+    "as_json_tokens": null,
+    "sample": "{\"title\":\"Python (programming language)\",\"summary\":\"Python is a high-level, general-purpose programming language that emphasizes code readability, simplicity, and ease-of-writing w"
+   },
+   {
+    "tool": "get_sections",
+    "args": {
+     "title": "Python (programming language)"
+    },
+    "note": "network; structure only",
+    "tokens": 8700,
+    "chars": 40478,
+    "payload": "json",
+    "structured_tokens": 8902,
+    "projected_tokens": 3025,
+    "projection_drops_substance": false,
+    "as_json_tokens": null,
+    "sample": "{\"title\":\"Python (programming language)\",\"sections\":[{\"title\":\"History\",\"level\":0,\"text\":\"Python was conceived in the late 1980s by Guido van Rossum at Centrum Wiskunde & Informati"
+   },
+   {
+    "tool": "get_article",
+    "args": {
+     "title": "Python (programming language)"
+    },
+    "note": "network; a full article - the unbounded-response case",
+    "tokens": 18439,
+    "chars": 86268,
+    "payload": "json",
+    "structured_tokens": 18793,
+    "projected_tokens": 12764,
+    "projection_drops_substance": false,
+    "as_json_tokens": null,
+    "sample": "{\"title\":\"Python (programming language)\",\"pageid\":23862,\"summary\":\"Python is a high-level, general-purpose programming language that emphasizes code readability, simplicity, and ea"
+   }
+  ],
+  "duckduckgo-mcp-server": [
+   {
+    "tool": "search",
+    "args": {
+     "query": "model context protocol token cost",
+     "max_results": 10
+    },
+    "note": "network; 10 results",
+    "tokens": 954,
+    "chars": 4277,
+    "payload": "text",
+    "structured_tokens": 984,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "Found 10 search results:\n\n1. The MCP Tax: Hidden Costs of Model Context Protocol\n   URL: https://www.mmntm.net/articles/mcp-context-tax\n   Summary: The MCP Tax is the compounding o"
+   }
+  ],
+  "arxiv-mcp-server": [
+   {
+    "tool": "search_papers",
+    "args": {
+     "query": "model context protocol",
+     "max_results": 5
+    },
+    "note": "network; 5 papers with abstracts",
+    "tokens": 1955,
+    "chars": 8732,
+    "payload": "json",
+    "structured_tokens": null,
+    "projected_tokens": 239,
+    "projection_drops_substance": false,
+    "as_json_tokens": null,
+    "sample": "{\n  \"total_results\": 5,\n  \"papers\": [\n    {\n      \"id\": \"2507.19570v1\",\n      \"title\": \"MCP4EDA: LLM-Powered Model Context Protocol RTL-to-GDSII Automation with Backend Aware Synth"
+   },
+   {
+    "tool": "get_abstract",
+    "args": {
+     "paper_id": "2103.00020"
+    },
+    "note": "network; one abstract (CLIP - a stable, well-known id)",
+    "tokens": 475,
+    "chars": 2053,
+    "payload": "json",
+    "structured_tokens": null,
+    "projected_tokens": 27,
+    "projection_drops_substance": true,
+    "as_json_tokens": null,
+    "sample": "{\n  \"status\": \"success\",\n  \"paper_id\": \"2103.00020\",\n  \"title\": \"Learning Transferable Visual Models From Natural Language Supervision\",\n  \"authors\": [\n    \"Alec Radford\",\n    \"Jon"
+   }
+  ],
+  "markitdown-mcp": [
+   {
+    "tool": "convert_to_markdown",
+    "args": {
+     "uri": "file:///{TMP}/notes.md"
+    },
+    "note": "local; conversion echoes its input back into context",
+    "tokens": 29,
+    "chars": 134,
+    "payload": "text",
+    "structured_tokens": null,
+    "projected_tokens": null,
+    "as_json_tokens": null,
+    "sample": "# Release notes\n\n- Added the response-cost measurement.\n- Fixed the asymmetric ratio.\n\n## Details\n\nThree buckets: menu, call, result.\n"
+   }
+  ]
+ }
+}

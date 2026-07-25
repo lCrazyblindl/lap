@@ -1,0 +1,285 @@
+{
+ "_README": [
+  "Committed allowlist for experiments/response_costs.py (bucket C, measured).",
+  "READ-ONLY CALLS ONLY. Nothing here writes, deletes, commits, moves or posts:",
+  "  - git: log/status/diff_unstaged/show (never add/commit/reset/checkout/create_branch)",
+  "  - sqlite: read_query/list_tables/describe_table (never write_query/create_table)",
+  "  - filesystem: read/list/tree/info inside a temp dir (never write_file/edit_file/move_file)",
+  "  - memory: read_graph only (never create_*/delete_*)",
+  "Placeholders substituted by the script: {REPO} this repository, {TMP} a fresh temp dir,",
+  "{DB} a seeded temp sqlite db (10 rows x 6 fields), {FILE} a small temp markdown file.",
+  "Server-level 'args' override the leaderboard spawn args so servers point at the sandbox.",
+  "Arguments are part of the measurement: response size depends on them, so they are frozen",
+  "here and quoted in the generated doc."
+ ],
+ "mcp-server-time": {
+  "calls": [
+   {
+    "tool": "get_current_time",
+    "args": {
+     "timezone": "UTC"
+    },
+    "note": "smallest plausible response - the floor"
+   },
+   {
+    "tool": "convert_time",
+    "args": {
+     "source_timezone": "UTC",
+     "time": "12:00",
+     "target_timezone": "Europe/Warsaw"
+    },
+    "note": "two timezones, one computed answer"
+   }
+  ]
+ },
+ "mcp-server-calculator": {
+  "calls": [
+   {
+    "tool": "calculate",
+    "args": {
+     "expression": "2+2*10"
+    },
+    "note": "pure computation: the theoretical minimum for a useful reply"
+   }
+  ]
+ },
+ "mcp-server-git": {
+  "calls": [
+   {
+    "tool": "git_status",
+    "args": {
+     "repo_path": "{REPO}"
+    },
+    "note": "read-only"
+   },
+   {
+    "tool": "git_log",
+    "args": {
+     "repo_path": "{REPO}",
+     "max_count": 5
+    },
+    "note": "5 commits - a bounded list, deterministic on a clean checkout"
+   },
+   {
+    "tool": "git_diff_unstaged",
+    "args": {
+     "repo_path": "{REPO}"
+    },
+    "note": "read-only"
+   },
+   {
+    "tool": "git_show",
+    "args": {
+     "repo_path": "{REPO}",
+     "revision": "HEAD"
+    },
+    "note": "one commit with its patch - unbounded by design"
+   }
+  ]
+ },
+ "mcp-server-sqlite": {
+  "args": [
+   "--db-path",
+   "{DB}"
+  ],
+  "calls": [
+   {
+    "tool": "list_tables",
+    "args": {},
+    "note": "read-only"
+   },
+   {
+    "tool": "describe_table",
+    "args": {
+     "table_name": "items"
+    },
+    "note": "schema of 6 columns"
+   },
+   {
+    "tool": "read_query",
+    "args": {
+     "query": "SELECT * FROM items"
+    },
+    "note": "10 rows x 6 fields - the projection candidate: SELECT * is what agents write"
+   }
+  ]
+ },
+ "server-filesystem": {
+  "args": [
+   "{TMP}"
+  ],
+  "calls": [
+   {
+    "tool": "list_directory",
+    "args": {
+     "path": "{TMP}"
+    },
+    "note": "read-only"
+   },
+   {
+    "tool": "read_text_file",
+    "args": {
+     "path": "{FILE}"
+    },
+    "note": "a small markdown file"
+   },
+   {
+    "tool": "get_file_info",
+    "args": {
+     "path": "{FILE}"
+    },
+    "note": "metadata only"
+   },
+   {
+    "tool": "directory_tree",
+    "args": {
+     "path": "{TMP}"
+    },
+    "note": "read-only"
+   }
+  ]
+ },
+ "server-memory": {
+  "calls": [
+   {
+    "tool": "read_graph",
+    "args": {},
+    "note": "empty graph - the shape of a 'nothing to report' reply"
+   }
+  ]
+ },
+ "server-everything": {
+  "calls": [
+   {
+    "tool": "echo",
+    "args": {
+     "message": "hello"
+    },
+    "note": "protocol floor"
+   },
+   {
+    "tool": "get-sum",
+    "args": {
+     "a": 2,
+     "b": 3
+    },
+    "note": "computed scalar"
+   },
+   {
+    "tool": "get-structured-content",
+    "args": {
+     "location": "New York"
+    },
+    "note": "the reference server's own structuredContent example"
+   }
+  ]
+ },
+ "sequential-thinking": {
+  "calls": [
+   {
+    "tool": "sequentialthinking",
+    "args": {
+     "thought": "Measure the response, then decide.",
+     "thoughtNumber": 1,
+     "totalThoughts": 1,
+     "nextThoughtNeeded": false
+    },
+    "note": "in-memory only; a 921-token definition answering with what?"
+   }
+  ]
+ },
+ "mcp-server-fetch": {
+  "calls": [
+   {
+    "tool": "fetch",
+    "args": {
+     "url": "https://example.com"
+    },
+    "note": "network; stable minimal page, converted to markdown"
+   },
+   {
+    "tool": "fetch",
+    "args": {
+     "url": "https://example.com",
+     "raw": true
+    },
+    "note": "network; the SAME page raw - conversion vs raw HTML, same information"
+   }
+  ]
+ },
+ "wikipedia-mcp": {
+  "calls": [
+   {
+    "tool": "search_wikipedia",
+    "args": {
+     "query": "Model Context Protocol",
+     "limit": 10
+    },
+    "note": "network; 10 hits"
+   },
+   {
+    "tool": "get_summary",
+    "args": {
+     "title": "Python (programming language)"
+    },
+    "note": "network; prose by design"
+   },
+   {
+    "tool": "get_sections",
+    "args": {
+     "title": "Python (programming language)"
+    },
+    "note": "network; structure only"
+   },
+   {
+    "tool": "get_article",
+    "args": {
+     "title": "Python (programming language)"
+    },
+    "note": "network; a full article - the unbounded-response case"
+   }
+  ]
+ },
+ "duckduckgo-mcp-server": {
+  "calls": [
+   {
+    "tool": "search",
+    "args": {
+     "query": "model context protocol token cost",
+     "max_results": 10
+    },
+    "note": "network; 10 results"
+   }
+  ]
+ },
+ "arxiv-mcp-server": {
+  "calls": [
+   {
+    "tool": "search_papers",
+    "args": {
+     "query": "model context protocol",
+     "max_results": 5
+    },
+    "note": "network; 5 papers with abstracts"
+   },
+   {
+    "tool": "get_abstract",
+    "args": {
+     "paper_id": "2103.00020"
+    },
+    "note": "network; one abstract (CLIP - a stable, well-known id)"
+   }
+  ]
+ },
+ "markitdown-mcp": {
+  "calls": [
+   {
+    "tool": "convert_to_markdown",
+    "args": {
+     "uri": "file:///{FILE}"
+    },
+    "note": "local; conversion echoes its input back into context"
+   }
+  ]
+ }
+}

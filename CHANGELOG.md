@@ -7,6 +7,11 @@ versioning while pre-1.0.
 ## [Unreleased]
 
 ### Added
+- **Bucket C, measured** (`experiments/response_costs.py` → `docs/RESPONSE-COSTS.md`): 29
+  read-only calls across 13 credential-free published MCP servers, tokenizing what actually
+  comes back. Closes the toolkit's own biggest gap — bucket C was a schema-based *estimate*
+  for OpenAPI and entirely absent for MCP servers. Calls come from a committed read-only
+  allowlist (`experiments/response_fixtures.json`); no LLM, no credentials, rerunnable.
 - **Deferred-facade label** (`lap lint --mcp`, `lint.looks_deferred()`): a tiny menu with a
   tool-search signature (`search_tools`/`get_tool_schema` + `call`/`execute`) gets an
   informational note — "figures reflect the facade, not the catalog behind it" — in human

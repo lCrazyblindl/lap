@@ -94,6 +94,11 @@ live, with billed calls where it matters:
 - **Compression doesn't cost accuracy** — a 500-run live matrix (2 models × 10 tasks × 5
   forms): every compressed form matched or beat the naive menu; the *cheapest correct answer*
   turned out to be model-dependent ([validation.md](experiments/token-bench/validation.md)).
+- **What the replies cost, measured** — 29 real read-only calls across 13 servers: one
+  Wikipedia article costs **18,439 tokens** — 9.5× that server's entire tool menu — 13 of 29 replies
+  are free text a caller can't project or paginate, and ~44% of the projectable tokens sit in
+  fields nobody asked for. Every menu optimization in the ecosystem leaves this untouched
+  ([RESPONSE-COSTS](docs/RESPONSE-COSTS.md)).
 
 Results that don't flatter the thesis ship as prominently as the ones that do — the
 verified/disputed registry of the field's headline claims is [docs/FIELD.md](docs/FIELD.md),
