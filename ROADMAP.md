@@ -942,6 +942,56 @@ MCP-server-leaderboard title, per the refreshed draft). Still pending: the blog 
 (POST.md drafts 1–2), LISTINGS.md submissions, the Action-Marketplace click. The twice-daily
 watch covers the 5 GitHub threads; Reddit replies arrive via the owner's native Reddit inbox.
 
+## Stages — v0.10 (drawn 2026-07-25 from the W13 review; full text in the owner's plan file)
+
+**Why a new plan.** The project changed phase, not ended: `[Unreleased]` holds a 0.9.0
+release; 6 upstream threads are live; two calendar anchors are set (spec-day Jul 28, monthly
+diff Aug 3); the binding constraint is still audience (POST.md unpublished). Two inputs shape
+this cycle: (1) a code review of `experiments/response_costs.py` found the measurement core
+sound but 7 metadata-layer defects (worst: `--rerender` re-dates the data file; the
+substance-drop check is blind to lists, so `search_papers`' per-item abstract drops sit
+unflagged inside the ~44% ceiling); (2) a methodological verdict on the owner's question
+"can bucket C be measured correctly at all": **per call — exactly; per server as one number —
+no** (C is a function of the request; any aggregate is workload-relative and must never
+silently enter the grade). The well-posed workload-free forms are **scaling curves** (tokens
+vs the tool's own limit arg: slope = marginal cost/item, intercept = envelope overhead) and
+**same-information comparisons** (repr↔JSON, markdown↔raw). Reporting discipline per the
+`no-headline-chasing` feedback memory applies to everything below.
+
+- [ ] ▶ **X1 — W13 hardening** `[no key, small]`. The 7-point review list: `--rerender` must
+  not rewrite/re-date `response-costs-data.json`; item-wise substance-drop check for
+  lists/envelopes (recompute the ceiling — it will drop; publish the honest number); align
+  the module docstring with the reference-price-list framing; remove the dead
+  `StdioTransport` import; extract a shared `build_transport(entry)` in
+  `mcp_leaderboard.py` (kill the spawn-logic duplication); un-hardcode the ", a full
+  article" caption; run `sample` fields through the placeholder un-substitution.
+  Verify: two consecutive `--rerender`s leave the data file byte-identical.
+- [ ] **X2 — Scaling curves + encoding overhead** `[no key]`. Limit-arg sweeps
+  (`max_results` ∈ {1,3,5,10}, `max_count` ∈ {1,5,10}, `max_length` steps) on the tools
+  that have one → marginal-per-item + intercept per tool; same-information table
+  (repr↔JSON, markdown↔raw fetch of the same page). RESPONSE-COSTS.md gains "Unit prices"
+  + "Encoding overhead". Unit prices need no thesis — this replaces headline ratios.
+- [ ] **X3 — Response-side live A/B** `[key]`. Reuse `facade_ab.py`'s harness; two
+  questions: (a) tool choice among granularities (`get_summary`/`get_sections`/
+  `get_article` + information-seeking tasks — does the model over-pick heavy tools?);
+  (b) reply ablation (full vs projected `tool_result` — does accuracy move?). k=3, Haiku,
+  billed usage, cost cap. Tests the hypothesis W13 explicitly declined to claim.
+- [ ] **X4 — mcpproxy cross-validation + peer row** `[no key]`. Score mcpproxy's three
+  routing modes with our pipeline next to their own `bench/` numbers (Go vs Python, same
+  cl100k tokenizer); FIELD.md "peer measurement" row; assess their MIT retrieval golden
+  set for X5 reuse.
+- [ ] **X5 — Selection-accuracy-vs-scale curve** `[key]` — the public promise from the
+  r/mcp thread: same discovery tasks at ~20 → ~100 → ~741 tools, compact-in-context vs
+  facade, counting search-recall misses and re-query recoveries. Builds on `facade_ab.py`;
+  budget ~W12-order (<$5).
+- [ ] **R — Release 0.9.0** on the owner's word (M5 + facade label + response-costs + X1).
+
+Calendar (scheduled, not stages): **W2** spec-day — one-shot task fires Jul 28 11:00;
+**W8** month-over-month diff after Aug 3. The 6-thread watch runs twice daily; thread
+conversions (e.g. a gcore PR#13 merge) take priority over queued stages. Owner-only:
+POST.md (blog → Show HN), LISTINGS.md. Backlog: client resend matrix, param-description
+ablation, workload-declared grade wiring for C, x-lap/Arazzo follow-ups.
+
 ## The 1.0 bar (written v0.9 W7 — what "stable" will mean)
 
 `lap` tags 1.0 when ALL of these hold; until then, loose semver (minor = capability,
@@ -1039,11 +1089,13 @@ macro-tools measured on the OAI examples (menu −50…97%; B wins grow with cha
 tiny flows pay more; intermediate C never enters context — structural) + the x-lap strawman
 (4 keys). **W7 done** — stable Python API (score_spec/lint_spec/grade_spec/diff_specs),
 `--diff --git`, pre-commit recipe, the written 1.0 bar; 66 tests green.
-**0.7.0 FULLY RELEASED 2026-07-10** (PyPI + GitHub, fresh-venv verified). ▶ **W2** fires
-~Jul 28 (reminder scheduled); W3/W5 stay `[key]`; W8 after Aug 3; otherwise v0.9 is done
-pending replies to the 5 watched threads. **The mcp-compressor issue is POSTED
-(2026-07-09, owner-authorized): [atlassian-labs/mcp-compressor#236](https://github.com/atlassian-labs/mcp-compressor/issues/236).**
-Owner actions still pending: POST.md publishing + LISTINGS.md submissions.**
+**0.7.0 + 0.8.0 FULLY RELEASED 2026-07-10** (PyPI + GitHub, fresh-venv verified). W9–W13
+done (grade navigation, M5, facade label, facade live A/B, response costs — see the v0.9
+list). **2026-07-25: plan re-drawn → v0.10 X1–X5 + R** (triggers: the W13 code review —
+7 metadata-layer defects, core sound — and the C-measurability verdict: per-call exact,
+per-server-as-one-number ill-posed; scaling curves are the well-posed form). ▶ **X1 — W13
+hardening**; W2 fires ~Jul 28 (reminder scheduled); W8 after Aug 3; thread conversions take
+priority. Owner actions still pending: POST.md publishing + LISTINGS.md submissions.
 Say "continue LAP" to keep going.
 v0.4 pivoted the benchmark from our own interface variants to real third-party
 artifacts —
