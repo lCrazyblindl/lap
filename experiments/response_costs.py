@@ -217,8 +217,17 @@ def lb_transport(entry: dict):
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default="", help="comma-separated server names to measure")
+    ap.add_argument("--rerender", action="store_true",
+                    help="rebuild docs/RESPONSE-COSTS.md from the saved data file, "
+                    "no calls made (text edits without re-measuring)")
     args = ap.parse_args()
     sys.stdout.reconfigure(errors="replace")
+
+    if args.rerender:
+        saved = json.loads((REPO / "docs" / "response-costs-data.json")
+                           .read_text(encoding="utf-8"))
+        write_doc(saved["servers"])
+        return
 
     fixtures = json.loads(FIXTURES.read_text(encoding="utf-8"))
     by_name = {e["name"]: e for e in lb.SERVERS}
@@ -272,7 +281,7 @@ def write_doc(results: dict) -> None:
     heaviest = max(ok_rows, key=lambda x: x[1]["tokens"]) if ok_rows else None
 
     lines = [
-        "# Bucket C, measured — what real MCP tool responses cost in context",
+        "# Bucket C, measured — a price list of real MCP tool responses",
         "",
         f"_Generated {date.today().isoformat()} by "
         "[`experiments/response_costs.py`](../experiments/response_costs.py); tokenizer "
@@ -282,23 +291,24 @@ def write_doc(results: dict) -> None:
         "([`response_fixtures.json`](../experiments/response_fixtures.json)) — this script "
         "never enumerates and calls a server's tools. No LLM involved._",
         "",
-        "**Why this exists.** Every mitigation the ecosystem has (compact menus, deferred "
-        "loading, meta-tool facades) shrinks the *menu*. None of them touch the reply. Our own "
-        "bucket-C figures were schema-based estimates for OpenAPI and simply absent for MCP "
-        "servers ([the grade skips the result sub-score](MCP-LEADERBOARD.md)). These are "
-        "measured.",
+        "**What this is.** Reference data, not a ranking. Our bucket-C figures were "
+        "schema-based estimates for OpenAPI and absent for MCP servers ([the grade skips the "
+        "result sub-score](MCP-LEADERBOARD.md)); as far as we know nobody had published "
+        "measured response costs at all. Response size belongs to the *request* — a long "
+        "article is long because we asked for an article — so a big number in this table is "
+        "not by itself a finding. What the dataset supports: budgeting (what does a call of "
+        "this shape put into context?), validating estimators, and the two structural "
+        "observations below, which don't depend on any response being \"too big\".",
         "",
         f"**{len(ok_rows)} calls across {len({s for s, _ in ok_rows})} servers, "
-        f"{total:,} tokens of replies.** Heaviest single response: "
-        f"**{heaviest[1]['tokens']:,} tokens** from `{heaviest[0]}` / "
-        f"`{heaviest[1]['tool']}`. `projected` = the same payload with each item cut to its "
-        f"first {KEEP} fields (the model `lap score`'s projected bucket C already uses): "
-        f"**{saved:.0%} of projectable response tokens sit in fields past the first {KEEP}** "
-        f"(over the {len(projectable)} rows where that projection still keeps the payload's "
-        "largest field — see the caveat below). "
-        f"{len(prose)} of {len(ok_rows)} replies are free text — nothing for a caller to "
-        f"project, filter or paginate; {len(reprs)} more return structured data in a "
-        "**non-JSON serialization** (Python `repr()`), which a caller can't parse either.",
+        f"{total:,} tokens of replies** — ranging from {min(r['tokens'] for _, r in ok_rows)} "
+        f"token(s) (`{min(ok_rows, key=lambda x: x[1]['tokens'])[1]['tool']}`) to "
+        f"{heaviest[1]['tokens']:,} (`{heaviest[0]}`/`{heaviest[1]['tool']}`, a full article). "
+        f"Payload form: {len(ok_rows) - len(prose) - len(reprs)} JSON, {len(prose)} free "
+        f"text, {len(reprs)} Python-`repr()`. `projected` = the same payload with each item "
+        f"cut to its first {KEEP} fields; treat it as a *ceiling* on what caller-side field "
+        "selection could reclaim, not a saving (see the caveat on where the heuristic "
+        "breaks).",
         "",
         "| server | tool | args | response tok | projected | payload |",
         "| --- | --- | --- | ---: | ---: | --- |",
@@ -322,21 +332,30 @@ def write_doc(results: dict) -> None:
 
     lines += [
         "",
-        "## Read",
+        "## What the dataset supports",
         "",
-        "- **Response size is argument-dependent** — a search returns ten hits because the "
-        "fixture asked for ten. That's why every row quotes its exact arguments and the "
-        "allowlist is committed. The conclusions below are only about *avoidable* overhead.",
-        "- **Free-text responses are the response-side counterpart of a bloated menu**: they "
-        "can't be projected, filtered or paginated by the caller, and the model pays for "
-        "narrative it didn't ask for. Tools that return computed data let the model own the "
-        "narrative (a point MCP server authors have raised independently).",
-        f"- **Field selection is the biggest lever we can quantify here** — {saved:.0%} of "
-        f"projectable response tokens are in fields past the first {KEEP}. But an MCP tool has "
-        "no standard way for a caller to ask for fewer fields (or a smaller page): that is a "
-        "**protocol-shaped gap**, not an author mistake. On the OpenAPI side the same saving "
-        "has a name and a rule (R1 field projection, R3 pagination); MCP has no equivalent, so "
-        "the only lever left to a server author is choosing what to return by default.",
+        "- **A price list.** Every row quotes its exact arguments because the cost belongs to "
+        "the request; use the table to budget what a call of a given shape puts into context, "
+        "the way the [leaderboard](MCP-LEADERBOARD.md) budgets menus. No row is an accusation.",
+        "- **The affordance gap (structural — visible in the schemas, independent of any "
+        "measured size).** Some tools give the caller a brake: `fetch` has "
+        "`max_length`/`start_index`, `git_log` has `max_count`, `read_text_file` has "
+        "`head`/`tail`, the search tools have `max_results`. Others don't: `get_article` "
+        "accepts only `title`, `get_abstract` only `paper_id` — whatever comes back, comes "
+        "back whole. And MCP itself has no standard caller-side field or page selection "
+        "(OpenAPI has R1/R3 for exactly this), so where the author didn't add a limit "
+        "parameter, no one downstream can add one. A protocol-shaped gap, not an author "
+        "mistake.",
+        f"- **Response form (structural).** {len(prose)} of {len(ok_rows)} replies are free "
+        "text: whatever their size, the caller can't parse, filter or paginate them — the "
+        "model pays for narrative formatting it may not need. Tools that return computed "
+        "data leave the narrative to the model (a point MCP server authors have raised "
+        "independently).",
+        f"- **Projection ceiling, stated carefully.** Under the first-{KEEP}-fields heuristic, "
+        f"{saved:.0%} of the projectable tokens would be cut ({len(projectable)} rows where "
+        "the projection keeps the payload's largest field). This is an upper bound on what "
+        "caller-side field selection *could* reclaim if MCP had such a mechanism — not a "
+        "measured saving, and the heuristic itself fails on some shapes (next bullet).",
     ]
     if dropped:
         lines += [
@@ -369,8 +388,10 @@ def write_doc(results: dict) -> None:
         "_Caveats: one call per fixture (network-backed servers may vary run to run — local "
         "targets like git/sqlite/filesystem are deterministic); tool_result text is what most "
         "clients forward, but a client that forwards `structured_content` instead pays the "
-        "figure in the JSON data file; no LLM in the loop, so this says nothing about whether "
-        "a trimmed response preserves accuracy — that's a separate live experiment._",
+        "figure in the JSON data file; and no LLM was involved, so this dataset says nothing "
+        "about model behavior — e.g. whether models over-pick heavy tools when a cheaper one "
+        "would do (`get_article` vs `get_summary`) is a plausible hypothesis this data cannot "
+        "test; it would need a live experiment._",
     ]
 
     (REPO / "docs" / "RESPONSE-COSTS.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
