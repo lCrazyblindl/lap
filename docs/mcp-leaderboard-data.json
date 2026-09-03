@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-03",
+ "generated": "2026-09-03",
  "tokenizer": "tiktoken-approx",
  "servers": [
   {
@@ -41,51 +41,68 @@
    "pkg": "firecrawl-mcp",
    "kind": "npm",
    "by": "Firecrawl",
-   "tools": 26,
+   "tools": 27,
    "facade": false,
-   "menu": 9948,
-   "compact": 773,
-   "per_tool": 383,
-   "warn": 6,
-   "info": 28,
+   "menu": 10648,
+   "compact": 788,
+   "per_tool": 394,
+   "warn": 7,
+   "info": 27,
    "grade": "D",
    "score": 43,
    "heaviest": "firecrawl_search",
-   "heaviest_tok": 1358
+   "heaviest_tok": 1630
   },
   {
    "name": "easy-notion-mcp",
    "pkg": "easy-notion-mcp",
    "kind": "npm",
    "by": "community (Grey-Iris)",
-   "tools": 42,
+   "tools": 43,
    "facade": false,
-   "menu": 8199,
-   "compact": 554,
-   "per_tool": 195,
-   "warn": 0,
-   "info": 2,
+   "menu": 10339,
+   "compact": 669,
+   "per_tool": 240,
+   "warn": 4,
+   "info": 1,
    "grade": "B",
-   "score": 83,
-   "heaviest": "read_page",
-   "heaviest_tok": 475
+   "score": 76,
+   "heaviest": "update_section",
+   "heaviest_tok": 674
   },
   {
    "name": "yfmcp (Yahoo Finance)",
    "pkg": "yfmcp",
    "kind": "pip",
    "by": "community",
-   "tools": 13,
+   "tools": 15,
    "facade": false,
-   "menu": 4412,
-   "compact": 229,
-   "per_tool": 339,
+   "menu": 4891,
+   "compact": 265,
+   "per_tool": 326,
    "warn": 1,
    "info": 2,
    "grade": "C",
-   "score": 68,
+   "score": 69,
    "heaviest": "yfinance_get_price_history",
    "heaviest_tok": 737
+  },
+  {
+   "name": "arxiv-mcp-server",
+   "pkg": "arxiv-mcp-server",
+   "kind": "pip",
+   "by": "community",
+   "tools": 19,
+   "facade": false,
+   "menu": 4181,
+   "compact": 312,
+   "per_tool": 220,
+   "warn": 0,
+   "info": 5,
+   "grade": "B",
+   "score": 76,
+   "heaviest": "search_papers",
+   "heaviest_tok": 558
   },
   {
    "name": "playwright-mcp",
@@ -94,15 +111,15 @@
    "by": "Microsoft",
    "tools": 24,
    "facade": false,
-   "menu": 4018,
+   "menu": 4024,
    "compact": 288,
-   "per_tool": 167,
+   "per_tool": 168,
    "warn": 3,
    "info": 6,
    "grade": "B",
    "score": 77,
    "heaviest": "browser_take_screenshot",
-   "heaviest_tok": 345
+   "heaviest_tok": 351
   },
   {
    "name": "excel-mcp-server",
@@ -128,32 +145,15 @@
    "by": "AWS Labs",
    "tools": 5,
    "facade": false,
-   "menu": 3604,
+   "menu": 3575,
    "compact": 81,
-   "per_tool": 721,
+   "per_tool": 715,
    "warn": 3,
    "info": 0,
    "grade": "F",
    "score": 37,
    "heaviest": "search_documentation",
    "heaviest_tok": 1002
-  },
-  {
-   "name": "arxiv-mcp-server",
-   "pkg": "arxiv-mcp-server",
-   "kind": "pip",
-   "by": "community",
-   "tools": 14,
-   "facade": false,
-   "menu": 3346,
-   "compact": 198,
-   "per_tool": 239,
-   "warn": 1,
-   "info": 4,
-   "grade": "B",
-   "score": 72,
-   "heaviest": "search_papers",
-   "heaviest_tok": 1190
   },
   {
    "name": "mcp-server-datadog (winor30)",
@@ -179,7 +179,7 @@
    "by": "community",
    "tools": 22,
    "facade": false,
-   "menu": 1933,
+   "menu": 1936,
    "compact": 235,
    "per_tool": 88,
    "warn": 0,
@@ -187,7 +187,7 @@
    "grade": "B",
    "score": 83,
    "heaviest": "wikipedia_summarize_article_for_query",
-   "heaviest_tok": 124
+   "heaviest_tok": 125
   },
   {
    "name": "server-filesystem",
@@ -205,6 +205,23 @@
    "score": 74,
    "heaviest": "read_text_file",
    "heaviest_tok": 209
+  },
+  {
+   "name": "mcp-server-git",
+   "pkg": "mcp-server-git",
+   "kind": "pip",
+   "by": "official reference",
+   "tools": 12,
+   "facade": false,
+   "menu": 1418,
+   "compact": 153,
+   "per_tool": 118,
+   "warn": 2,
+   "info": 11,
+   "grade": "B",
+   "score": 71,
+   "heaviest": "git_log",
+   "heaviest_tok": 302
   },
   {
    "name": "server-everything",
@@ -247,15 +264,15 @@
    "by": "Upstash",
    "tools": 2,
    "facade": false,
-   "menu": 1032,
+   "menu": 1036,
    "compact": 31,
-   "per_tool": 516,
+   "per_tool": 518,
    "warn": 1,
    "info": 0,
    "grade": "D",
    "score": 47,
    "heaviest": "resolve-library-id",
-   "heaviest_tok": 633
+   "heaviest_tok": 635
   },
   {
    "name": "sequential-thinking",
@@ -264,15 +281,15 @@
    "by": "official reference",
    "tools": 1,
    "facade": false,
-   "menu": 921,
+   "menu": 937,
    "compact": 59,
-   "per_tool": 921,
+   "per_tool": 937,
    "warn": 1,
    "info": 0,
    "grade": "F",
    "score": 18,
    "heaviest": "sequentialthinking",
-   "heaviest_tok": 921
+   "heaviest_tok": 937
   },
   {
    "name": "duckduckgo-mcp-server",
@@ -292,21 +309,55 @@
    "heaviest_tok": 394
   },
   {
-   "name": "markitdown-mcp",
-   "pkg": "markitdown-mcp",
+   "name": "mcp-server-fetch",
+   "pkg": "mcp-server-fetch",
    "kind": "pip",
-   "by": "Microsoft",
+   "by": "official reference",
    "tools": 1,
    "facade": false,
-   "menu": 79,
-   "compact": 18,
-   "per_tool": 79,
+   "menu": 290,
+   "compact": 28,
+   "per_tool": 290,
+   "warn": 0,
+   "info": 0,
+   "grade": "B",
+   "score": 76,
+   "heaviest": "fetch",
+   "heaviest_tok": 290
+  },
+  {
+   "name": "mcp-server-time",
+   "pkg": "mcp-server-time",
+   "kind": "pip",
+   "by": "official reference",
+   "tools": 2,
+   "facade": false,
+   "menu": 277,
+   "compact": 31,
+   "per_tool": 138,
+   "warn": 0,
+   "info": 0,
+   "grade": "A",
+   "score": 90,
+   "heaviest": "convert_time",
+   "heaviest_tok": 186
+  },
+  {
+   "name": "mcp-server-calculator",
+   "pkg": "mcp-server-calculator",
+   "kind": "pip",
+   "by": "community",
+   "tools": 1,
+   "facade": false,
+   "menu": 63,
+   "compact": 15,
+   "per_tool": 63,
    "warn": 0,
    "info": 1,
    "grade": "B",
    "score": 82,
-   "heaviest": "convert_to_markdown",
-   "heaviest_tok": 79
+   "heaviest": "calculate",
+   "heaviest_tok": 63
   },
   {
    "name": "server-postgres",
@@ -328,40 +379,22 @@
  ],
  "unreachable": [
   {
-   "name": "mcp-server-git",
-   "pkg": "mcp-server-git",
-   "kind": "pip",
-   "note": "McpError: Connection closed"
-  },
-  {
-   "name": "mcp-server-time",
-   "pkg": "mcp-server-time",
-   "kind": "pip",
-   "note": "McpError: Connection closed"
-  },
-  {
-   "name": "mcp-server-fetch",
-   "pkg": "mcp-server-fetch",
-   "kind": "pip",
-   "note": "McpError: Connection closed"
-  },
-  {
    "name": "mcp-server-sqlite",
    "pkg": "mcp-server-sqlite",
    "kind": "pip",
-   "note": "McpError: Connection closed"
+   "note": "MCPError: Connection closed"
+  },
+  {
+   "name": "markitdown-mcp",
+   "pkg": "markitdown-mcp",
+   "kind": "pip",
+   "note": "MCPError: Connection closed"
   },
   {
    "name": "mcp-atlassian",
    "pkg": "mcp-atlassian",
    "kind": "pip",
    "note": "RuntimeError: advertised 0 tools"
-  },
-  {
-   "name": "mcp-server-calculator",
-   "pkg": "mcp-server-calculator",
-   "kind": "pip",
-   "note": "McpError: Connection closed"
   }
  ]
 }
