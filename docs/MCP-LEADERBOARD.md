@@ -1,31 +1,32 @@
 # MCP-server leaderboard — what popular published servers charge your context window
 
-_Generated 2026-09-03 by [`experiments/mcp_leaderboard.py`](../experiments/mcp_leaderboard.py); tokenizer: **tiktoken-approx**. Each server was installed and run locally in an isolated env (`uvx` / `npx -y`), its advertised tool list fetched over stdio with **no credentials** (dummy env vars only where a server refuses to boot without them), and scored exactly like `lap lint --mcp`: menu (bucket A) tokens + M-rule hygiene + the composite grade (result sub-score skipped - tool listings don't declare response shapes). Same method as the [OpenAPI leaderboard](LEADERBOARD.md)._
+_Generated 2026-10-03 by [`experiments/mcp_leaderboard.py`](../experiments/mcp_leaderboard.py); tokenizer: **tiktoken-approx**. Each server was installed and run locally in an isolated env (`uvx` / `npx -y`), its advertised tool list fetched over stdio with **no credentials** (dummy env vars only where a server refuses to boot without them), and scored exactly like `lap lint --mcp`: menu (bucket A) tokens + M-rule hygiene + the composite grade (result sub-score skipped - tool listings don't declare response shapes). Same method as the [OpenAPI leaderboard](LEADERBOARD.md)._
 
-**22 servers reachable, 449 tools; their menus total 105,418 tokens per session before the first user message** - a compact rendering of the same tools would cost 7,333 (93% less). Every session with these servers connected pays the menu whether the tools are used or not ([cache math](CACHE-ECONOMICS.md): caching discounts the price, not the context).
+**23 servers reachable, 453 tools; their menus total 115,644 tokens per session before the first user message** - a compact rendering of the same tools would cost 7,397 (94% less). Every session with these servers connected pays the menu whether the tools are used or not ([cache math](CACHE-ECONOMICS.md): caching discounts the price, not the context).
 
 | server | by | tools | menu tok | tok/tool | compact | saved | findings (warn/info) | grade |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
 | datadog-mcp (@us-all) | community | 166 | 28,835 | 174 | 2,799 | 90% | 1/25 | **B** (82) |
 | notion-mcp-server | Notion | 24 | 21,411 | 892 | 400 | 98% | 25/14 | **F** (19) |
-| firecrawl-mcp | Firecrawl | 27 | 10,648 | 394 | 788 | 93% | 7/27 | **D** (43) |
+| firecrawl-mcp | Firecrawl | 27 | 14,581 | 540 | 882 | 94% | 9/29 | **F** (33) |
 | easy-notion-mcp | community (Grey-Iris) | 43 | 10,339 | 240 | 669 | 94% | 4/1 | **B** (76) |
+| excel-mcp-server | community | 26 | 9,400 | 362 | 412 | 96% | 5/2 | **C** (64) |
 | yfmcp (Yahoo Finance) | community | 15 | 4,891 | 326 | 265 | 95% | 1/2 | **C** (69) |
-| arxiv-mcp-server | community | 19 | 4,181 | 220 | 312 | 93% | 0/5 | **B** (76) |
-| playwright-mcp | Microsoft | 24 | 4,024 | 168 | 288 | 93% | 3/6 | **B** (77) |
-| excel-mcp-server | community | 25 | 3,955 | 158 | 494 | 88% | 0/26 | **C** (69) |
-| aws-documentation-mcp | AWS Labs | 5 | 3,575 | 715 | 81 | 98% | 3/0 | **F** (37) |
+| playwright-mcp | Microsoft | 25 | 4,445 | 178 | 313 | 93% | 3/7 | **B** (76) |
+| arxiv-mcp-server | community | 19 | 4,208 | 221 | 312 | 93% | 0/5 | **B** (76) |
+| aws-documentation-mcp | AWS Labs | 5 | 3,562 | 712 | 81 | 98% | 3/0 | **F** (37) |
 | mcp-server-datadog (winor30) | community (winor30) | 21 | 2,497 | 119 | 316 | 87% | 0/13 | **B** (81) |
 | wikipedia-mcp | community | 22 | 1,936 | 88 | 235 | 88% | 0/18 | **B** (83) |
 | server-filesystem | official reference | 14 | 1,915 | 137 | 130 | 93% | 0/12 | **B** (74) |
 | mcp-server-git | official reference | 12 | 1,418 | 118 | 153 | 89% | 2/11 | **B** (71) |
 | server-everything | official reference | 13 | 1,302 | 100 | 114 | 91% | 0/5 | **A** (89) |
 | server-memory | official reference | 9 | 1,117 | 124 | 69 | 94% | 0/4 | **B** (84) |
+| duckduckgo-mcp-server | community | 3 | 1,063 | 354 | 50 | 95% | 0/3 | **D** (54) |
 | context7 | Upstash | 2 | 1,036 | 518 | 31 | 97% | 1/0 | **D** (47) |
 | sequential-thinking | official reference | 1 | 937 | 937 | 59 | 94% | 1/0 | **F** (18) |
-| duckduckgo-mcp-server | community | 2 | 729 | 364 | 41 | 94% | 0/2 | **D** (53) |
 | mcp-server-fetch | official reference | 1 | 290 | 290 | 28 | 90% | 0/0 | **B** (76) |
 | mcp-server-time | official reference | 2 | 277 | 138 | 31 | 89% | 0/0 | **A** (90) |
+| markitdown-mcp | Microsoft | 1 | 79 | 79 | 18 | 77% | 0/1 | **B** (82) |
 | mcp-server-calculator | community | 1 | 63 | 63 | 15 | 76% | 0/1 | **B** (82) |
 | server-postgres | official (archived) | 1 | 42 | 42 | 15 | 64% | 0/2 | **C** (64) |
 
@@ -38,7 +39,6 @@ These wouldn't even list tools in a clean environment - noted, not scored:
 | server | kind | error |
 | --- | --- | --- |
 | mcp-server-sqlite | pip | `MCPError: Connection closed` |
-| markitdown-mcp | pip | `MCPError: Connection closed` |
 | mcp-atlassian | pip | `RuntimeError: advertised 0 tools` |
 
 ## Cross-check: agent-friend's published grades

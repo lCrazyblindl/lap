@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-03",
+ "generated": "2026-10-03",
  "tokenizer": "tiktoken-approx",
  "servers": [
   {
@@ -43,15 +43,15 @@
    "by": "Firecrawl",
    "tools": 27,
    "facade": false,
-   "menu": 10648,
-   "compact": 788,
-   "per_tool": 394,
-   "warn": 7,
-   "info": 27,
-   "grade": "D",
-   "score": 43,
+   "menu": 14581,
+   "compact": 882,
+   "per_tool": 540,
+   "warn": 9,
+   "info": 29,
+   "grade": "F",
+   "score": 33,
    "heaviest": "firecrawl_search",
-   "heaviest_tok": 1630
+   "heaviest_tok": 2186
   },
   {
    "name": "easy-notion-mcp",
@@ -71,6 +71,23 @@
    "heaviest_tok": 674
   },
   {
+   "name": "excel-mcp-server",
+   "pkg": "excel-mcp-server",
+   "kind": "pip",
+   "by": "community",
+   "tools": 26,
+   "facade": false,
+   "menu": 9400,
+   "compact": 412,
+   "per_tool": 362,
+   "warn": 5,
+   "info": 2,
+   "grade": "C",
+   "score": 64,
+   "heaviest": "format_range",
+   "heaviest_tok": 1010
+  },
+  {
    "name": "yfmcp (Yahoo Finance)",
    "pkg": "yfmcp",
    "kind": "pip",
@@ -88,15 +105,32 @@
    "heaviest_tok": 737
   },
   {
+   "name": "playwright-mcp",
+   "pkg": "@playwright/mcp",
+   "kind": "npm",
+   "by": "Microsoft",
+   "tools": 25,
+   "facade": false,
+   "menu": 4445,
+   "compact": 313,
+   "per_tool": 178,
+   "warn": 3,
+   "info": 7,
+   "grade": "B",
+   "score": 76,
+   "heaviest": "browser_take_screenshot",
+   "heaviest_tok": 358
+  },
+  {
    "name": "arxiv-mcp-server",
    "pkg": "arxiv-mcp-server",
    "kind": "pip",
    "by": "community",
    "tools": 19,
    "facade": false,
-   "menu": 4181,
+   "menu": 4208,
    "compact": 312,
-   "per_tool": 220,
+   "per_tool": 221,
    "warn": 0,
    "info": 5,
    "grade": "B",
@@ -105,49 +139,15 @@
    "heaviest_tok": 558
   },
   {
-   "name": "playwright-mcp",
-   "pkg": "@playwright/mcp",
-   "kind": "npm",
-   "by": "Microsoft",
-   "tools": 24,
-   "facade": false,
-   "menu": 4024,
-   "compact": 288,
-   "per_tool": 168,
-   "warn": 3,
-   "info": 6,
-   "grade": "B",
-   "score": 77,
-   "heaviest": "browser_take_screenshot",
-   "heaviest_tok": 351
-  },
-  {
-   "name": "excel-mcp-server",
-   "pkg": "excel-mcp-server",
-   "kind": "pip",
-   "by": "community",
-   "tools": 25,
-   "facade": false,
-   "menu": 3955,
-   "compact": 494,
-   "per_tool": 158,
-   "warn": 0,
-   "info": 26,
-   "grade": "C",
-   "score": 69,
-   "heaviest": "format_range",
-   "heaviest_tok": 551
-  },
-  {
    "name": "aws-documentation-mcp",
    "pkg": "awslabs.aws-documentation-mcp-server",
    "kind": "pip",
    "by": "AWS Labs",
    "tools": 5,
    "facade": false,
-   "menu": 3575,
+   "menu": 3562,
    "compact": 81,
-   "per_tool": 715,
+   "per_tool": 712,
    "warn": 3,
    "info": 0,
    "grade": "F",
@@ -258,6 +258,23 @@
    "heaviest_tok": 171
   },
   {
+   "name": "duckduckgo-mcp-server",
+   "pkg": "duckduckgo-mcp-server",
+   "kind": "pip",
+   "by": "community",
+   "tools": 3,
+   "facade": false,
+   "menu": 1063,
+   "compact": 50,
+   "per_tool": 354,
+   "warn": 0,
+   "info": 3,
+   "grade": "D",
+   "score": 54,
+   "heaviest": "fetch_content",
+   "heaviest_tok": 559
+  },
+  {
    "name": "context7",
    "pkg": "@upstash/context7-mcp",
    "kind": "npm",
@@ -292,23 +309,6 @@
    "heaviest_tok": 937
   },
   {
-   "name": "duckduckgo-mcp-server",
-   "pkg": "duckduckgo-mcp-server",
-   "kind": "pip",
-   "by": "community",
-   "tools": 2,
-   "facade": false,
-   "menu": 729,
-   "compact": 41,
-   "per_tool": 364,
-   "warn": 0,
-   "info": 2,
-   "grade": "D",
-   "score": 53,
-   "heaviest": "fetch_content",
-   "heaviest_tok": 394
-  },
-  {
    "name": "mcp-server-fetch",
    "pkg": "mcp-server-fetch",
    "kind": "pip",
@@ -341,6 +341,23 @@
    "score": 90,
    "heaviest": "convert_time",
    "heaviest_tok": 186
+  },
+  {
+   "name": "markitdown-mcp",
+   "pkg": "markitdown-mcp",
+   "kind": "pip",
+   "by": "Microsoft",
+   "tools": 1,
+   "facade": false,
+   "menu": 79,
+   "compact": 18,
+   "per_tool": 79,
+   "warn": 0,
+   "info": 1,
+   "grade": "B",
+   "score": 82,
+   "heaviest": "convert_to_markdown",
+   "heaviest_tok": 79
   },
   {
    "name": "mcp-server-calculator",
@@ -381,12 +398,6 @@
   {
    "name": "mcp-server-sqlite",
    "pkg": "mcp-server-sqlite",
-   "kind": "pip",
-   "note": "MCPError: Connection closed"
-  },
-  {
-   "name": "markitdown-mcp",
-   "pkg": "markitdown-mcp",
    "kind": "pip",
    "note": "MCPError: Connection closed"
   },
